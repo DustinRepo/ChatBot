@@ -22,7 +22,7 @@ Due to my parsing of Minecraft's chat messages being bad, the bot may not be abl
 I am working to create a better chat parser to address this
 
 ## Commands
-Below are a list of commands currently in ChatBot (Assuming default prefix of "!")
+Below are a list of commands currently in ChatBot
 
 ###### 8ball -question-
 Ask a question to the magic 8 ball
@@ -30,11 +30,19 @@ Ask a question to the magic 8 ball
 Print a random bible verse in chat
 ###### isEven -number-
 Check if a number is even using the isEven API
-###### report
+###### coffee
+Returns a link to a random picture of coffee
+###### report -name- -reason-
 Report a player for bad behavior
+###### kys
+Make the bot commit suicide. (Uses the /suicide command)
 ###### tps
 Get the current server TPS
 ###### cum
 Make the bot cum
+###### dupe -item-
+Dupe any item! Unpatched on all servers 2019 no survey!
+###### votekill -name-
+Start a vote to kill a player. Vote with /kill
 ###### help
 Links to here
