@@ -9,6 +9,7 @@ public class CommandHelp extends Command {
 
     @Override
     public void run(String str) {
-        sendChat("ChatBot made by Dustin. List of commands: https://github.com/DustinRepo/ChatBot");
+        if (str.isEmpty())
+            sendChat("ChatBot made by Dustin. List of commands: https://github.com/DustinRepo/ChatBot");
     }
 }
