@@ -52,7 +52,7 @@ Make the bot cum
 Dupe any item! Unpatched on all servers 2019 no survey!
 ###### votekill -name-
 Start a vote to kill a player. Vote with /kill
-##### reload
+###### reload
 Reload the bot commands
 ###### help
 Links to here
