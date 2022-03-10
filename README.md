@@ -5,6 +5,7 @@ An external chat bot for Minecraft that runs from console made in Java.
 ```
 Auto-Reconnect: Automatically reconnect to the server if you get disconnected
 Auto-Register/Login: Automatically use /register and /login with a password set in the config
+Anti-AFK: Prevent the bot from getting AFK kicked
 Greentext: Turn Greentext chat on/off for the bot
 Customizable prefix: Customize the prefix in the config.cfg file
 ```
@@ -40,6 +41,8 @@ Tells you the most changed name of the player
 See who has the lowest ping on the server
 ###### wp / worstping
 See who has the highest ping on the server
+###### myping
+Get your ping
 ###### coords
 Get the coords of the bot
 ###### kys
