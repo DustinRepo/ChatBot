@@ -31,7 +31,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
             getClientConnection().getPacketCrypt().generateCiphers();
 
             String serverHash = new BigInteger(getClientConnection().getPacketCrypt().hash(encryptionStartPacket.getServerID().getBytes("ISO_8859_1"), getClientConnection().getPacketCrypt().getSecretKey().getEncoded(), getClientConnection().getPacketCrypt().getPublicKey().getEncoded())).toString(16);
-            GeneralHelper.print("Contacting Auth Servers", GeneralHelper.ANSI_GREEN);
+            GeneralHelper.print("Contacting Auth Servers...", GeneralHelper.ANSI_GREEN);
             getClientConnection().contactAuthServers(serverHash);
 
             byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
@@ -40,7 +40,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
             ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(secretKey, encryptedSecret, encryptedVerify);
 
             getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
-            GeneralHelper.print("Encrypting connection", GeneralHelper.ANSI_GREEN);
+            GeneralHelper.print("Encrypting connection...", GeneralHelper.ANSI_GREEN);
             getClientConnection().activateEncryption();
 
         } catch (Exception e) {

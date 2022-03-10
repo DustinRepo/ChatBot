@@ -6,6 +6,7 @@ import me.dustin.chatbot.network.ClientConnection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CommandManager {
 
@@ -32,7 +33,7 @@ public class CommandManager {
         });
     }
 
-    public boolean parse(String string) {
+    public boolean parse(String string, UUID sender) {
         if (!string.contains(ChatBot.getConfig().getCommandPrefix())) {
             return false;
         }
@@ -47,7 +48,7 @@ public class CommandManager {
 
             for (Command command : commands) {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
-                    command.run(input);
+                    command.run(input, sender);
                     return true;
                 }
             }

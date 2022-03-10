@@ -34,6 +34,12 @@ Check if a number is even using the isEven API
 Returns a link to a random picture of coffee
 ###### report -name- -reason-
 Report a player for bad behavior
+###### lastname -name-
+Tells you the most changed name of the player
+###### bp / bestping
+See who has the lowest ping on the server
+###### wp / worstping
+See who has the highest ping on the server
 ###### kys
 Make the bot commit suicide. (Uses the /suicide command)
 ###### tps

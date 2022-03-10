@@ -4,13 +4,15 @@ import com.google.gson.JsonObject;
 import me.dustin.chatbot.command.Command;
 import me.dustin.chatbot.helper.GeneralHelper;
 
+import java.util.UUID;
+
 public class CommandIsEven extends Command {
     public CommandIsEven() {
         super("iseven");
     }
 
     @Override
-    public void run(String str) {
+    public void run(String str, UUID sender) {
         try {
             int num = Integer.parseInt(str);
             String api = "https://api.isevenapi.xyz/api/iseven/%d/";

@@ -2,13 +2,15 @@ package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.command.Command;
 
+import java.util.UUID;
+
 public class CommandReport extends Command {
     public CommandReport() {
         super("report");
     }
 
     @Override
-    public void run(String str) {
+    public void run(String str, UUID sender) {
         if (str.isEmpty()) {
             sendChat("Error! You must specify a player to report!");
             return;

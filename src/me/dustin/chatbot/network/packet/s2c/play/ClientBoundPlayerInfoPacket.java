@@ -1,5 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
+import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -9,15 +10,14 @@ import me.dustin.chatbot.network.player.PlayerManager;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
 
-    public static final int ADD_PLAYER = 1, UPDATE_GAMEMODE = 0, UPDATE_PING = 2, UPDATE_DISPLAY_NAME = 3, REMOVE_PLAYER = 4;
+    public static final int ADD_PLAYER = 0, UPDATE_GAMEMODE = 1, UPDATE_PING = 2, UPDATE_DISPLAY_NAME = 3, REMOVE_PLAYER = 4;
 
     private int action;
-
-    private UUID uuid;
 
     private OtherPlayer[] players;
 
@@ -31,43 +31,51 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
         action = readVarInt(dataInputStream);
         int playerNumbers = readVarInt(dataInputStream);
         players = new OtherPlayer[playerNumbers];
+
         for (int i = 0; i < playerNumbers; i++) {
-            uuid = readUUID(dataInputStream);
+            UUID uuid = readUUID(dataInputStream);
             OtherPlayer player = PlayerManager.INSTANCE.get(uuid);
             if (player == null)
                 player = new OtherPlayer("", uuid);
-            players[i] = player;
             switch (action) {
                 case ADD_PLAYER -> {
-                    player.name = readString(dataInputStream);
+                    player.setName(readString(dataInputStream));
                     int propertyListSize = readVarInt(dataInputStream);
-                    String pName = null;
-                    String pValue = null;
-                    String signature = null;
-                    if (propertyListSize > 0) {
-                        pName = readString(dataInputStream);
-                    }
-                    if (propertyListSize > 1) {
-                        pValue = readString(dataInputStream);
-                    }
-                    if (propertyListSize > 2) {
+                    ArrayList<OtherPlayer.PlayerProperty> properties = new ArrayList<>();
+                    for (int ii = 0; ii < propertyListSize; ii++) {
+                        String pName = readString(dataInputStream);
+                        String pValue = readString(dataInputStream);
                         boolean isSigned = dataInputStream.readBoolean();
+                        String signature = "";
                         if (isSigned) {
                             signature = readString(dataInputStream);
                         }
+                        properties.add(new OtherPlayer.PlayerProperty(pName, pValue, isSigned, signature));
                     }
-                    player.properties = new OtherPlayer.PlayerProperty(pName, pValue, signature);
-                    player.gameMode = readVarInt(dataInputStream);
-                    player.ping = readVarInt(dataInputStream);
+                    player.properties.addAll(properties);
+                    player.setGameMode(OtherPlayer.GameMode.get(readVarInt(dataInputStream)));
+                    player.setPing(readVarInt(dataInputStream));
                     boolean hasDisplayName = dataInputStream.readBoolean();
                     if (hasDisplayName) {
-                        player.displayName = readString(dataInputStream);
+                        player.setDisplayName(readString(dataInputStream));
                     }
                 }
-                case UPDATE_PING -> {
-                    player.ping = readVarInt(dataInputStream);
+                case UPDATE_GAMEMODE -> {
+                    player.setGameMode(OtherPlayer.GameMode.get(readVarInt(dataInputStream)));
                 }
+                case UPDATE_PING -> {
+                    player.setPing(readVarInt(dataInputStream));
+                }
+                case UPDATE_DISPLAY_NAME -> {
+                    boolean hasDisplayName = dataInputStream.readBoolean();
+                    if (hasDisplayName)
+                        player.setDisplayName(readString(dataInputStream));
+                    else
+                        player.setDisplayName(player.getName());
+                }
+                //we don't do anything for remove player because that's done in ClientBoundPlayClientBoundPacketHandler
             }
+            players[i] = player;
         }
         super.createPacket(byteArrayInputStream);
     }
@@ -79,10 +87,6 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
 
     public int getAction() {
         return action;
-    }
-
-    public UUID getUuid() {
-        return uuid;
     }
 
     public OtherPlayer[] getPlayers() {

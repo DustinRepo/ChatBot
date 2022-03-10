@@ -6,6 +6,7 @@ import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class Command {
 
@@ -19,7 +20,7 @@ public abstract class Command {
         this.name = name;
     }
 
-    public abstract void run(String str);
+    public abstract void run(String str, UUID sender);
 
     public String getName() {
         return name;

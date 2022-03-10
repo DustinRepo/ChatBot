@@ -14,7 +14,7 @@ public enum PlayerManager {
 
     public OtherPlayer get(UUID uuid) {
         for (OtherPlayer player : players) {
-            if (player.uuid.toString().equalsIgnoreCase(uuid.toString()))
+            if (player.getUuid().toString().equalsIgnoreCase(uuid.toString()))
                 return player;
         }
         return null;
@@ -22,7 +22,7 @@ public enum PlayerManager {
 
     public OtherPlayer get(String name) {
         for (OtherPlayer player : players) {
-            if (player.name == name)
+            if (player.getName().equalsIgnoreCase(name))
                 return player;
         }
         return null;

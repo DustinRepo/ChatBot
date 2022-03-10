@@ -3,6 +3,7 @@ package me.dustin.chatbot.command.impl;
 import me.dustin.chatbot.command.Command;
 
 import java.util.Random;
+import java.util.UUID;
 
 public class Command8Ball extends Command {
     public Command8Ball() {
@@ -12,7 +13,7 @@ public class Command8Ball extends Command {
     String[] responses = new String[]{"Yes, 100%", "No", "Maybe", "I don't know", "Ask again later", "Stop asking questions"};
 
     @Override
-    public void run(String str) {
+    public void run(String str, UUID send) {
         if (str.isEmpty()) {
             sendChat("You can't ask an 8ball question without a question!");
         }

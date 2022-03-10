@@ -11,6 +11,8 @@ import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.OtherPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
 
+import java.util.UUID;
+
 public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public ClientBoundPlayClientBoundPacketHandler(ClientConnection clientConnection) {
@@ -19,7 +21,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         getPacketMap().put(0x1A, ClientBoundDisconnectPlayPacket.class);
         getPacketMap().put(0x21, ClientBoundKeepAlivePacket.class);
         getPacketMap().put(0x35, ClientBoundPlayerDeadPacket.class);
-        //getPacketMap().put(0x36, ClientBoundPlayerInfoPacket.class);
+        getPacketMap().put(0x36, ClientBoundPlayerInfoPacket.class);
         getPacketMap().put(0x52, ClientBoundUpdateHealthPacket.class);
         getPacketMap().put(0x59, ClientBoundWorldTimePacket.class);
     }
@@ -38,8 +40,9 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
 
     public void handleChatMessage(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
         String message = MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage());
+        UUID sender = clientBoundChatMessagePacket.getSender();
         GeneralHelper.print(message, GeneralHelper.ANSI_CYAN);
-        if (!getClientConnection().getCommandManager().parse(MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage())) && ChatBot.getConfig().isCrackedLogin()) {
+        if (!getClientConnection().getCommandManager().parse(MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage()), sender) && ChatBot.getConfig().isCrackedLogin()) {
             if (message.contains("/register")) {
                 getClientConnection().sendPacket(new ServerBoundChatPacket("/register " + ChatBot.getConfig().getCrackedLoginPassword() + " " + ChatBot.getConfig().getCrackedLoginPassword()));
             } else if (message.contains("/login")) {
@@ -52,12 +55,12 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         for (OtherPlayer player : clientBoundPlayerInfoPacket.getPlayers()) {
             switch (clientBoundPlayerInfoPacket.getAction()) {
                 case ClientBoundPlayerInfoPacket.ADD_PLAYER -> {
-                    PlayerManager.INSTANCE.getPlayers().add(player);
-                    GeneralHelper.print("Added player " + player.uuid + " " + player.name, GeneralHelper.ANSI_YELLOW);
+                    if (!PlayerManager.INSTANCE.getPlayers().contains(player)) {
+                        PlayerManager.INSTANCE.getPlayers().add(player);
+                    }
                 }
                 case ClientBoundPlayerInfoPacket.REMOVE_PLAYER -> {
-                    if (player != null) {
-                        GeneralHelper.print("Removed player " + player.name, GeneralHelper.ANSI_YELLOW);
+                    if (player != null && PlayerManager.INSTANCE.getPlayers().contains(player)) {
                         PlayerManager.INSTANCE.getPlayers().remove(player);
                     }
                 }
