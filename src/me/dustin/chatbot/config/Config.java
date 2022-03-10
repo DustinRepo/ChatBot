@@ -21,6 +21,7 @@ public class Config {
     private final int reconnectDelay;
     private final int messageDelay;
     private final int announcementDelay;
+    private final int keepAliveCheckTime;
 
     private final File loginFile;
 
@@ -39,6 +40,7 @@ public class Config {
         reconnectDelay = parser.readInt("reconnectDelay");
         messageDelay = parser.readInt("messageDelay");
         announcementDelay = parser.readInt("announcementDelay");
+        keepAliveCheckTime = parser.readInt("keepAliveCheckTime");
 
         String jarPath = new File("").getAbsolutePath();
         loginFile = new File(jarPath, parser.readString("loginFile"));
@@ -86,6 +88,10 @@ public class Config {
 
     public int getAnnouncementDelay() {
         return announcementDelay;
+    }
+
+    public int getKeepAliveCheckTime() {
+        return keepAliveCheckTime;
     }
 
     public File getLoginFile() {

@@ -33,6 +33,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         //send KeepAlive packet back with same ID
         long id = keepAlivePacket.getId();
         getClientConnection().sendPacket(new ServerBoundKeepAlivePacket(id));
+        getClientConnection().updateKeepAlive();
     }
 
     public void handleChatMessage(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {

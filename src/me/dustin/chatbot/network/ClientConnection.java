@@ -43,6 +43,7 @@ public class ClientConnection {
     private boolean isConnected;
 
     private long lastAnnouncement = -1;
+    private long lastKeepAlive = -1;
     private final String[] announcements = new String[]{"Use !help to get a list of my commands", "Use {PREFIX}coffee to get a picture of coffee", "Need to report someone? Use {PREFIX}report <name> <reason>", "Use {PREFIX}isEven to see if a number is even!", "Need to see server TPS? {PREFIX}tps", "Want to use this bot program? https://github.com/DustinRepo/ChatBot"};
 
     public ClientConnection(String ip, int port, Session session) throws IOException {
@@ -63,6 +64,7 @@ public class ClientConnection {
         this.isConnected = true;
         this.lastAnnouncement = System.currentTimeMillis();
         this.commandManager.init();
+        this.updateKeepAlive();
         GeneralHelper.print("Sending Handshake and LoginStart packets...", GeneralHelper.ANSI_GREEN);
         sendPacket(new ServerBoundHandshakePacket(ChatBot.getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
@@ -101,6 +103,11 @@ public class ClientConnection {
 
     public void tick() {
         getClientBoundPacketHandler().listen();
+        if (System.currentTimeMillis() - lastKeepAlive >= ChatBot.getConfig().getKeepAliveCheckTime() * 1000L && getNetworkState() == NetworkState.PLAY) {
+            GeneralHelper.print("Time out detected, closing connection.", GeneralHelper.ANSI_PURPLE);
+            close();
+            return;
+        }
         if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
             int size = announcements.length;
             Random random = new Random();
@@ -217,6 +224,10 @@ public class ClientConnection {
 
     public void setClientBoundPacketHandler(ClientBoundPacketHandler clientBoundPacketHandler) {
         this.clientBoundPacketHandler = clientBoundPacketHandler;
+    }
+
+    public void updateKeepAlive() {
+        this.lastKeepAlive = System.currentTimeMillis();
     }
 
     public enum NetworkState {
