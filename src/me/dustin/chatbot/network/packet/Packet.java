@@ -1,6 +1,7 @@
 package me.dustin.chatbot.network.packet;
 
 import com.google.common.io.ByteArrayDataOutput;
+import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
@@ -11,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class Packet {
+
+    private ClientConnection clientConnection;
 
     public ByteArrayDataOutput createPacket() throws IOException {
         return null;
@@ -36,6 +39,14 @@ public class Packet {
         long first = dataInputStream.readLong();
         long second = dataInputStream.readLong();
         return new UUID(first, second);
+    }
+
+    public ClientConnection getClientConnection() {
+        return clientConnection;
+    }
+
+    public void setClientConnection(ClientConnection clientConnection) {
+        this.clientConnection = clientConnection;
     }
 
     public static abstract class ClientBoundPacket extends Packet{

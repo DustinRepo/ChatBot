@@ -29,6 +29,7 @@ public abstract class ClientBoundPacketHandler {
                 Class<? extends Packet.ClientBoundPacket> c = packetMap.get(packetId);
                 if (c != null) {
                     Packet.ClientBoundPacket packet = c.getDeclaredConstructor(ClientBoundPacketHandler.class).newInstance(this);
+                    packet.setClientConnection(getClientConnection());
                     packet.createPacket(packetData);
                     packet.apply();
                 }

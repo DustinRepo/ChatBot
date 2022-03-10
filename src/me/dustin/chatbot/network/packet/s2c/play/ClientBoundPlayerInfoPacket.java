@@ -34,7 +34,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
 
         for (int i = 0; i < playerNumbers; i++) {
             UUID uuid = readUUID(dataInputStream);
-            OtherPlayer player = PlayerManager.INSTANCE.get(uuid);
+            OtherPlayer player = getClientConnection().getPlayerManager().get(uuid);
             if (player == null)
                 player = new OtherPlayer("", uuid);
             switch (action) {

@@ -14,14 +14,14 @@ public class CommandBestPing extends Command {
 
     @Override
     public void run(String str, UUID send) {
-        if (PlayerManager.INSTANCE.getPlayers().isEmpty()) {
+        if (getClientConnection().getPlayerManager().getPlayers().isEmpty()) {
             sendChat("Error! I don't see any players :(");
             return;
         }
         int best = 9999;
         OtherPlayer player = null;
 
-        for (OtherPlayer instancePlayer : PlayerManager.INSTANCE.getPlayers()) {
+        for (OtherPlayer instancePlayer : getClientConnection().getPlayerManager().getPlayers()) {
             if (player == null || (instancePlayer.getPing() < best && instancePlayer.getPing() > 0)) {
                 player = instancePlayer;
                 best = player.getPing();

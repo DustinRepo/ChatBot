@@ -4,12 +4,10 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.MessageParser;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientStatusPacket;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundKeepAlivePacket;
+import me.dustin.chatbot.network.packet.c2s.play.*;
 import me.dustin.chatbot.network.packet.s2c.play.*;
+import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.OtherPlayer;
-import me.dustin.chatbot.network.player.PlayerManager;
 
 import java.util.UUID;
 
@@ -22,6 +20,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         getPacketMap().put(0x21, ClientBoundKeepAlivePacket.class);
         getPacketMap().put(0x35, ClientBoundPlayerDeadPacket.class);
         getPacketMap().put(0x36, ClientBoundPlayerInfoPacket.class);
+        getPacketMap().put(0x38, ClientBoundPlayerPositionAndLookPacket.class);
         getPacketMap().put(0x52, ClientBoundUpdateHealthPacket.class);
         getPacketMap().put(0x59, ClientBoundWorldTimePacket.class);
     }
@@ -31,14 +30,14 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         getClientConnection().close();
     }
 
-    public void handleKeepAlive(ClientBoundKeepAlivePacket keepAlivePacket) {
+    public void handleKeepAlivePacket(ClientBoundKeepAlivePacket keepAlivePacket) {
         //send KeepAlive packet back with same ID
         long id = keepAlivePacket.getId();
         getClientConnection().sendPacket(new ServerBoundKeepAlivePacket(id));
         getClientConnection().updateKeepAlive();
     }
 
-    public void handleChatMessage(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
+    public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
         String message = MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage());
         UUID sender = clientBoundChatMessagePacket.getSender();
         GeneralHelper.print(message, GeneralHelper.ANSI_CYAN);
@@ -51,17 +50,25 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         }
     }
 
+    public void handleResourcePackPacket(ClientBoundResourcePackSendPacket clientBoundResourcePackSendPacket) {
+        if (clientBoundResourcePackSendPacket.isForced()) {
+            //tell the server we have the resource pack if it forces one
+            getClientConnection().sendPacket(new ServerBoundResourcePackStatusPacket(ServerBoundResourcePackStatusPacket.ACCEPTED));
+            getClientConnection().sendPacket(new ServerBoundResourcePackStatusPacket(ServerBoundResourcePackStatusPacket.SUCCESSFULLY_LOADED));
+        }
+    }
+
     public void handlePlayerInfoPacket(ClientBoundPlayerInfoPacket clientBoundPlayerInfoPacket) {
         for (OtherPlayer player : clientBoundPlayerInfoPacket.getPlayers()) {
             switch (clientBoundPlayerInfoPacket.getAction()) {
                 case ClientBoundPlayerInfoPacket.ADD_PLAYER -> {
-                    if (!PlayerManager.INSTANCE.getPlayers().contains(player)) {
-                        PlayerManager.INSTANCE.getPlayers().add(player);
+                    if (!getClientConnection().getPlayerManager().getPlayers().contains(player)) {
+                        getClientConnection().getPlayerManager().getPlayers().add(player);
                     }
                 }
                 case ClientBoundPlayerInfoPacket.REMOVE_PLAYER -> {
-                    if (player != null && PlayerManager.INSTANCE.getPlayers().contains(player)) {
-                        PlayerManager.INSTANCE.getPlayers().remove(player);
+                    if (player != null) {
+                        getClientConnection().getPlayerManager().getPlayers().remove(player);
                     }
                 }
             }
@@ -80,5 +87,43 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
 
     public void handlePlayerDeadPacket(ClientBoundPlayerDeadPacket clientBoundPlayerDeadPacket) {
         getClientConnection().sendPacket(new ServerBoundClientStatusPacket(ServerBoundClientStatusPacket.RESPAWN));
+    }
+
+    public void handlePlayerPositionAndLookPacket(ClientBoundPlayerPositionAndLookPacket clientBoundPlayerPositionAndLookPacket) {
+        byte flags = clientBoundPlayerPositionAndLookPacket.getFlags();
+        boolean xRelative = (flags & 0x01) == 0x01;
+        boolean yRelative = (flags & 0x02) == 0x02;
+        boolean zRelative = (flags & 0x04) == 0x04;
+        boolean yawRelative = (flags & 0x08) == 0x08;
+        boolean pitchRelative = (flags & 0x10) == 0x10;
+
+        ClientPlayer clientPlayer = getClientConnection().getClientPlayer();
+
+        if (xRelative)
+            clientPlayer.moveX(clientBoundPlayerPositionAndLookPacket.getX());
+        else
+            clientPlayer.setX(clientBoundPlayerPositionAndLookPacket.getX());
+
+        if (yRelative)
+            clientPlayer.moveY(clientBoundPlayerPositionAndLookPacket.getY());
+        else
+            clientPlayer.setY(clientBoundPlayerPositionAndLookPacket.getY());
+
+        if (zRelative)
+            clientPlayer.moveZ(clientBoundPlayerPositionAndLookPacket.getZ());
+        else
+            clientPlayer.setZ(clientBoundPlayerPositionAndLookPacket.getZ());
+
+        if (yawRelative)
+            clientPlayer.moveYaw(clientBoundPlayerPositionAndLookPacket.getYaw());
+        else
+            clientPlayer.setYaw(clientBoundPlayerPositionAndLookPacket.getYaw());
+
+        if (pitchRelative)
+            clientPlayer.movePitch(clientBoundPlayerPositionAndLookPacket.getPitch());
+        else
+            clientPlayer.setPitch(clientBoundPlayerPositionAndLookPacket.getPitch());
+
+        getClientConnection().sendPacket(new ServerBoundConfirmTeleportPacket(clientBoundPlayerPositionAndLookPacket.getTeleportId()));
     }
 }

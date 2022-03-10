@@ -3,8 +3,7 @@ package me.dustin.chatbot.network.player;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public enum PlayerManager {
-    INSTANCE;
+public class PlayerManager {
 
     private final ArrayList<OtherPlayer> players = new ArrayList<>();
 

@@ -13,6 +13,8 @@ import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
+import me.dustin.chatbot.network.player.ClientPlayer;
+import me.dustin.chatbot.network.player.PlayerManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -22,6 +24,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 public class ClientConnection {
 
@@ -32,6 +35,7 @@ public class ClientConnection {
     private DataOutputStream out;
 
     private final Session session;
+    private final PlayerManager playerManager;
     private final CommandManager commandManager;
     private final PacketCrypt packetCrypt;
     private final TPSHelper tpsHelper;
@@ -41,6 +45,8 @@ public class ClientConnection {
     private int compressionThreshold;
     private boolean isEncrypted;
     private boolean isConnected;
+
+    private final ClientPlayer clientPlayer;
 
     private long lastAnnouncement = -1;
     private long lastKeepAlive = -1;
@@ -53,11 +59,14 @@ public class ClientConnection {
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
         this.session = session;
+        this.clientPlayer = new ClientPlayer(session.getUsername(), UUID.fromString(session.getUuid().replaceFirst(
+                "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
+        )));
         this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler(this);
         this.commandManager = new CommandManager(this);
         this.packetCrypt = new PacketCrypt();
-
         this.tpsHelper = new TPSHelper();
+        this.playerManager = new PlayerManager();
     }
 
     public void connect() {
@@ -174,6 +183,10 @@ public class ClientConnection {
         return session;
     }
 
+    public ClientPlayer getClientPlayer() {
+        return clientPlayer;
+    }
+
     public ClientBoundPacketHandler getClientBoundPacketHandler() {
         return clientBoundPacketHandler;
     }
@@ -196,6 +209,10 @@ public class ClientConnection {
 
     public NetworkState getNetworkState() {
         return networkState;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
     }
 
     public void setNetworkState(NetworkState networkState) {

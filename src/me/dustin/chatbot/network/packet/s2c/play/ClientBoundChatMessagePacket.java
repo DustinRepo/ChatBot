@@ -29,7 +29,7 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleChatMessage(this);
+        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleChatMessagePacket(this);
     }
 
     public String getMessage() {

@@ -28,6 +28,6 @@ public class ClientBoundKeepAlivePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleKeepAlive(this);
+        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleKeepAlivePacket(this);
     }
 }

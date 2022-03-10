@@ -40,6 +40,8 @@ Tells you the most changed name of the player
 See who has the lowest ping on the server
 ###### wp / worstping
 See who has the highest ping on the server
+###### coords
+Get the coords of the bot
 ###### kys
 Make the bot commit suicide. (Uses the /suicide command)
 ###### tps
@@ -50,5 +52,7 @@ Make the bot cum
 Dupe any item! Unpatched on all servers 2019 no survey!
 ###### votekill -name-
 Start a vote to kill a player. Vote with /kill
+##### reload
+Reload the bot commands
 ###### help
 Links to here
