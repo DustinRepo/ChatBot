@@ -45,6 +45,8 @@ See who has the highest ping on the server
 Get your ping
 ###### coords
 Get the coords of the bot
+###### queue / q
+Get the current length of 2b2t queue
 ###### kys
 Make the bot commit suicide. (Uses the /suicide command)
 ###### tps
