@@ -7,29 +7,34 @@ import java.io.IOException;
 
 public class Config {
 
+    private final File configFile;
 
-    private final String commandPrefix;
-    private final String accountType;
-    private final String crackedLoginPassword;
+    private String commandPrefix;
+    private String accountType;
+    private String crackedLoginPassword;
 
-    private final boolean greenText;
-    private final boolean colorConsole;
-    private final boolean crackedLogin;
-    private final boolean reconnect;
-    private final boolean antiAFK;
+    private boolean greenText;
+    private boolean colorConsole;
+    private boolean crackedLogin;
+    private boolean reconnect;
+    private boolean antiAFK;
 
-    private final int protocolVersion;
-    private final int reconnectDelay;
-    private final int messageDelay;
-    private final int announcementDelay;
-    private final int antiAFKDelay;
-    private final int keepAliveCheckTime;
+    private int protocolVersion;
+    private int reconnectDelay;
+    private int messageDelay;
+    private int announcementDelay;
+    private int antiAFKDelay;
+    private int keepAliveCheckTime;
 
-    private final File loginFile;
+    private File loginFile;
 
-    public Config(File file) throws IOException {
-        ConfigParser parser = new ConfigParser(GeneralHelper.readFile(file));
+    public Config(File file) throws IOException{
+        this.configFile = file;
+        loadConfig();
+    }
 
+    public void loadConfig() throws IOException {
+        ConfigParser parser = new ConfigParser(GeneralHelper.readFile(configFile));
         commandPrefix = parser.readString("commandPrefix");
         accountType = parser.readString("accountType");
         crackedLoginPassword = parser.readString("crackedLoginPassword");
