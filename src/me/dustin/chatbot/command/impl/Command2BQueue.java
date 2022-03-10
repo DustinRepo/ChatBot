@@ -20,11 +20,7 @@ public class Command2BQueue extends Command {
         JsonObject object = GeneralHelper.gson.fromJson(resp, JsonObject.class);
         int regQueue = object.get("regular").getAsInt();
         int priority = object.get("prio").getAsInt();
-        long timestamp = object.get("timems").getAsLong();
-        DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
-        String formattedDate = df.format(timestamp);
-        String dateString = formattedDate.split(" ")[0] + " " + formattedDate.split(" ")[1];
 
-        sendChat("2B2T queue is currently: " + regQueue + " players long. Priority Queue: " + priority + ". Updated: " + dateString);
+        sendChat("2B2T queue is currently: " + regQueue + " players long. Priority Queue: " + priority);
     }
 }
