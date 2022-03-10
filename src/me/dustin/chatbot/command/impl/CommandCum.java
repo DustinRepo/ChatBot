@@ -1,7 +1,6 @@
 package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.command.Command;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 
 import java.util.Random;
 
@@ -15,7 +14,7 @@ public class CommandCum extends Command {
 
     @Override
     public void run(String str) {
-        int size = cumMessages.length - 1;
+        int size = cumMessages.length;
         Random random = new Random();
         int select = random.nextInt(size);
         sendChat(cumMessages[select]);

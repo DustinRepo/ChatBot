@@ -1,12 +1,10 @@
 package me.dustin.chatbot.network.crypt;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.PublicKey;
+import java.security.*;
 
 public class PacketCrypt {
 
@@ -40,6 +38,39 @@ public class PacketCrypt {
         return null;
     }
 
+    public void generateCiphers() {
+        try {
+            String alg = "AES/CFB8/NoPadding";
+            encryptCipher = Cipher.getInstance(alg);
+            encryptCipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(secretKey.getEncoded()));
+
+            decryptCipher = Cipher.getInstance(alg);
+            decryptCipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(secretKey.getEncoded()));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public byte[] hash(byte[] ... bytes) throws Exception {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+        for (byte[] bs : bytes) {
+            messageDigest.update(bs);
+        }
+        return messageDigest.digest();
+    }
+
+    public Cipher getCipher(int opMode) {
+        try {
+            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
+            cipher.init(opMode, secretKey, new IvParameterSpec(secretKey.getEncoded()));
+            return cipher;
+        }
+        catch (Exception cipher) {
+            cipher.printStackTrace();
+        }
+        return null;
+    }
+
     public InputStream decryptInputStream(InputStream inputStream) {
         return new CipherInputStream(inputStream, decryptCipher);
     }
@@ -68,15 +99,7 @@ public class PacketCrypt {
         return encryptCipher;
     }
 
-    public void setEncryptCipher(Cipher encryptCipher) {
-        this.encryptCipher = encryptCipher;
-    }
-
     public Cipher getDecryptCipher() {
         return decryptCipher;
-    }
-
-    public void setDecryptCipher(Cipher decryptCipher) {
-        this.decryptCipher = decryptCipher;
     }
 }

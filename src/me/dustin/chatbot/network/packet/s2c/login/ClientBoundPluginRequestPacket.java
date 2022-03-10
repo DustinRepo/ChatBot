@@ -10,9 +10,8 @@ import java.io.IOException;
 
 public class ClientBoundPluginRequestPacket extends Packet.ClientBoundPacket {
 
-    public int messageId;
-    public String identifier;
-    public byte[] data;
+    private int messageId;
+    private String identifier;
 
     public ClientBoundPluginRequestPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         super(0x04, clientBoundPacketHandler);
@@ -29,5 +28,13 @@ public class ClientBoundPluginRequestPacket extends Packet.ClientBoundPacket {
     @Override
     public void apply() {
         clientBoundPacketHandler.handlePluginRequestPacket(this);
+    }
+
+    public int getMessageId() {
+        return messageId;
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 }

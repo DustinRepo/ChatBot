@@ -13,12 +13,8 @@ import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.OtherPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
 
-import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import java.math.BigInteger;
-import java.security.Key;
-import java.security.MessageDigest;
 
 public class ClientBoundPacketHandler {
 
@@ -30,21 +26,20 @@ public class ClientBoundPacketHandler {
 
     public void handleEncryptionRequest(ClientBoundEncryptionStartPacket encryptionStartPacket) {
         GeneralHelper.print("Received EncryptionRequest", GeneralHelper.ANSI_GREEN);
-        if (encryptionStartPacket.publicKey == null)
+        if (encryptionStartPacket.getPublicKey() == null)
             return;
         try {
             SecretKey secretKey = ServerBoundEncryptionResponsePacket.generateSecret();
             clientConnection.getPacketCrypt().setSecretKey(secretKey);
-            clientConnection.getPacketCrypt().setPublicKey(encryptionStartPacket.publicKey);
-            clientConnection.getPacketCrypt().setEncryptCipher(cipherFromKey(Cipher.ENCRYPT_MODE, clientConnection.getPacketCrypt().getSecretKey()));
-            clientConnection.getPacketCrypt().setDecryptCipher(cipherFromKey(Cipher.DECRYPT_MODE, clientConnection.getPacketCrypt().getSecretKey()));
+            clientConnection.getPacketCrypt().setPublicKey(encryptionStartPacket.getPublicKey());
+            clientConnection.getPacketCrypt().generateCiphers();
 
-            String serverHash = new BigInteger(hash(encryptionStartPacket.serverID.getBytes("ISO_8859_1"), clientConnection.getPacketCrypt().getSecretKey().getEncoded(), clientConnection.getPacketCrypt().getPublicKey().getEncoded())).toString(16);
+            String serverHash = new BigInteger(clientConnection.getPacketCrypt().hash(encryptionStartPacket.getServerID().getBytes("ISO_8859_1"), clientConnection.getPacketCrypt().getSecretKey().getEncoded(), clientConnection.getPacketCrypt().getPublicKey().getEncoded())).toString(16);
             GeneralHelper.print("Contacting Auth Servers", GeneralHelper.ANSI_GREEN);
             clientConnection.contactAuthServers(serverHash);
 
             byte[] encryptedSecret = clientConnection.getPacketCrypt().encrypt(secretKey.getEncoded());
-            byte[] encryptedVerify = clientConnection.getPacketCrypt().encrypt(encryptionStartPacket.verifyToken);
+            byte[] encryptedVerify = clientConnection.getPacketCrypt().encrypt(encryptionStartPacket.getVerifyToken());
 
             ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(secretKey, encryptedSecret, encryptedVerify);
 
@@ -63,8 +58,8 @@ public class ClientBoundPacketHandler {
     }
 
     public void handlePluginRequestPacket(ClientBoundPluginRequestPacket clientBoundPluginRequestPacket) {
-        int id = clientBoundPluginRequestPacket.messageId;
-        GeneralHelper.print("Received Plugin Request packet " + id + " " + clientBoundPluginRequestPacket.identifier, GeneralHelper.ANSI_GREEN);
+        int id = clientBoundPluginRequestPacket.getMessageId();
+        GeneralHelper.print("Received Plugin Request packet " + id + " " + clientBoundPluginRequestPacket.getIdentifier(), GeneralHelper.ANSI_GREEN);
         clientConnection.sendPacket(new ServerBoundPluginResponsePacket(id));
     }
 
@@ -132,25 +127,5 @@ public class ClientBoundPacketHandler {
 
     public void handlePlayerDeadPacket(ClientBoundPlayerDeadPacket clientBoundPlayerDeadPacket) {
         clientConnection.sendPacket(new ServerBoundClientStatusPacket(ServerBoundClientStatusPacket.RESPAWN));
-    }
-
-    private static byte[] hash(byte[] ... bytes) throws Exception {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-        for (byte[] bs : bytes) {
-            messageDigest.update(bs);
-        }
-        return messageDigest.digest();
-    }
-
-    public static Cipher cipherFromKey(int opMode, Key key) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
-            cipher.init(opMode, key, new IvParameterSpec(key.getEncoded()));
-            return cipher;
-        }
-        catch (Exception cipher) {
-            cipher.printStackTrace();
-        }
-        return null;
     }
 }

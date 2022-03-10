@@ -12,9 +12,9 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
 
-    public String serverID = "";
-    public PublicKey publicKey;
-    public byte[] verifyToken;
+    private String serverID = "";
+    private PublicKey publicKey;
+    private byte[] verifyToken;
 
     public ClientBoundEncryptionStartPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         super(0x01, clientBoundPacketHandler);
@@ -53,5 +53,17 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
     @Override
     public void apply() {
         clientBoundPacketHandler.handleEncryptionRequest(this);
+    }
+
+    public String getServerID() {
+        return serverID;
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public byte[] getVerifyToken() {
+        return verifyToken;
     }
 }

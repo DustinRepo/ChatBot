@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
-    public UUID uuid;
-    public String username;
+    private UUID uuid;
+    private String username;
 
     public ClientBoundLoginSuccessPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         super(0x02, clientBoundPacketHandler);
@@ -29,5 +29,13 @@ public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
     @Override
     public void apply() {
         clientBoundPacketHandler.handleLoginSuccess(this);
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

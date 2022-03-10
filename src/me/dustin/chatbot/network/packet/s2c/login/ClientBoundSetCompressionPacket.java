@@ -7,7 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
-    int compressionThreshold;
+    private int compressionThreshold;
     public ClientBoundSetCompressionPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         super(0x03, clientBoundPacketHandler);
     }

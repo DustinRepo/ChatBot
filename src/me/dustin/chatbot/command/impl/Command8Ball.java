@@ -16,7 +16,7 @@ public class Command8Ball extends Command {
         if (str.isEmpty()) {
             sendChat("You can't ask an 8ball question without a question!");
         }
-        int size = responses.length - 1;
+        int size = responses.length;
         Random random = new Random();
         int select = random.nextInt(size);
         sendChat(responses[select]);

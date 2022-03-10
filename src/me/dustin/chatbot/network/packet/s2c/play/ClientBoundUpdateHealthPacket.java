@@ -19,7 +19,6 @@ public class ClientBoundUpdateHealthPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        byte[] floatArray = new byte[8];
         DataInputStream inputStream = new DataInputStream(byteArrayInputStream);
         this.health = inputStream.readFloat();
         this.food = readVarInt(inputStream);

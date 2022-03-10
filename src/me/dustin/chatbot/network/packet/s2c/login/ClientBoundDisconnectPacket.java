@@ -21,12 +21,12 @@ public class ClientBoundDisconnectPacket extends Packet.ClientBoundPacket {
         super.createPacket(byteArrayInputStream);
     }
 
-    public String getReason() {
-        return reason;
-    }
-
     @Override
     public void apply() {
         clientBoundPacketHandler.handleDisconnectPacket(this);
+    }
+
+    public String getReason() {
+        return reason;
     }
 }

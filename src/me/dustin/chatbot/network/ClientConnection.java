@@ -102,7 +102,7 @@ public class ClientConnection {
     public void tick() {
         getClientBoundPacketListener().listen();
         if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
-            int size = announcements.length - 1;
+            int size = announcements.length;
             Random random = new Random();
             int select = random.nextInt(size);
             sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements[select].replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
