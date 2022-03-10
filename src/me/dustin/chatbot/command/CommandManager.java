@@ -48,8 +48,12 @@ public class CommandManager {
 
             for (Command command : commands) {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
-                    command.run(input, sender);
-                    return true;
+                    try {
+                        command.run(input, sender);
+                        return true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         } catch (IndexOutOfBoundsException e) {}

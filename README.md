@@ -47,6 +47,8 @@ Get your ping
 Get the coords of the bot
 ###### queue / q
 Get the current length of 2b2t queue
+###### kanye / ye
+Get a random Kanye quote
 ###### kys
 Make the bot commit suicide. (Uses the /suicide command)
 ###### tps
