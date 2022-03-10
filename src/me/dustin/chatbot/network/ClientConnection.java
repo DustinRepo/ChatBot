@@ -112,12 +112,14 @@ public class ClientConnection {
     public void tick() {
         getClientBoundPacketHandler().listen();
         getClientPlayer().tick();
-        if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
-            int size = announcements.length;
-            Random random = new Random();
-            int select = random.nextInt(size);
-            sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements[select].replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
-            lastAnnouncement = System.currentTimeMillis();
+        if (ChatBot.getConfig().getAnnouncementDelay() > 0) {
+            if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
+                int size = announcements.length;
+                Random random = new Random();
+                int select = random.nextInt(size);
+                sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements[select].replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
+                lastAnnouncement = System.currentTimeMillis();
+            }
         }
     }
 
