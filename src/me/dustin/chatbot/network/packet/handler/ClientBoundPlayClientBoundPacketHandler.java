@@ -14,7 +14,7 @@ import me.dustin.chatbot.network.player.PlayerManager;
 public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public ClientBoundPlayClientBoundPacketHandler(ClientConnection clientConnection) {
-        super(clientConnection, ClientConnection.NetworkState.PLAY);
+        super(clientConnection);
         getPacketMap().put(0x0F, ClientBoundChatMessagePacket.class);
         getPacketMap().put(0x1A, ClientBoundDisconnectPlayPacket.class);
         getPacketMap().put(0x21, ClientBoundKeepAlivePacket.class);

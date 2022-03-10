@@ -12,7 +12,7 @@ import java.math.BigInteger;
 public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public ClientBoundLoginClientBoundPacketHandler(ClientConnection clientConnection) {
-        super(clientConnection, ClientConnection.NetworkState.LOGIN);
+        super(clientConnection);
         getPacketMap().put(0x00, ClientBoundDisconnectPacket.class);
         getPacketMap().put(0x01, ClientBoundEncryptionStartPacket.class);
         getPacketMap().put(0x02, ClientBoundLoginSuccessPacket.class);

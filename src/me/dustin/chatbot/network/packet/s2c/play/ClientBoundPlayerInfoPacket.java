@@ -30,7 +30,6 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
         DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
         action = readVarInt(dataInputStream);
         int playerNumbers = readVarInt(dataInputStream);
-        System.out.println(action);
         players = new OtherPlayer[playerNumbers];
         for (int i = 0; i < playerNumbers; i++) {
             uuid = readUUID(dataInputStream);

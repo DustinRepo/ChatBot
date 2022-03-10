@@ -14,12 +14,10 @@ import java.util.zip.Inflater;
 public abstract class ClientBoundPacketHandler {
 
     private final ClientConnection clientConnection;
-    private final ClientConnection.NetworkState state;
 
     private final Map<Integer, Class<? extends Packet.ClientBoundPacket>> packetMap = new HashMap<>();
 
-    public ClientBoundPacketHandler(ClientConnection clientConnection, ClientConnection.NetworkState state) {
-        this.state = state;
+    public ClientBoundPacketHandler(ClientConnection clientConnection) {
         this.clientConnection = clientConnection;
     }
 
