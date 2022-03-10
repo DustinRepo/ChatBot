@@ -16,11 +16,13 @@ public class Config {
     private final boolean colorConsole;
     private final boolean crackedLogin;
     private final boolean reconnect;
+    private final boolean antiAFK;
 
     private final int protocolVersion;
     private final int reconnectDelay;
     private final int messageDelay;
     private final int announcementDelay;
+    private final int antiAFKDelay;
     private final int keepAliveCheckTime;
 
     private final File loginFile;
@@ -35,12 +37,14 @@ public class Config {
         crackedLogin = parser.readBoolean("crackedLogin");
         greenText = parser.readBoolean("greenText");
         reconnect = parser.readBoolean("reconnect");
+        antiAFK = parser.readBoolean("antiAFK");
 
         protocolVersion = parser.readInt("protocolVersion");
         reconnectDelay = parser.readInt("reconnectDelay");
         messageDelay = parser.readInt("messageDelay");
         announcementDelay = parser.readInt("announcementDelay");
         keepAliveCheckTime = parser.readInt("keepAliveCheckTime");
+        antiAFKDelay = parser.readInt("antiAFKDelay");
 
         String jarPath = new File("").getAbsolutePath();
         loginFile = new File(jarPath, parser.readString("loginFile"));
@@ -92,6 +96,14 @@ public class Config {
 
     public int getKeepAliveCheckTime() {
         return keepAliveCheckTime;
+    }
+
+    public boolean isAntiAFK() {
+        return antiAFK;
+    }
+
+    public int getAntiAFKDelay() {
+        return antiAFKDelay;
     }
 
     public File getLoginFile() {

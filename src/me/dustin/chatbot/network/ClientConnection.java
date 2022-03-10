@@ -49,7 +49,6 @@ public class ClientConnection {
     private final ClientPlayer clientPlayer;
 
     private long lastAnnouncement = -1;
-    private long lastKeepAlive = -1;
     private final String[] announcements = new String[]{"Use {PREFIX}help to get a list of my commands", "Use {PREFIX}worstping to see who has the highest ping", "Use {PREFIX}bestping to see who has the lowest ping", "Use {PREFIX}coffee to get a picture of coffee", "Need to report someone? Use {PREFIX}report <name> <reason>", "Use {PREFIX}isEven to see if a number is even!", "Need to see server TPS? {PREFIX}tps", "Want to use this bot program? https://github.com/DustinRepo/ChatBot"};
 
     public ClientConnection(String ip, int port, Session session) throws IOException {
@@ -61,7 +60,7 @@ public class ClientConnection {
         this.session = session;
         this.clientPlayer = new ClientPlayer(session.getUsername(), UUID.fromString(session.getUuid().replaceFirst(
                 "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
-        )));
+        )), this);
         this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler(this);
         this.commandManager = new CommandManager(this);
         this.packetCrypt = new PacketCrypt();
@@ -73,7 +72,7 @@ public class ClientConnection {
         this.isConnected = true;
         this.lastAnnouncement = System.currentTimeMillis();
         this.commandManager.init();
-        this.updateKeepAlive();
+        this.getClientPlayer().updateKeepAlive();
         GeneralHelper.print("Sending Handshake and LoginStart packets...", GeneralHelper.ANSI_GREEN);
         sendPacket(new ServerBoundHandshakePacket(ChatBot.getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
@@ -112,11 +111,7 @@ public class ClientConnection {
 
     public void tick() {
         getClientBoundPacketHandler().listen();
-        if (System.currentTimeMillis() - lastKeepAlive >= ChatBot.getConfig().getKeepAliveCheckTime() * 1000L && getNetworkState() == NetworkState.PLAY) {
-            GeneralHelper.print("Time out detected, closing connection.", GeneralHelper.ANSI_PURPLE);
-            close();
-            return;
-        }
+        getClientPlayer().tick();
         if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
             int size = announcements.length;
             Random random = new Random();
@@ -241,10 +236,6 @@ public class ClientConnection {
 
     public void setClientBoundPacketHandler(ClientBoundPacketHandler clientBoundPacketHandler) {
         this.clientBoundPacketHandler = clientBoundPacketHandler;
-    }
-
-    public void updateKeepAlive() {
-        this.lastKeepAlive = System.currentTimeMillis();
     }
 
     public enum NetworkState {
