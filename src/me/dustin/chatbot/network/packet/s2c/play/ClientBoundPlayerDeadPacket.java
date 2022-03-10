@@ -1,7 +1,8 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -12,7 +13,7 @@ public class ClientBoundPlayerDeadPacket extends Packet.ClientBoundPacket {
     private int killerId;
     private String message;
     public ClientBoundPlayerDeadPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x35, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class ClientBoundPlayerDeadPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        clientBoundPacketHandler.handlePlayerDeadPacket(this);
+        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handlePlayerDeadPacket(this);
     }
 
     public int getPlayerId() {

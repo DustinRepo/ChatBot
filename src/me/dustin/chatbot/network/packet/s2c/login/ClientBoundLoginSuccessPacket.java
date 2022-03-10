@@ -1,7 +1,8 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
-import me.dustin.chatbot.network.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -13,7 +14,7 @@ public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
     private String username;
 
     public ClientBoundLoginSuccessPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x02, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -28,7 +29,7 @@ public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        clientBoundPacketHandler.handleLoginSuccess(this);
+        ((ClientBoundLoginClientBoundPacketHandler)clientBoundPacketHandler).handleLoginSuccess(this);
     }
 
     public UUID getUuid() {

@@ -1,7 +1,8 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -11,7 +12,7 @@ public class ClientBoundDisconnectPlayPacket extends Packet.ClientBoundPacket {
     private String reason;
 
     public ClientBoundDisconnectPlayPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x1A, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -27,6 +28,6 @@ public class ClientBoundDisconnectPlayPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        clientBoundPacketHandler.handleDisconnectPacket(this);
+        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleDisconnectPacket(this);
     }
 }

@@ -1,7 +1,8 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -11,7 +12,7 @@ public class ClientBoundWorldTimePacket extends Packet.ClientBoundPacket {
     private long worldAge;
     private long timeOfDay;
     public ClientBoundWorldTimePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x59, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class ClientBoundWorldTimePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        clientBoundPacketHandler.handleWorldTimePacket(this);
+        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleWorldTimePacket(this);
     }
 
     public long getWorldAge() {

@@ -11,7 +11,6 @@ import java.io.IOException;
 public class ServerBoundPluginResponsePacket extends Packet {
     private final int messageId;
     public ServerBoundPluginResponsePacket(int messageId) {
-        super(0x02);
         this.messageId = messageId;
     }
 
@@ -22,7 +21,7 @@ public class ServerBoundPluginResponsePacket extends Packet {
         DataOutputStream pluginResponsePacket = new DataOutputStream(baos);
         byte[] bytes = new byte[0];
 
-        writeVarInt(pluginResponsePacket, this.packetId);//packet id
+        writeVarInt(pluginResponsePacket, 0x02);//packet id
         writeVarInt(pluginResponsePacket, messageId);//id from request packet
         pluginResponsePacket.writeBoolean(false);//tell the server we don't give a shit
         pluginResponsePacket.write(bytes);//empty byte array

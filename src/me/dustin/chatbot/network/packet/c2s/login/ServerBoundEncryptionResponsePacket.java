@@ -16,7 +16,6 @@ public class ServerBoundEncryptionResponsePacket extends Packet {
     private final byte[] encryptedSecret;
     private final byte[] encryptedVerify;
     public ServerBoundEncryptionResponsePacket(SecretKey secretKey, byte[] encryptedSecret, byte[] encryptedVerify) {
-        super(0x01);
         this.secretKey = secretKey;
         this.encryptedSecret = encryptedSecret;
         this.encryptedVerify = encryptedVerify;
@@ -39,7 +38,7 @@ public class ServerBoundEncryptionResponsePacket extends Packet {
         ByteArrayOutputStream encryptionResponseBytes = new ByteArrayOutputStream();
         DataOutputStream encryptionResponsePacket = new DataOutputStream(encryptionResponseBytes);
 
-        encryptionResponsePacket.writeByte(this.packetId);
+        encryptionResponsePacket.writeByte(0x01);//packet id
 
         writeVarInt(encryptionResponsePacket, encryptedSecret.length);
         encryptionResponsePacket.write(encryptedSecret);

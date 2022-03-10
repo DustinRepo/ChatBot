@@ -6,12 +6,13 @@ import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.command.CommandManager;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.TPSHelper;
-import me.dustin.chatbot.network.packet.ClientBoundPacketListener;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundLoginStartPacket;
 import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
+import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -31,12 +32,11 @@ public class ClientConnection {
     private DataOutputStream out;
 
     private final Session session;
-    private final ClientBoundPacketHandler clientBoundPacketHandler;
-    private final ClientBoundPacketListener clientBoundPacketListener;
     private final CommandManager commandManager;
     private final PacketCrypt packetCrypt;
     private final TPSHelper tpsHelper;
 
+    private ClientBoundPacketHandler clientBoundPacketHandler;
     private NetworkState networkState = NetworkState.LOGIN;
     private int compressionThreshold;
     private boolean isEncrypted;
@@ -52,8 +52,7 @@ public class ClientConnection {
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
         this.session = session;
-        this.clientBoundPacketHandler = new ClientBoundPacketHandler(this);
-        this.clientBoundPacketListener = new ClientBoundPacketListener(this);
+        this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler(this);
         this.commandManager = new CommandManager(this);
         this.packetCrypt = new PacketCrypt();
 
@@ -62,6 +61,7 @@ public class ClientConnection {
 
     public void connect() {
         this.isConnected = true;
+        this.lastAnnouncement = System.currentTimeMillis();
         this.commandManager.init();
         GeneralHelper.print("Sending Handshake and LoginStart packets...", GeneralHelper.ANSI_GREEN);
         sendPacket(new ServerBoundHandshakePacket(ChatBot.getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
@@ -100,7 +100,7 @@ public class ClientConnection {
     }
 
     public void tick() {
-        getClientBoundPacketListener().listen();
+        getClientBoundPacketHandler().listen();
         if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
             int size = announcements.length;
             Random random = new Random();
@@ -114,22 +114,38 @@ public class ClientConnection {
         try {
             byte[] data = packet.createPacket().toByteArray();
             if (data.length > 0) {
-                if (this.compressionThreshold > 0) {
+                if (this.getCompressionThreshold() > 0) {
                     //deconstruct the packet to rebuild back into compressed format
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+                    DataInputStream first = new DataInputStream(byteArrayInputStream);
                     int size = Packet.readVarInt(byteArrayInputStream);
                     byte[] packetData = new byte[size];
-                    byteArrayInputStream.read(packetData, 0, size);
+                    first.readFully(packetData, 0, size);
 
-                    ByteArrayInputStream packetDataInputStream = new ByteArrayInputStream(packetData);
-                    DataInputStream packetDataStream = new DataInputStream(packetDataInputStream);
+                    //TODO: test this to see if it actually works.
+                    //it seems unnecessary currently, doesn't seem most packets go over the threshold
+                    /*if (size > this.getCompressionThreshold()) {
+                        GeneralHelper.print("Compressing packet", GeneralHelper.ANSI_PURPLE);
+                        byte[] compressed = new byte[1024];
 
-                    int packetId = Packet.readVarInt(packetDataStream);
+                        Deflater deflater = new Deflater();
+                        deflater.setInput(packetData);
+                        int compressedSize = deflater.deflate(compressed);
 
-                    Packet.writeVarInt(out, packetData.length + Packet.sizeOfVarInt(packetId));//write size of packet id + data
-                    Packet.writeVarInt(out, 0);//send 0 so the server knows it's not compressed
-                    out.write(packetData);
-                    out.flush();
+                        Packet.writeVarInt(out, size + compressedSize);//Length of Data Length + compressed length of (Packet ID + Data)
+                        Packet.writeVarInt(out, size);//Length of uncompressed (Packet ID + Data)
+                        out.write(compressed);
+                    } else {*/
+                        ByteArrayInputStream packetDataInputStream = new ByteArrayInputStream(packetData);
+                        DataInputStream second = new DataInputStream(packetDataInputStream);
+
+                        int packetId = Packet.readVarInt(second);
+
+                        Packet.writeVarInt(out, packetData.length + Packet.sizeOfVarInt(packetId));//write size of packet id + data
+                        Packet.writeVarInt(out, 0);//send 0 so the server knows it's not compressed
+                        out.write(packetData);
+                        out.flush();
+                    //}
                 } else {
                     out.write(data);
                 }
@@ -153,10 +169,6 @@ public class ClientConnection {
 
     public ClientBoundPacketHandler getClientBoundPacketHandler() {
         return clientBoundPacketHandler;
-    }
-
-    public ClientBoundPacketListener getClientBoundPacketListener() {
-        return clientBoundPacketListener;
     }
 
     public TPSHelper getTpsHelper() {
@@ -201,6 +213,10 @@ public class ClientConnection {
 
     public void setCompressionThreshold(int compressionThreshold) {
         this.compressionThreshold = compressionThreshold;
+    }
+
+    public void setClientBoundPacketHandler(ClientBoundPacketHandler clientBoundPacketHandler) {
+        this.clientBoundPacketHandler = clientBoundPacketHandler;
     }
 
     public enum NetworkState {

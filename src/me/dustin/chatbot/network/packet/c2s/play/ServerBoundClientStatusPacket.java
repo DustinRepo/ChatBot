@@ -10,9 +10,8 @@ import java.io.IOException;
 
 public class ServerBoundClientStatusPacket extends Packet {
     public static final int RESPAWN = 0, REQUEST_STATS = 1;
-    private int action;
+    private final int action;
     public ServerBoundClientStatusPacket(int action) {
-        super(0x04);
         this.action = action;
     }
 
@@ -22,7 +21,7 @@ public class ServerBoundClientStatusPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream clientStatusPacket = new DataOutputStream(baos);
 
-        writeVarInt(clientStatusPacket, packetId);
+        writeVarInt(clientStatusPacket, 0x04);
         writeVarInt(clientStatusPacket, action);
 
         writeVarInt(out, baos.toByteArray().length);

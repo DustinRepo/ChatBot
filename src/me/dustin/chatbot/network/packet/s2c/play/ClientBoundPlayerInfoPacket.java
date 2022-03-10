@@ -1,14 +1,14 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.OtherPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
@@ -22,7 +22,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
     private OtherPlayer[] players;
 
     public ClientBoundPlayerInfoPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x36, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        clientBoundPacketHandler.handlePlayerInfoPacket(this);
+        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handlePlayerInfoPacket(this);
     }
 
     public int getAction() {

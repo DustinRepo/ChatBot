@@ -11,7 +11,6 @@ import java.io.IOException;
 public class ServerBoundChatPacket extends Packet {
     String message;
     public ServerBoundChatPacket(String message) {
-        super(0x03);
         if (message.length() > 256) {
             message = message.substring(0, 256);
         }
@@ -24,7 +23,7 @@ public class ServerBoundChatPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(baos);
 
-        writeVarInt(dataOutputStream, this.packetId);
+        writeVarInt(dataOutputStream, 0x03);
         writeString(dataOutputStream, message);
 
         writeVarInt(out, baos.toByteArray().length);

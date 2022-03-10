@@ -1,7 +1,8 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
-import me.dustin.chatbot.network.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -17,7 +18,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
     private byte[] verifyToken;
 
     public ClientBoundEncryptionStartPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x01, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        clientBoundPacketHandler.handleEncryptionRequest(this);
+        ((ClientBoundLoginClientBoundPacketHandler)clientBoundPacketHandler).handleEncryptionRequest(this);
     }
 
     public String getServerID() {

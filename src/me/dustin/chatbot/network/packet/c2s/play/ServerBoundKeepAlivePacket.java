@@ -11,7 +11,6 @@ public class ServerBoundKeepAlivePacket extends Packet {
     private long id;
 
     public ServerBoundKeepAlivePacket(long id) {
-        super(0x0F);
         this.id = id;
     }
 
@@ -19,7 +18,7 @@ public class ServerBoundKeepAlivePacket extends Packet {
     public ByteArrayDataOutput createPacket() throws IOException {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeByte(0x09);
-        out.writeByte(this.packetId);
+        out.writeByte(0x0F);
         out.writeLong(id);
         return out;
     }

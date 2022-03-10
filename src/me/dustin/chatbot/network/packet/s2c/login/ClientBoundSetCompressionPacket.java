@@ -1,7 +1,8 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
-import me.dustin.chatbot.network.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.io.IOException;
 public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
     private int compressionThreshold;
     public ClientBoundSetCompressionPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x03, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -24,6 +25,6 @@ public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        clientBoundPacketHandler.handleCompressionPacket(this);
+        ((ClientBoundLoginClientBoundPacketHandler)clientBoundPacketHandler).handleCompressionPacket(this);
     }
 }

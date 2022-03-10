@@ -20,7 +20,7 @@ public class ServerBoundHandshakePacket extends Packet {
     public int protocolVersion, serverPort;
 
     public ServerBoundHandshakePacket(int protocolVersion, String serverIP, int serverPort, int networkState) {
-        super(0x00);
+        super();
         this.networkState = networkState;
         this.protocolVersion = protocolVersion;
         this.serverIP = serverIP;
@@ -34,7 +34,7 @@ public class ServerBoundHandshakePacket extends Packet {
         DataOutputStream handshakePacket = new DataOutputStream(handshakeBytes);
 
         //write packetID with the data so we can just easily get their size together
-        handshakePacket.writeByte(this.packetId);
+        handshakePacket.writeByte(0x00);
         writeVarInt(handshakePacket, protocolVersion);
         writeString(handshakePacket, serverIP);
         handshakePacket.writeShort(serverPort);
