@@ -1,10 +1,12 @@
 package me.dustin.chatbot.network.packet.handler;
 
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundEncryptionResponsePacket;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundPluginResponsePacket;
+import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
 import me.dustin.chatbot.network.packet.s2c.login.*;
 
 import javax.crypto.SecretKey;
@@ -68,6 +70,8 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
         getClientConnection().getTpsHelper().clear();
         GeneralHelper.print("Login Success Packet. You are connected", GeneralHelper.ANSI_GREEN);
         GeneralHelper.print("Setting NETWORK_STATE to PLAY", GeneralHelper.ANSI_GREEN);
+        //send a ClientSettings packet so the server knows stuff like our language, enabled skin parts, allowing server listings, etc
+        getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPacket clientBoundDisconnectPacket) {

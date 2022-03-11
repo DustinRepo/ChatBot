@@ -12,12 +12,14 @@ public class Config {
     private String commandPrefix;
     private String accountType;
     private String crackedLoginPassword;
+    private String locale;
 
     private boolean greenText;
     private boolean colorConsole;
     private boolean crackedLogin;
     private boolean reconnect;
     private boolean antiAFK;
+    private boolean allowServerListing;
 
     private int protocolVersion;
     private int reconnectDelay;
@@ -38,11 +40,14 @@ public class Config {
         commandPrefix = parser.readString("commandPrefix");
         accountType = parser.readString("accountType");
         crackedLoginPassword = parser.readString("crackedLoginPassword");
+        locale = parser.readString("locale");
+
         colorConsole = parser.readBoolean("consoleColor");
         crackedLogin = parser.readBoolean("crackedLogin");
         greenText = parser.readBoolean("greenText");
         reconnect = parser.readBoolean("reconnect");
         antiAFK = parser.readBoolean("antiAFK");
+        allowServerListing = parser.readBoolean("allowServerListing");
 
         protocolVersion = parser.readInt("protocolVersion");
         reconnectDelay = parser.readInt("reconnectDelay");
@@ -55,6 +60,10 @@ public class Config {
         loginFile = new File(jarPath, parser.readString("loginFile"));
     }
 
+    public File getConfigFile() {
+        return configFile;
+    }
+
     public String getCommandPrefix() {
         return commandPrefix;
     }
@@ -65,6 +74,10 @@ public class Config {
 
     public String getCrackedLoginPassword() {
         return crackedLoginPassword;
+    }
+
+    public String getLocale() {
+        return locale;
     }
 
     public boolean isGreenText() {
@@ -83,6 +96,14 @@ public class Config {
         return reconnect;
     }
 
+    public boolean isAntiAFK() {
+        return antiAFK;
+    }
+
+    public boolean isAllowServerListing() {
+        return allowServerListing;
+    }
+
     public int getProtocolVersion() {
         return protocolVersion;
     }
@@ -99,16 +120,12 @@ public class Config {
         return announcementDelay;
     }
 
-    public int getKeepAliveCheckTime() {
-        return keepAliveCheckTime;
-    }
-
-    public boolean isAntiAFK() {
-        return antiAFK;
-    }
-
     public int getAntiAFKDelay() {
         return antiAFKDelay;
+    }
+
+    public int getKeepAliveCheckTime() {
+        return keepAliveCheckTime;
     }
 
     public File getLoginFile() {
