@@ -6,10 +6,9 @@ import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.GeneralHelper;
 
-public enum MessageParser {
-    INSTANCE;
+public class MessageParser {
 
-    public ChatMessage parse(String jsonData) {
+    public static ChatMessage parse(String jsonData) {
         StringBuilder name = new StringBuilder();
         StringBuilder body = new StringBuilder();
 
@@ -45,7 +44,7 @@ public enum MessageParser {
         return new ChatMessage(name.toString(), body.toString());
     }
 
-    public String getExtra(JsonObject jsonObject) {
+    public static String getExtra(JsonObject jsonObject) {
         StringBuilder s = new StringBuilder();
         JsonArray extra = jsonObject.getAsJsonArray("extra");
         if (extra != null) {

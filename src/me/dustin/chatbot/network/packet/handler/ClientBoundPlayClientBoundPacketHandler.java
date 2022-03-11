@@ -39,7 +39,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     }
 
     public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
-        ChatMessage chatMessage = MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage());
+        ChatMessage chatMessage = MessageParser.parse(clientBoundChatMessagePacket.getMessage());
         String printMessage = chatMessage.getMessage();
         if (clientBoundChatMessagePacket.getType() == ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT && !chatMessage.getSenderName().isEmpty()) {
             printMessage = "<" + chatMessage.getSenderName() + "> " + chatMessage.getBody();
@@ -47,7 +47,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         GeneralHelper.print(printMessage, GeneralHelper.ANSI_CYAN);
 
         UUID sender = clientBoundChatMessagePacket.getSender();
-        if (!getClientConnection().getCommandManager().parse(MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage()).getBody(), sender) && ChatBot.getConfig().isCrackedLogin()) {
+        if (!getClientConnection().getCommandManager().parse(MessageParser.parse(clientBoundChatMessagePacket.getMessage()).getBody(), sender) && ChatBot.getConfig().isCrackedLogin()) {
             if (chatMessage.getBody().contains("/register")) {
                 getClientConnection().sendPacket(new ServerBoundChatPacket("/register " + ChatBot.getConfig().getCrackedLoginPassword() + " " + ChatBot.getConfig().getCrackedLoginPassword()));
             } else if (chatMessage.getBody().contains("/login")) {
