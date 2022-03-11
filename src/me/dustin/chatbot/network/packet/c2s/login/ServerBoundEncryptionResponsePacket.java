@@ -12,11 +12,9 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 public class ServerBoundEncryptionResponsePacket extends Packet {
-    private final SecretKey secretKey;
     private final byte[] encryptedSecret;
     private final byte[] encryptedVerify;
-    public ServerBoundEncryptionResponsePacket(SecretKey secretKey, byte[] encryptedSecret, byte[] encryptedVerify) {
-        this.secretKey = secretKey;
+    public ServerBoundEncryptionResponsePacket(byte[] encryptedSecret, byte[] encryptedVerify) {
         this.encryptedSecret = encryptedSecret;
         this.encryptedVerify = encryptedVerify;
     }

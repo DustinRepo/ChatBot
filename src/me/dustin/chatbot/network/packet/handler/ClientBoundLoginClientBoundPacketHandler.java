@@ -1,6 +1,6 @@
 package me.dustin.chatbot.network.packet.handler;
 
-import me.dustin.chatbot.chat.MessageParser;
+import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundEncryptionResponsePacket;
@@ -38,7 +38,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
             byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
             byte[] encryptedVerify = getClientConnection().getPacketCrypt().encrypt(encryptionStartPacket.getVerifyToken());
 
-            ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(secretKey, encryptedSecret, encryptedVerify);
+            ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
 
             getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
             GeneralHelper.print("Encrypting connection...", GeneralHelper.ANSI_GREEN);
@@ -62,16 +62,16 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
 
     public void handleLoginSuccess(ClientBoundLoginSuccessPacket clientBoundLoginSuccessPacket) {
         getClientConnection().setNetworkState(ClientConnection.NetworkState.PLAY);
-        getClientConnection().getTpsHelper().clear();
         getClientConnection().setClientBoundPacketHandler(new ClientBoundPlayClientBoundPacketHandler(getClientConnection()));
         getClientConnection().getClientPlayer().updateKeepAlive();
         getClientConnection().getClientPlayer().updateAntiAFK();
+        getClientConnection().getTpsHelper().clear();
         GeneralHelper.print("Login Success Packet. You are connected", GeneralHelper.ANSI_GREEN);
         GeneralHelper.print("Setting NETWORK_STATE to PLAY", GeneralHelper.ANSI_GREEN);
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPacket clientBoundDisconnectPacket) {
-        GeneralHelper.print("Disconnected: " + MessageParser.parse(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.ANSI_RED);
+        GeneralHelper.print("Disconnected: " + ChatMessage.of(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.ANSI_RED);
         getClientConnection().close();
     }
 }

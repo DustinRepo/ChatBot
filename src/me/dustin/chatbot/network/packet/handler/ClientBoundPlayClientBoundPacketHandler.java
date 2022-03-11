@@ -3,7 +3,6 @@ package me.dustin.chatbot.network.packet.handler;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.chat.MessageParser;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.*;
 import me.dustin.chatbot.network.packet.s2c.play.*;
@@ -27,7 +26,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {
-        GeneralHelper.print("Disconnected: " + MessageParser.parse(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.ANSI_RED);
+        GeneralHelper.print("Disconnected: " + ChatMessage.of(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.ANSI_RED);
         getClientConnection().close();
     }
 
@@ -39,7 +38,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     }
 
     public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
-        ChatMessage chatMessage = MessageParser.parse(clientBoundChatMessagePacket.getMessage());
+        ChatMessage chatMessage = ChatMessage.of(clientBoundChatMessagePacket.getMessage());
         String printMessage = chatMessage.getMessage();
         if (clientBoundChatMessagePacket.getType() == ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT && !chatMessage.getSenderName().isEmpty()) {
             printMessage = "<" + chatMessage.getSenderName() + "> " + chatMessage.getBody();
@@ -47,7 +46,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         GeneralHelper.print(printMessage, GeneralHelper.ANSI_CYAN);
 
         UUID sender = clientBoundChatMessagePacket.getSender();
-        if (!getClientConnection().getCommandManager().parse(MessageParser.parse(clientBoundChatMessagePacket.getMessage()).getBody(), sender) && ChatBot.getConfig().isCrackedLogin()) {
+        if (!getClientConnection().getCommandManager().parse(chatMessage.getBody(), sender) && ChatBot.getConfig().isCrackedLogin()) {
             if (chatMessage.getBody().contains("/register")) {
                 getClientConnection().sendPacket(new ServerBoundChatPacket("/register " + ChatBot.getConfig().getCrackedLoginPassword() + " " + ChatBot.getConfig().getCrackedLoginPassword()));
             } else if (chatMessage.getBody().contains("/login")) {

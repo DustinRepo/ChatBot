@@ -49,7 +49,7 @@ public class ClientConnection {
     private final ClientPlayer clientPlayer;
 
     private long lastAnnouncement = -1;
-    private final String[] announcements = new String[]{"Use {PREFIX}help to get a list of my commands", "Use {PREFIX}worstping to see who has the highest ping", "Use {PREFIX}bestping to see who has the lowest ping", "Use {PREFIX}coffee to get a picture of coffee", "Need to report someone? Use {PREFIX}report <name> <reason>", "Use {PREFIX}isEven to see if a number is even!", "Need to see server TPS? {PREFIX}tps", "Want to use this bot program? https://github.com/DustinRepo/ChatBot"};
+    private final String[] announcements = new String[]{"Use {PREFIX}help to get a list of my commands", "Use {PREFIX}worstping or {PREFIX}bestping to see who has the lowest/highest ping", "Use {PREFIX}coffee to get a picture of coffee", "Need to report someone? Use {PREFIX}report <name> <reason>", "Use {PREFIX}isEven to see if a number is even!", "Need to see server TPS? {PREFIX}tps", "Want to use this bot program? https://github.com/DustinRepo/ChatBot"};
 
     public ClientConnection(String ip, int port, Session session) throws IOException {
         this.ip = ip;
@@ -110,7 +110,6 @@ public class ClientConnection {
     }
 
     public void tick() {
-        getClientBoundPacketHandler().listen();
         getClientPlayer().tick();
         if (ChatBot.getConfig().getAnnouncementDelay() > 0) {
             if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
@@ -121,9 +120,12 @@ public class ClientConnection {
                 lastAnnouncement = System.currentTimeMillis();
             }
         }
+        getClientBoundPacketHandler().listen();
     }
 
     public void sendPacket(Packet packet) {
+        if (!isConnected())
+            return;
         try {
             byte[] data = packet.createPacket().toByteArray();
             if (data.length > 0) {
