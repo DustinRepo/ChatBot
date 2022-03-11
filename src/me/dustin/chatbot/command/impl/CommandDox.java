@@ -29,15 +29,12 @@ public class CommandDox extends Command {
         JsonArray array = firstObj.getAsJsonArray("results");
         JsonObject object = array.get(0).getAsJsonObject();
 
-        String address;
-        String fullName;
-        String phonenumber;
         JsonObject nameObject = object.getAsJsonObject("name");
         JsonObject addressObject = object.getAsJsonObject("location");
         JsonObject streetObject = addressObject.get("street").getAsJsonObject();
-        fullName = nameObject.get("first").getAsString() + " " + nameObject.get("last").getAsString();
-        address = streetObject.get("number").getAsString() + " " + streetObject.get("name").getAsString() + ", " + addressObject.get("city").getAsString() + " " + addressObject.get("state").getAsString();
-        phonenumber = object.get("cell").getAsString();
+        String fullName = nameObject.get("first").getAsString() + " " + nameObject.get("last").getAsString();
+        String address = streetObject.get("number").getAsString() + " " + streetObject.get("name").getAsString() + ", " + addressObject.get("city").getAsString() + " " + addressObject.get("state").getAsString() + ", " + addressObject.get("country").getAsString();
+        String phonenumber = object.get("cell").getAsString();
 
         sendChat(name + "'s Name: " + fullName + ". Address: " + address + ". Phone#: " + phonenumber);
     }
