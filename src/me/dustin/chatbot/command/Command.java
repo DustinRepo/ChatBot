@@ -14,8 +14,6 @@ public abstract class Command {
     private final List<String> alias = new ArrayList<>();
     private ClientConnection clientConnection;
 
-    private long lastMessage = -1;
-
     public Command(String name) {
         this.name = name;
     }
@@ -39,9 +37,6 @@ public abstract class Command {
     }
 
     public void sendChat(String message) {
-        if (System.currentTimeMillis() - lastMessage >= ChatBot.getConfig().getMessageDelay()) {
-            getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message));
-            lastMessage = System.currentTimeMillis();
-        }
+        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message));
     }
 }

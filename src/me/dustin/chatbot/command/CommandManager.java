@@ -17,7 +17,7 @@ public class CommandManager {
         this.clientConnection = clientConnection;
     }
 
-
+    private long lastMessage = -1;
     public void init() {
         commands.clear();
         List<Class<?>> classes = ClassHelper.INSTANCE.getClasses("me.dustin.chatbot.command.impl", Command.class);
@@ -37,6 +37,9 @@ public class CommandManager {
         if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || sender.toString().equalsIgnoreCase(getClientConnection().getSession().getUuid())) {
             return false;
         }
+        if (System.currentTimeMillis() - lastMessage < ChatBot.getConfig().getMessageDelay()) {
+            return false;
+        }
         try {
             String cmd = string.split(" ")[0].replace(ChatBot.getConfig().getCommandPrefix(), "");
             String input;
@@ -49,6 +52,7 @@ public class CommandManager {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
                     try {
                         command.run(input, sender);
+                        lastMessage = System.currentTimeMillis();
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
