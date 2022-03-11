@@ -26,6 +26,6 @@ public class CommandCoords extends Command {
             return;
         }
         Random r = new Random();
-        sendChat(otherPlayer.getName() + "'s coords are X:" + r.nextInt(1000000) + " Y:" + (r.nextInt(320) - 64) + " Z:" + r.nextInt(1000000));
+        sendChat(otherPlayer.getName() + "'s coords are X:" + r.nextInt(1000000) + " Z:" + r.nextInt(1000000));
     }
 }
