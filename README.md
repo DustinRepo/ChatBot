@@ -13,8 +13,8 @@ Customizable prefix: Customize the prefix in the config.cfg file
 ## How to use
 ```
 1. Put your login info file in the same directory as the jar (default login.txt)
-2. Make sure your login info is set to email on the first line, password on the second
-3. Set the account type in config.cfg. (MSA for Microsoft and MOJ for Mojang)
+2. Make sure your login info is set to email on the first line, password on the second (Or just username in first line for cracked)
+3. Set the account type in config.cfg. (MSA for Microsoft and MOJ for Mojang/Cracked)
 3. Open terminal and type 'java -jar ChatBot.jar <ip>/<ip:port>'
 ```
 
