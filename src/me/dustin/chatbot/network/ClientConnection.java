@@ -20,6 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +57,18 @@ public class ClientConnection {
     public ClientConnection(String ip, int port, Session session) throws IOException {
         this.ip = ip;
         this.port = port;
-        this.socket = new Socket(ip, port);
+        String proxyString = ChatBot.getConfig().getProxyString();
+        if (!proxyString.isEmpty()) {
+            String proxyIP = proxyString.split(":")[0];
+            int proxyPort = Integer.parseInt(proxyString.split(":")[1]);
+            Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(proxyIP, proxyPort));
+            if (!ChatBot.getConfig().getProxyUsername().isEmpty()) {
+                Authenticator.setDefault(GeneralHelper.getAuth(ChatBot.getConfig().getProxyUsername(), ChatBot.getConfig().getProxyPassword()));
+            }
+            this.socket = new Socket(proxy);
+            this.socket.connect(new InetSocketAddress(ip, port), 10000);
+        }else
+            this.socket = new Socket(ip, port);
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
         this.session = session;

@@ -5,9 +5,7 @@ import com.google.gson.GsonBuilder;
 import me.dustin.chatbot.ChatBot;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -91,6 +89,14 @@ public class GeneralHelper {
         for (Map.Entry<?, ?> entry : map.entrySet())
             sj.add(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8) + "=" + URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
         return sj.toString();
+    }
+
+    public static Authenticator getAuth(String user, String password) {
+       return new Authenticator() {
+            public PasswordAuthentication getPasswordAuthentication() {
+                return (new PasswordAuthentication(user, password.toCharArray()));
+            }
+        };
     }
 
     public record HttpResponse(String data, int responseCode){}

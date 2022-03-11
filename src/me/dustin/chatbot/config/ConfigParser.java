@@ -11,7 +11,7 @@ public class ConfigParser {
         for (String s : input.split("\n")) {
             if (!s.startsWith("#") && s.contains("=")) {
                 String valueName = s.split("=")[0];
-                String value = s.split("=")[1];
+                String value = s.split("=").length == 1 ? "" : s.split("=")[1];
                 configMap.put(valueName, value);
             }
         }

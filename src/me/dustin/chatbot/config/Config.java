@@ -9,6 +9,9 @@ public class Config {
 
     private final File configFile;
 
+    private String proxyString;
+    private String proxyUsername;
+    private String proxyPassword;
     private String commandPrefix;
     private String accountType;
     private String crackedLoginPassword;
@@ -37,6 +40,9 @@ public class Config {
 
     public void loadConfig() throws IOException {
         ConfigParser parser = new ConfigParser(GeneralHelper.readFile(configFile));
+        proxyString = parser.readString("proxy");
+        proxyUsername = parser.readString("proxyUsername");
+        proxyPassword = parser.readString("proxyPassword");
         commandPrefix = parser.readString("commandPrefix");
         accountType = parser.readString("accountType");
         crackedLoginPassword = parser.readString("crackedLoginPassword");
@@ -62,6 +68,18 @@ public class Config {
 
     public File getConfigFile() {
         return configFile;
+    }
+
+    public String getProxyString() {
+        return proxyString;
+    }
+
+    public String getProxyUsername() {
+        return proxyUsername;
+    }
+
+    public String getProxyPassword() {
+        return proxyPassword;
     }
 
     public String getCommandPrefix() {
