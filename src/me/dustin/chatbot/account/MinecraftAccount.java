@@ -19,7 +19,7 @@ public class MinecraftAccount {
         private boolean isCracked;
 
         public MojangAccount(String username) {
-            this.email = "";
+            this.email = username;
             this.password = "";
             this.isCracked = true;
         }
