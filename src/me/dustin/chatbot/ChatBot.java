@@ -56,11 +56,15 @@ public class ChatBot {
     }
 
     private static void connectionLoop(String ip, int port, Session session) throws InterruptedException, IOException {
-        clientConnection = new ClientConnection(ip, port, session);
-        clientConnection.connect();
+        try {
+            clientConnection = new ClientConnection(ip, port, session);
+            clientConnection.connect();
 
-        while (clientConnection.isConnected()) {
-            clientConnection.tick();
+            while (clientConnection.isConnected()) {
+                clientConnection.tick();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         if (getConfig().isReconnect()) {
             GeneralHelper.print("Client disconnected, reconnecting in " + getConfig().getReconnectDelay() + " seconds...", GeneralHelper.ANSI_PURPLE);

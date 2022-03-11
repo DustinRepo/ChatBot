@@ -28,18 +28,20 @@ public class ClientPlayer {
     }
 
     public void tick() {
-        if (System.currentTimeMillis() - lastKeepAlive >= ChatBot.getConfig().getKeepAliveCheckTime() * 1000L && getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
-            GeneralHelper.print("Time out detected, closing connection.", GeneralHelper.ANSI_PURPLE);
-            getClientConnection().close();
-            return;
-        }
-        if (ChatBot.getConfig().isAntiAFK() && System.currentTimeMillis() - afkTimer >= ChatBot.getConfig().getAntiAFKDelay() * 1000L && getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
-            Random random = new Random();
-            float yaw = random.nextInt(360) - 180;
-            float pitch = random.nextInt(180) - 90;
-            getClientConnection().sendPacket(new ServerBoundPlayerRotationPacket(yaw, pitch, true));
-            getClientConnection().sendPacket(new ServerBoundPlayerSwingPacket(ServerBoundPlayerSwingPacket.MAIN_HAND));
-            updateAntiAFK();
+        if (getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
+            if (System.currentTimeMillis() - lastKeepAlive >= ChatBot.getConfig().getKeepAliveCheckTime() * 1000L) {
+                GeneralHelper.print("Time out detected, closing connection.", GeneralHelper.ANSI_PURPLE);
+                getClientConnection().close();
+                return;
+            }
+            if (ChatBot.getConfig().isAntiAFK() && System.currentTimeMillis() - afkTimer >= ChatBot.getConfig().getAntiAFKDelay() * 1000L) {
+                Random random = new Random();
+                float yaw = random.nextInt(360) - 180;
+                float pitch = random.nextInt(180) - 90;
+                getClientConnection().sendPacket(new ServerBoundPlayerRotationPacket(yaw, pitch, true));
+                getClientConnection().sendPacket(new ServerBoundPlayerSwingPacket(ServerBoundPlayerSwingPacket.MAIN_HAND));
+                updateAntiAFK();
+            }
         }
     }
 

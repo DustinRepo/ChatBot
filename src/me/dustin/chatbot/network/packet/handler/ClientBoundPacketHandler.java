@@ -35,6 +35,7 @@ public abstract class ClientBoundPacketHandler {
                 }
             }
         } catch (Exception e) {
+            getClientConnection().close();
             e.printStackTrace();
         }
     }
