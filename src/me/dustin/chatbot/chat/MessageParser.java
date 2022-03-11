@@ -57,7 +57,7 @@ public class MessageParser {
                     if (object.get("extra") != null)
                         s.append(getExtra(object));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    s.append(" ").append(extra.get(i).getAsString());
                 }
             }
         }
