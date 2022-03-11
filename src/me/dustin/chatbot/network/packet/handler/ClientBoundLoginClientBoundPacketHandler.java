@@ -1,5 +1,6 @@
 package me.dustin.chatbot.network.packet.handler;
 
+import me.dustin.chatbot.chat.MessageParser;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundEncryptionResponsePacket;
@@ -70,7 +71,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPacket clientBoundDisconnectPacket) {
-        GeneralHelper.print("Disconnected: " + clientBoundDisconnectPacket.getReason(), GeneralHelper.ANSI_RED);
+        GeneralHelper.print("Disconnected: " + MessageParser.parse(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.ANSI_RED);
         getClientConnection().close();
     }
 }

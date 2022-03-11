@@ -27,7 +27,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {
-        GeneralHelper.print("Disconnected: " + clientBoundDisconnectPacket.getReason(), GeneralHelper.ANSI_RED);
+        GeneralHelper.print("Disconnected: " + MessageParser.parse(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.ANSI_RED);
         getClientConnection().close();
     }
 
