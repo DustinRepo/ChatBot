@@ -52,7 +52,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
                         }
                         properties.add(new OtherPlayer.PlayerProperty(pName, pValue, isSigned, signature));
                     }
-                    player.properties.addAll(properties);
+                    player.getProperties().addAll(properties);
                     player.setGameMode(OtherPlayer.GameMode.get(readVarInt(dataInputStream)));
                     player.setPing(readVarInt(dataInputStream));
                     boolean hasDisplayName = dataInputStream.readBoolean();

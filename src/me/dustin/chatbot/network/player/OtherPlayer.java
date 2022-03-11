@@ -11,7 +11,7 @@ public class OtherPlayer {
     private int ping;
     private String displayName;
 
-    public final ArrayList<PlayerProperty> properties = new ArrayList<>();
+    private final ArrayList<PlayerProperty> properties = new ArrayList<>();
 
     public OtherPlayer(String name, UUID uuid) {
         this.name = name;
