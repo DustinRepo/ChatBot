@@ -11,7 +11,6 @@ public class CommandHelp extends Command {
 
     @Override
     public void run(String str, UUID sender) {
-        if (str.isEmpty())
-            sendChat("ChatBot made by Dustin. List of commands: https://github.com/DustinRepo/ChatBot#commands");
+        sendChat("ChatBot made by Dustin. List of commands: https://github.com/DustinRepo/ChatBot#commands");
     }
 }
