@@ -28,11 +28,11 @@ Below are a list of commands currently in ChatBot
 Ask a question to the magic 8 ball
 ###### bible / pray
 Print a random bible verse in chat
-###### isEven -number-
+###### iseven -number-
 Check if a number is even using the isEven API
 ###### coffee
 Returns a link to a random picture of coffee
-###### Roulette / RussianRoulette
+###### roulette / russianRoulette
 Play Russian Roulette
 ###### report -name- -reason-
 Report a player for bad behavior
@@ -48,6 +48,8 @@ Get your ping
 Get the ping of another player
 ###### coords
 Get the coords of the bot
+###### coords -name-
+Get the coords of another player
 ###### queue / q
 Get the current length of 2b2t queue
 ###### kanye / ye
