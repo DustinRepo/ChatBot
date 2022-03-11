@@ -44,7 +44,7 @@ public class CommandManager {
                 input = string.replace(cmd + " ", "");
             else
                 input = string.replace(cmd, "");
-
+            input = input.substring(1);
             for (Command command : commands) {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
                     try {

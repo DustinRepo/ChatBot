@@ -1,6 +1,7 @@
 package me.dustin.chatbot.network.packet.handler;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.chat.MessageParser;
 import me.dustin.chatbot.network.ClientConnection;
@@ -38,13 +39,18 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     }
 
     public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
-        String message = MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage()).getMessage();
+        ChatMessage chatMessage = MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage());
+        String printMessage = chatMessage.getMessage();
+        if (clientBoundChatMessagePacket.getType() == ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT && !chatMessage.getSenderName().isEmpty()) {
+            printMessage = "<" + chatMessage.getSenderName() + "> " + chatMessage.getBody();
+        }
+        GeneralHelper.print(printMessage, GeneralHelper.ANSI_CYAN);
+
         UUID sender = clientBoundChatMessagePacket.getSender();
-        GeneralHelper.print(message, GeneralHelper.ANSI_CYAN);
         if (!getClientConnection().getCommandManager().parse(MessageParser.INSTANCE.parse(clientBoundChatMessagePacket.getMessage()).getBody(), sender) && ChatBot.getConfig().isCrackedLogin()) {
-            if (message.contains("/register")) {
+            if (chatMessage.getBody().contains("/register")) {
                 getClientConnection().sendPacket(new ServerBoundChatPacket("/register " + ChatBot.getConfig().getCrackedLoginPassword() + " " + ChatBot.getConfig().getCrackedLoginPassword()));
-            } else if (message.contains("/login")) {
+            } else if (chatMessage.getBody().contains("/login")) {
                 getClientConnection().sendPacket(new ServerBoundChatPacket("/login " + ChatBot.getConfig().getCrackedLoginPassword()));
             }
         }
