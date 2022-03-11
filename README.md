@@ -40,8 +40,10 @@ Tells you the most changed name of the player
 See who has the lowest ping on the server
 ###### wp / worstping
 See who has the highest ping on the server
-###### myping
+###### ping
 Get your ping
+###### ping -name-
+Get the ping of another player
 ###### coords
 Get the coords of the bot
 ###### queue / q
