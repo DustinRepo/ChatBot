@@ -22,7 +22,10 @@ public class CommandPing extends Command {
                 sendChat("Error! Couldn't find you in my player list :(");
                 return;
             }
-            sendChat("Your ping is " + player.getPing() + "ms");
+            if (player.getPing() <= 0)
+                sendChat("Server doesn't have a ping count for you yet");
+            else
+                sendChat("Your ping is " + player.getPing() + "ms");
         } else {
             OtherPlayer player = getClientConnection().getPlayerManager().get(str);
             if (player == null) {
