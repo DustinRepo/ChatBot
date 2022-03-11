@@ -14,7 +14,7 @@ public class CommandCoords extends Command {
 
     @Override
     public void run(String str, UUID sender) {
-        if (str.isEmpty()) {
+        if (str.isEmpty() || str.split(" ")[0].equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
             ClientPlayer player = getClientConnection().getClientPlayer();
             sendChat(String.format("My coords are X: %.1f Y: %.1f Z: %.1f", player.getX(), player.getY(), player.getZ()));
             return;
@@ -26,6 +26,6 @@ public class CommandCoords extends Command {
             return;
         }
         Random r = new Random();
-        sendChat(otherPlayer.getName() + "'s coords are X:" + r.nextInt(1000000) + " Y:" + r.nextInt(1000000) + " Z:" + r.nextInt(1000000));
+        sendChat(otherPlayer.getName() + "'s coords are X:" + r.nextInt(1000000) + " Y:" + (r.nextInt(320) - 64) + " Z:" + r.nextInt(1000000));
     }
 }
