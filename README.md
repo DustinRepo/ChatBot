@@ -18,9 +18,8 @@ Customizable prefix: Customize the prefix in the config.cfg file
 3. Open terminal and type 'java -jar ChatBot.jar <ip>/<ip:port>'
 ```
 
-## Issues
-Due to my parsing of Minecraft's chat messages being bad, the bot may not be able to read messages on some servers, and some messages on working servers might not come through, depending on formatting.
-I am working to create a better chat parser to address this
+## PSA
+Chat message parsing is still being worked on and improved. If you find a server this bot doesn't work on, please open an issue or contact me on Discord at untrusted#9025
 
 ## Commands
 Below are a list of commands currently in ChatBot
