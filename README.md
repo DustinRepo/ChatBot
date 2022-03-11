@@ -32,6 +32,8 @@ Print a random bible verse in chat
 Check if a number is even using the isEven API
 ###### coffee
 Returns a link to a random picture of coffee
+###### Roulette / RussianRoulette
+Play Russian Roulette
 ###### report -name- -reason-
 Report a player for bad behavior
 ###### lastname -name-
@@ -50,9 +52,9 @@ Get the coords of the bot
 Get the current length of 2b2t queue
 ###### kanye / ye
 Get a random Kanye quote
-###### dox
+###### dox -name-
 Dox a player
-###### resolve / ip
+###### resolve / ip -name-
 Get a player's IP address
 ###### kys
 Make the bot commit suicide. (Uses the /suicide command)
