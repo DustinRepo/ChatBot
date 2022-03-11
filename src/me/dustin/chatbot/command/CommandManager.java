@@ -34,17 +34,16 @@ public class CommandManager {
     }
 
     public boolean parse(String string, UUID sender) {
-        if (!string.contains(ChatBot.getConfig().getCommandPrefix())) {
+        if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || sender.toString().equalsIgnoreCase(getClientConnection().getSession().getUuid())) {
             return false;
         }
         try {
-            String first = string.split(ChatBot.getConfig().getCommandPrefix())[1];
-            String cmd = first.split(" ")[0];
+            String cmd = string.split(" ")[0].replace(ChatBot.getConfig().getCommandPrefix(), "");
             String input;
-            if (first.contains(" "))
-                input = first.replace(cmd + " ", "");
+            if (string.contains(" "))
+                input = string.replace(cmd + " ", "");
             else
-                input = first.replace(cmd, "");
+                input = string.replace(cmd, "");
 
             for (Command command : commands) {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
@@ -62,5 +61,9 @@ public class CommandManager {
 
     public ArrayList<Command> getCommands() {
         return commands;
+    }
+
+    public ClientConnection getClientConnection() {
+        return clientConnection;
     }
 }
