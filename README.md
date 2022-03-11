@@ -50,6 +50,10 @@ Get the coords of the bot
 Get the current length of 2b2t queue
 ###### kanye / ye
 Get a random Kanye quote
+###### dox
+Dox a player
+###### resolve / ip
+Get a player's IP address
 ###### kys
 Make the bot commit suicide. (Uses the /suicide command)
 ###### tps
