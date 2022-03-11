@@ -35,7 +35,7 @@ Returns a link to a random picture of coffee
 ###### report -name- -reason-
 Report a player for bad behavior
 ###### lastname -name-
-Tells you the most changed name of the player
+Tells you the most recently changed name of the player
 ###### bp / bestping
 See who has the lowest ping on the server
 ###### wp / worstping
