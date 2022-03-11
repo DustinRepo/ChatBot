@@ -15,10 +15,11 @@ public class CommandVoteKill extends Command {
             sendChat("You have to tell me who you want killed!");
             return;
         }
-        if (str.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
+        String name = str.split(" ")[0];
+        if (name.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
             sendChat("Fuck you buddy");
             return;
         }
-        sendChat("Started a vote to kill " + str + ". Vote with /kill " + str);
+        sendChat("Started a vote to kill " + name + ". Vote with /kill " + str);
     }
 }

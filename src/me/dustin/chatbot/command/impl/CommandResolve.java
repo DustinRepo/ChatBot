@@ -17,12 +17,13 @@ public class CommandResolve extends Command {
             sendChat("Error! You have to tell me who to dox!");
             return;
         }
-        if (str.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
+        String name = str.split(" ")[0];
+        if (name.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
             sendChat("Nice try, dumbass");
             return;
         }
         Random r = new Random();
         String ip = r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256);
-        sendChat(str + "'s IP is " + ip);
+        sendChat(name + "'s IP is " + ip);
     }
 }

@@ -27,9 +27,10 @@ public class CommandPing extends Command {
             else
                 sendChat("Your ping is " + player.getPing() + "ms");
         } else {
-            OtherPlayer player = getClientConnection().getPlayerManager().get(str);
+            String name = str.split(" ")[0];
+            OtherPlayer player = getClientConnection().getPlayerManager().get(name);
             if (player == null) {
-                sendChat("Error! " + str + " not online!");
+                sendChat("Error! " + name + " not online!");
                 return;
             }
             if (player.getPing() <= 0)

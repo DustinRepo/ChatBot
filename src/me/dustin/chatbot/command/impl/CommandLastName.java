@@ -13,7 +13,7 @@ public class CommandLastName extends Command {
 
     @Override
     public void run(String str, UUID sender) {
-        UUID uuid = MCAPIHelper.getUUIDFromName(str);
+        UUID uuid = MCAPIHelper.getUUIDFromName(str.split(" ")[0]);
         if (uuid == null) {
             sendChat("Error! Could not grab UUID from username " + str);
             return;
