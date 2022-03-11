@@ -52,7 +52,7 @@ public class ClientConnection {
     private final ClientPlayer clientPlayer;
 
     private long lastAnnouncement = -1;
-    private final String[] announcements = new String[]{"Use {PREFIX}help to get a list of my commands", "Use {PREFIX}worstping or {PREFIX}bestping to see who has the lowest/highest ping", "Use {PREFIX}coffee to get a picture of coffee", "Need to report someone? Use {PREFIX}report <name> <reason>", "Use {PREFIX}isEven to see if a number is even!", "Need to see server TPS? {PREFIX}tps", "Want to use this bot program? https://github.com/DustinRepo/ChatBot"};
+    private final String[] announcements = new String[]{"Use {PREFIX}help to get a list of my commands", "Use {PREFIX}coinflip to flip a coin", "Use {PREFIX}worstping or {PREFIX}bestping to see who has the lowest/highest ping", "Use {PREFIX}coffee to get a picture of coffee", "Need to report someone? Use {PREFIX}report <name> <reason>", "Use {PREFIX}isEven to see if a number is even!", "Need to see server TPS? {PREFIX}tps", "Want to use this bot program? https://github.com/DustinRepo/ChatBot"};
 
     public ClientConnection(String ip, int port, Session session) throws IOException {
         this.ip = ip;
