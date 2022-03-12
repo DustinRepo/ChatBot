@@ -3,6 +3,8 @@ package me.dustin.chatbot.command;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.ClassHelper;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.player.OtherPlayer;
+import me.dustin.chatbot.network.player.PlayerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,13 @@ public class CommandManager {
     }
 
     public boolean parse(String string, UUID sender) {
+        String[] sA = string.split(" ");
+        if (sA.length > 2 && sA[1].equalsIgnoreCase("whispers:")) {
+            string = string.substring(sA[0].length() + sA[1].length() + 2);
+            if (sender == null && getClientConnection().getPlayerManager().get(sA[1]) != null) {
+                sender = getClientConnection().getPlayerManager().get(sA[1]).getUuid();
+            }
+        }
         if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || sender.toString().equalsIgnoreCase(getClientConnection().getSession().getUuid())) {
             return false;
         }
