@@ -45,6 +45,8 @@ Returns a link to a random picture of coffee
 Play Russian Roulette
 ###### report -name- -reason-
 Report a player for bad behavior
+###### plugins
+Tries to get the server plugins and returns them
 ###### namemc -name-
 Get the link for a NameMC search
 ###### lastname -name-

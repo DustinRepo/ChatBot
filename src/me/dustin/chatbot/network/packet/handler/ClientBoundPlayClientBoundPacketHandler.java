@@ -2,6 +2,7 @@ package me.dustin.chatbot.network.packet.handler;
 
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
+import me.dustin.chatbot.command.impl.CommandPlugins;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.*;
@@ -22,6 +23,8 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         getPacketMap().put(0x35, ClientBoundPlayerDeadPacket.class);
         getPacketMap().put(0x36, ClientBoundPlayerInfoPacket.class);
         getPacketMap().put(0x38, ClientBoundPlayerPositionAndLookPacket.class);
+        getPacketMap().put(0x3C, ClientBoundResourcePackSendPacket.class);
+        getPacketMap().put(0x11, ClientBoundTabCompletePacket.class);
         getPacketMap().put(0x52, ClientBoundUpdateHealthPacket.class);
         getPacketMap().put(0x59, ClientBoundWorldTimePacket.class);
     }
@@ -55,6 +58,10 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
                 getClientConnection().sendPacket(new ServerBoundChatPacket("/login " + ChatBot.getConfig().getCrackedLoginPassword()));
             }
         }
+    }
+
+    public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {
+        CommandPlugins.setTabCompletePacket(clientBoundTabCompletePacket);
     }
 
     public void handleResourcePackPacket(ClientBoundResourcePackSendPacket clientBoundResourcePackSendPacket) {
