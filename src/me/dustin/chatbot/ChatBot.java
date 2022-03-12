@@ -3,9 +3,11 @@ package me.dustin.chatbot;
 import me.dustin.chatbot.account.MinecraftAccount;
 import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.config.Config;
+import me.dustin.chatbot.gui.ChatBotGui;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -13,15 +15,40 @@ public class ChatBot {
 
     private static Config config;
     private static ClientConnection clientConnection;
+    private static ChatBotGui gui;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();
         config = new Config(new File(jarPath, "config.cfg"));
-        if (args.length < 1) {
-            GeneralHelper.print("ERROR: No IP specified in arguments!", GeneralHelper.ANSI_RED);
-            return;
+        String ip = null;
+
+        boolean noGui = false;
+        if (args.length > 0)
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase("--nogui")) {
+                noGui = true;
+            } else if (arg.startsWith("--ip=")) {
+                ip = arg.split("=")[1];
+            }
         }
-        String ip = args[0];
+
+        if (ip == null) {
+            if (noGui) {
+                GeneralHelper.print("ERROR: No IP specified in arguments! Use --ip=<ip:port>!", GeneralHelper.ANSI_RED);
+                return;
+            } else {
+                ip = JOptionPane.showInputDialog("Input ip or ip:port");
+                if (ip == null) {
+                    GeneralHelper.print("ERROR: You have to specify an IP!", GeneralHelper.ANSI_RED);
+                    return;
+                }
+            }
+        }
+
+        if (!noGui) {
+            gui = new ChatBotGui();
+        }
+
         int port = 25565;
         if (ip.contains(":")) {
             port = Integer.parseInt(ip.split(":")[1]);
@@ -48,7 +75,7 @@ public class ChatBot {
             GeneralHelper.print("ERROR: Login failed!", GeneralHelper.ANSI_RED);
             return;
         }
-        GeneralHelper.print("Logged in. Starting connection to " + args[0], GeneralHelper.ANSI_GREEN);
+        GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, GeneralHelper.ANSI_GREEN);
 
         connectionLoop(ip, port, session);
 
@@ -58,6 +85,8 @@ public class ChatBot {
     private static void connectionLoop(String ip, int port, Session session) throws InterruptedException, IOException {
         try {
             clientConnection = new ClientConnection(ip, port, session);
+            if (getGui() != null)
+                getGui().setClientConnection(clientConnection);
             clientConnection.connect();
 
             while (clientConnection.isConnected()) {
@@ -71,6 +100,10 @@ public class ChatBot {
             Thread.sleep(getConfig().getReconnectDelay() * 1000L);
             connectionLoop(ip, port, session);
         }
+    }
+
+    public static ChatBotGui getGui() {
+        return gui;
     }
 
     public static Config getConfig() {

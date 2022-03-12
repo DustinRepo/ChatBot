@@ -1,5 +1,5 @@
 # Chat Bot
-An external chat bot for Minecraft that runs from console made in Java.
+An external chat bot for Minecraft made in Java.
 
 ## Features
 ```
@@ -15,7 +15,16 @@ Customizable prefix: Customize the prefix in the config.cfg file
 1. Put your login info file in the same directory as the jar (default login.txt)
 2. Make sure your login info is set to email on the first line, password on the second (Or just username in first line for cracked)
 3. Set the account type in config.cfg. (MSA for Microsoft and MOJ for Mojang/Cracked)
-3. Open terminal and type 'java -jar ChatBot.jar <ip>/<ip:port>'
+```
+###### No gui
+```
+4. Open terminal and go to the jar's location
+5. Type 'java -jar ChatBot.jar --nogui --ip=<ip/ip:port>'
+```
+###### With Gui
+```
+4. Double click the jar
+5. Input the ip when prompted
 ```
 
 ## PSA

@@ -9,6 +9,7 @@ import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.OtherPlayer;
 
+import java.awt.*;
 import java.util.UUID;
 
 public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHandler {
@@ -70,11 +71,17 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
                 case ClientBoundPlayerInfoPacket.ADD_PLAYER -> {
                     if (!getClientConnection().getPlayerManager().getPlayers().contains(player)) {
                         getClientConnection().getPlayerManager().getPlayers().add(player);
+                        if (ChatBot.getGui() != null) {
+                            ChatBot.getGui().getPlayerList().addElement(player.getName());
+                        }
                     }
                 }
                 case ClientBoundPlayerInfoPacket.REMOVE_PLAYER -> {
                     if (player != null) {
                         getClientConnection().getPlayerManager().getPlayers().remove(player);
+                        if (ChatBot.getGui() != null) {
+                            ChatBot.getGui().getPlayerList().removeElement(player.getName());
+                        }
                     }
                 }
             }

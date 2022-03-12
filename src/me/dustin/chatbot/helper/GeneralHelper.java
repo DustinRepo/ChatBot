@@ -26,6 +26,10 @@ public class GeneralHelper {
     public static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public static void print(String s, String color) {
+        if (ChatBot.getGui() != null) {
+            ChatBot.getGui().getOutput().append(s + "\n");
+            ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
+        }
         if (ChatBot.getConfig() != null && ChatBot.getConfig().isColorConsole()) {
             System.out.println(color + s + ANSI_RESET);
         } else {

@@ -118,6 +118,9 @@ public class ClientConnection {
         try {
             socket.close();
             isConnected = false;
+            if (ChatBot.getGui() != null) {
+                ChatBot.getGui().getPlayerList().clear();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
