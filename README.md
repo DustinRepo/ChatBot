@@ -36,6 +36,8 @@ Returns a link to a random picture of coffee
 Play Russian Roulette
 ###### report -name- -reason-
 Report a player for bad behavior
+###### namemc -name-
+Get the link for a NameMC search
 ###### lastname -name-
 Tells you the most recently changed name of the player
 ###### bp / bestping
