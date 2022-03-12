@@ -49,6 +49,8 @@ Report a player for bad behavior
 Tries to get the server plugins and returns them
 ###### namemc -name-
 Get the link for a NameMC search
+###### skin -name-
+Get the link to a player's skin, directly from Minecraft
 ###### lastname -name-
 Tells you the most recently changed name of the player
 ###### bp / bestping

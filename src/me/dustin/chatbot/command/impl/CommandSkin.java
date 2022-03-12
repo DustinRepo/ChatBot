@@ -6,8 +6,6 @@ import me.dustin.chatbot.command.Command;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.MCAPIHelper;
 
-import java.io.*;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.UUID;
