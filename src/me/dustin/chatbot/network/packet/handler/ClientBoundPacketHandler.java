@@ -49,8 +49,8 @@ public abstract class ClientBoundPacketHandler {
     }
 
     public ByteArrayInputStream getPacketData() throws IOException {
-        DataInputStream dataInputStream = clientConnection.getIn();
-        if (clientConnection.getCompressionThreshold() > 0) {
+        DataInputStream dataInputStream = getClientConnection().getIn();
+        if (getClientConnection().getCompressionThreshold() > 0) {
             int length = Packet.readVarInt(dataInputStream);
             int[] dataLengths = Packet.readVarIntt(dataInputStream);
             int dataLength = dataLengths[0];
@@ -66,8 +66,8 @@ public abstract class ClientBoundPacketHandler {
     }
 
     private ByteArrayInputStream readCompressed(int packetLength, int dataLength) throws IOException {
-        DataInputStream dataInputStream = clientConnection.getIn();
-        if (dataLength >= clientConnection.getCompressionThreshold()) {
+        DataInputStream dataInputStream = getClientConnection().getIn();
+        if (dataLength >= getClientConnection().getCompressionThreshold()) {
             byte[] data = new byte[packetLength];
             dataInputStream.readFully(data, 0, packetLength);
 
@@ -89,7 +89,7 @@ public abstract class ClientBoundPacketHandler {
     }
 
     private ByteArrayInputStream readUncompressed() throws IOException {
-        DataInputStream dataInputStream = clientConnection.getIn();
+        DataInputStream dataInputStream = getClientConnection().getIn();
         int size = Packet.readVarInt(dataInputStream);
         byte[] readableBytes = new byte[size];
         dataInputStream.readFully(readableBytes);
@@ -97,7 +97,7 @@ public abstract class ClientBoundPacketHandler {
     }
 
     private ByteArrayInputStream readUncompressed(int size) throws IOException {
-        DataInputStream dataInputStream = clientConnection.getIn();
+        DataInputStream dataInputStream = getClientConnection().getIn();
         byte[] readableBytes = new byte[size];
         dataInputStream.readFully(readableBytes);
         return new ByteArrayInputStream(readableBytes);

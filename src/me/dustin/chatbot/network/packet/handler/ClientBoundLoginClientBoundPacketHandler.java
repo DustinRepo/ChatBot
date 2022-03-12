@@ -71,7 +71,15 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
         GeneralHelper.print("Login Success Packet. You are connected", GeneralHelper.ANSI_GREEN);
         GeneralHelper.print("Setting NETWORK_STATE to PLAY", GeneralHelper.ANSI_GREEN);
         //send a ClientSettings packet so the server knows stuff like our language, enabled skin parts, allowing server listings, etc
-        getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
+        //send it 2 seconds after connection just to make sure it doesn't break (for some reason it does if on a vanilla server)
+        new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+                getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPacket clientBoundDisconnectPacket) {
