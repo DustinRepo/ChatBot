@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.command.CommandManager;
+import me.dustin.chatbot.event.EventLoginSuccess;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.TPSHelper;
 import me.dustin.chatbot.network.packet.Packet;
@@ -11,10 +12,14 @@ import me.dustin.chatbot.network.packet.c2s.login.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundLoginStartPacket;
 import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
+import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
 import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
+import me.dustin.events.EventManager;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -42,6 +47,7 @@ public class ClientConnection {
     private final CommandManager commandManager;
     private final PacketCrypt packetCrypt;
     private final TPSHelper tpsHelper;
+    private final EventManager eventManager;
 
     private ClientBoundPacketHandler clientBoundPacketHandler;
     private NetworkState networkState = NetworkState.LOGIN;
@@ -80,7 +86,22 @@ public class ClientConnection {
         this.packetCrypt = new PacketCrypt();
         this.tpsHelper = new TPSHelper();
         this.playerManager = new PlayerManager();
+        this.eventManager = new EventManager();
+        eventManager.register(this);
     }
+
+    @EventPointer
+    private final EventListener<EventLoginSuccess> eventListener = new EventListener<>(event -> {
+        new Thread(() -> {
+            try {
+                //wait 2 seconds so vanilla servers don't throw a shit-fit
+                Thread.sleep(2000);
+                sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    });
 
     public void connect() {
         this.isConnected = true;
@@ -217,6 +238,10 @@ public class ClientConnection {
 
     public PacketCrypt getPacketCrypt() {
         return packetCrypt;
+    }
+
+    public EventManager getEventManager() {
+        return eventManager;
     }
 
     public Socket getSocket() {

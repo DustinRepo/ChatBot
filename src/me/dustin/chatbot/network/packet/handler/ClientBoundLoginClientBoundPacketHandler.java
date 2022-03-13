@@ -2,11 +2,13 @@ package me.dustin.chatbot.network.packet.handler;
 
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
+import me.dustin.chatbot.event.EventLoginSuccess;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundEncryptionResponsePacket;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundPluginResponsePacket;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
+import me.dustin.chatbot.network.packet.c2s.play.ServerBoundTabCompletePacket;
 import me.dustin.chatbot.network.packet.s2c.login.*;
 
 import javax.crypto.SecretKey;
@@ -70,16 +72,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
         getClientConnection().getTpsHelper().clear();
         GeneralHelper.print("Login Success Packet. You are connected", GeneralHelper.TextColors.GREEN);
         GeneralHelper.print("Setting NETWORK_STATE to PLAY", GeneralHelper.TextColors.GREEN);
-        //send a ClientSettings packet so the server knows stuff like our language, enabled skin parts, allowing server listings, etc
-        //send it 2 seconds after connection just to make sure it doesn't break (for some reason it does if on a vanilla server)
-        new Thread(() -> {
-            try {
-                Thread.sleep(2000);
-                getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        new EventLoginSuccess().run(getClientConnection());
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPacket clientBoundDisconnectPacket) {

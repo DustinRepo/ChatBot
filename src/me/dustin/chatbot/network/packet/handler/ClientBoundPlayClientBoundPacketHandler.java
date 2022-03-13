@@ -3,6 +3,7 @@ package me.dustin.chatbot.network.packet.handler;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.command.impl.CommandPlugins;
+import me.dustin.chatbot.event.EventReceiveTabComplete;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.*;
@@ -60,7 +61,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     }
 
     public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {
-        CommandPlugins.setTabCompletePacket(clientBoundTabCompletePacket);
+        new EventReceiveTabComplete(clientBoundTabCompletePacket).run(getClientConnection());
     }
 
     public void handleResourcePackPacket(ClientBoundResourcePackSendPacket clientBoundResourcePackSendPacket) {
