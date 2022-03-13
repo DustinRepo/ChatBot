@@ -183,7 +183,7 @@ public class GeneralHelper {
             if (!logsFolder.exists())
                 logsFolder.mkdirs();
             EasyFormatter easyFormatter = new EasyFormatter();
-            FileHandler fileHandler = new FileHandler(new File(logsFolder, getCurrentTimeStamp().substring(0, getCurrentTimeStamp().length() - 1) + ".txt").getAbsolutePath(), true);
+            FileHandler fileHandler = new FileHandler(new File(logsFolder, getCurrentTimeStamp() + ".txt").getAbsolutePath(), true);
             fileHandler.setFormatter(easyFormatter);
 
             logger.setUseParentHandlers(false);
