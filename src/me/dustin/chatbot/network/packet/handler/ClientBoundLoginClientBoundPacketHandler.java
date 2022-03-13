@@ -75,7 +75,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPacket clientBoundDisconnectPacket) {
-        GeneralHelper.print("Disconnected: " + ChatMessage.of(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.TextColors.RED);
+        GeneralHelper.printChat(ChatMessage.of(clientBoundDisconnectPacket.getReason()));
         getClientConnection().close();
     }
 }
