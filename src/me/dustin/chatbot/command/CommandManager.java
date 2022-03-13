@@ -3,6 +3,7 @@ package me.dustin.chatbot.command;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.ClassHelper;
+import me.dustin.chatbot.helper.Timer;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
 import me.dustin.chatbot.network.player.OtherPlayer;
@@ -18,12 +19,12 @@ public class CommandManager {
 
     private final ArrayList<Command> commands = new ArrayList<>();
     private final ClientConnection clientConnection;
+    private final Timer timer = new Timer();
 
     public CommandManager(ClientConnection clientConnection) {
         this.clientConnection = clientConnection;
     }
 
-    private long lastMessage = -1;
     public void init() {
         getClientConnection().getEventManager().unregister(this);
         getClientConnection().getEventManager().register(this);
@@ -56,7 +57,7 @@ public class CommandManager {
         if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || sender.toString().equalsIgnoreCase(getClientConnection().getSession().getUuid())) {
             return;
         }
-        if (System.currentTimeMillis() - lastMessage < ChatBot.getConfig().getMessageDelay()) {
+        if (!timer.hasPassed(ChatBot.getConfig().getMessageDelay())) {
             return;
         }
         try {
@@ -71,7 +72,7 @@ public class CommandManager {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
                     try {
                         command.run(input, sender);
-                        lastMessage = System.currentTimeMillis();
+                        timer.reset();
                         return;
                     } catch (Exception e) {
                         e.printStackTrace();

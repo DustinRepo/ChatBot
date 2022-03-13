@@ -21,6 +21,7 @@ import me.dustin.chatbot.process.ProcessManager;
 import me.dustin.chatbot.process.impl.AnnouncmentProcess;
 import me.dustin.chatbot.process.impl.AntiAFKProcess;
 import me.dustin.chatbot.process.impl.CrackedLoginProcess;
+import me.dustin.chatbot.process.impl.SkinBlinkProcess;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -101,7 +102,7 @@ public class ClientConnection {
             try {
                 //wait 2 seconds so vanilla servers don't throw a shit-fit
                 Thread.sleep(2000);
-                sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
+                sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -114,8 +115,10 @@ public class ClientConnection {
             getProcessManager().addProcess(new AntiAFKProcess(this));
         if (ChatBot.getConfig().isCrackedLogin())
             getProcessManager().addProcess(new CrackedLoginProcess(this));
-        if (ChatBot.getConfig().getAnnouncementDelay() > 0)
+        if (ChatBot.getConfig().isAnnouncements())
             getProcessManager().addProcess(new AnnouncmentProcess(this));
+        if (ChatBot.getConfig().isSkinBlink())
+        getProcessManager().addProcess(new SkinBlinkProcess(this));
     }
 
     public void connect() {

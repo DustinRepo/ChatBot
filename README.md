@@ -6,6 +6,7 @@ An external chat bot for Minecraft made in Java.
 Auto-Reconnect: Automatically reconnect to the server if you get disconnected
 Auto-Register/Login: Automatically use /register and /login with a password set in the config
 Anti-AFK: Prevent the bot from getting AFK kicked
+SkinBlink: Randomly toggles the extra layers of the bot's player skin (just for fun)
 Greentext: Turn Greentext chat on/off for the bot
 Customizable prefix: Customize the prefix in the config.cfg file
 ```

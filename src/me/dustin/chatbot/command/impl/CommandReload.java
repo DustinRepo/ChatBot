@@ -16,7 +16,7 @@ public class CommandReload extends Command {
     public void run(String str, UUID sender) {
         getClientConnection().getCommandManager().init();
         getClientConnection().loadProcesses();
-        getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
+        getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
         try {
             ChatBot.getConfig().loadConfig();
             sendChat("Reloaded commands and config!");

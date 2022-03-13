@@ -5,6 +5,7 @@ import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.config.Config;
 import me.dustin.chatbot.gui.ChatBotGui;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.Timer;
 import me.dustin.chatbot.network.ClientConnection;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ public class ChatBot {
     private static Config config;
     private static ClientConnection clientConnection;
     private static ChatBotGui gui;
-    private static long connectionTime;
+    private static Timer timer = new Timer();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();
@@ -90,11 +91,11 @@ public class ChatBot {
             if (getGui() != null)
                 getGui().setClientConnection(clientConnection);
             clientConnection.connect();
-            connectionTime = System.currentTimeMillis();
+            timer.reset();
             while (clientConnection.isConnected()) {
                 clientConnection.tick();
                 if (getGui() != null) {
-                    getGui().getFrame().setTitle("ChatBot - Connected for: " + GeneralHelper.getDurationString(System.currentTimeMillis() - connectionTime));
+                    getGui().getFrame().setTitle("ChatBot - Connected for: " + GeneralHelper.getDurationString(timer.getPassed()));
                 }
             }
         } catch (Exception e) {
@@ -102,7 +103,7 @@ public class ChatBot {
         }
         if (getConfig().isReconnect()) {
             GeneralHelper.print("Client disconnected, reconnecting in " + getConfig().getReconnectDelay() + " seconds...", GeneralHelper.TextColors.PURPLE);
-            connectionTime = System.currentTimeMillis();
+            timer.reset();
             Thread.sleep(getConfig().getReconnectDelay() * 1000L);
             connectionLoop(ip, port, session);
         }

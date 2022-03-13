@@ -17,12 +17,14 @@ public class Config {
     private String crackedLoginPassword;
     private String locale;
 
+    private boolean announcements;
     private boolean greenText;
     private boolean colorConsole;
     private boolean crackedLogin;
     private boolean reconnect;
     private boolean antiAFK;
     private boolean allowServerListing;
+    private boolean skinBlink;
 
     private int protocolVersion;
     private int reconnectDelay;
@@ -30,6 +32,7 @@ public class Config {
     private int announcementDelay;
     private int antiAFKDelay;
     private int keepAliveCheckTime;
+    private int skinBlinkDelay;
 
     private File loginFile;
 
@@ -50,10 +53,12 @@ public class Config {
 
         colorConsole = parser.readBoolean("consoleColor");
         crackedLogin = parser.readBoolean("crackedLogin");
+        announcements = parser.readBoolean("announcements");
         greenText = parser.readBoolean("greenText");
         reconnect = parser.readBoolean("reconnect");
         antiAFK = parser.readBoolean("antiAFK");
         allowServerListing = parser.readBoolean("allowServerListing");
+        skinBlink = parser.readBoolean("skinBlink");
 
         protocolVersion = parser.readInt("protocolVersion");
         reconnectDelay = parser.readInt("reconnectDelay");
@@ -61,6 +66,7 @@ public class Config {
         announcementDelay = parser.readInt("announcementDelay");
         keepAliveCheckTime = parser.readInt("keepAliveCheckTime");
         antiAFKDelay = parser.readInt("antiAFKDelay");
+        skinBlinkDelay = parser.readInt("skinBlinkDelay");
 
         String jarPath = new File("").getAbsolutePath();
         loginFile = new File(jarPath, parser.readString("loginFile"));
@@ -98,6 +104,10 @@ public class Config {
         return locale;
     }
 
+    public boolean isAnnouncements() {
+        return announcements;
+    }
+
     public boolean isGreenText() {
         return greenText;
     }
@@ -116,6 +126,10 @@ public class Config {
 
     public boolean isAntiAFK() {
         return antiAFK;
+    }
+
+    public boolean isSkinBlink() {
+        return skinBlink;
     }
 
     public boolean isAllowServerListing() {
@@ -145,6 +159,11 @@ public class Config {
     public int getKeepAliveCheckTime() {
         return keepAliveCheckTime;
     }
+
+    public int getSkinBlinkDelay() {
+        return skinBlinkDelay;
+    }
+
 
     public File getLoginFile() {
         return loginFile;

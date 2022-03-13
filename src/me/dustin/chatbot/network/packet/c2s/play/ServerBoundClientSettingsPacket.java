@@ -12,10 +12,12 @@ public class ServerBoundClientSettingsPacket extends Packet {
 
     private final String locale;
     private final boolean allowServerListings;
+    private final int enabledSkinParts;
 
-    public ServerBoundClientSettingsPacket(String locale, boolean allowServerListings) {
+    public ServerBoundClientSettingsPacket(String locale, boolean allowServerListings, int enabledSkinParts) {
         this.locale = locale;
         this.allowServerListings = allowServerListings;
+        this.enabledSkinParts = enabledSkinParts;
     }
 
     @Override
@@ -24,22 +26,12 @@ public class ServerBoundClientSettingsPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
 
-        //displayed skin parts. just enable all of them
-        int skinParts = 0;
-        skinParts |= 0x01;//cape
-        skinParts |= 0x02;//jacket
-        skinParts |= 0x04;//left sleeve
-        skinParts |= 0x08;//right sleeve
-        skinParts |= 0x10;//left pants
-        skinParts |= 0x20;//right pants
-        skinParts |= 0x40;//hat
-
         writeVarInt(packet, 0x05);//packet id
         writeString(packet, locale);
         packet.writeByte(8);//render distance
         writeVarInt(packet, 0);//chat mode. 0 = enabled
         packet.writeBoolean(true);//chat colors
-        packet.writeByte(skinParts);
+        packet.writeByte(enabledSkinParts);
         writeVarInt(packet, 1);//main hand - 0 = left 1 = right
         packet.writeBoolean(false);//text filtering
         packet.writeBoolean(allowServerListings);
@@ -47,5 +39,25 @@ public class ServerBoundClientSettingsPacket extends Packet {
         writeVarInt(out, baos.toByteArray().length);
         out.write(baos.toByteArray());
         return out;
+    }
+
+    public enum SkinPart {
+        CAPE(0), JACKET(1), LEFT_SLEEVE(2), RIGHT_SLEEVE(3), LEFT_PANTS(4), RIGHT_PANTS(5), HAT(6);
+        private final int value;
+        SkinPart(int value) {
+            this.value = 1 << value;
+        }
+
+        public static int all() {
+            int all = 0;
+            for (SkinPart playerModelPart : SkinPart.values()) {
+                all |= playerModelPart.getValue();
+            }
+            return all;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 }
