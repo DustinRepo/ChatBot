@@ -97,7 +97,7 @@ public class ChatBot {
             while (clientConnection.isConnected()) {
                 clientConnection.tick();
                 if (getGui() != null) {
-                    getGui().getFrame().setTitle("ChatBot - Connected for: " + GeneralHelper.getDurationString(timer.getPassed()));
+                    getGui().getFrame().setTitle("ChatBot - Connected for: " + GeneralHelper.getDurationString(connectionTime()));
                 }
             }
         } catch (Exception e) {
@@ -109,6 +109,10 @@ public class ChatBot {
             Thread.sleep(getConfig().getReconnectDelay() * 1000L);
             connectionLoop(ip, port, session);
         }
+    }
+
+    public static long connectionTime() {
+        return timer.getPassed();
     }
 
     public static ChatBotGui getGui() {

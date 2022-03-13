@@ -64,6 +64,8 @@ See who has the highest ping on the server
 Get your ping
 ###### ping -name-
 Get the ping of another player
+###### connected
+Get the amount of time the bot has been connected
 ###### coords
 Get the coords of the bot
 ###### coords -name-
