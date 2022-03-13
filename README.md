@@ -42,6 +42,8 @@ Print a random bible verse in chat
 Check if a number is even using the isEven API
 ###### coffee
 Returns a link to a random picture of coffee
+###### coinflip
+Flip a coin
 ###### roulette / russianRoulette
 Play Russian Roulette
 ###### report -name- -reason-
@@ -85,6 +87,6 @@ Dupe any item! Unpatched on all servers 2019 no survey!
 ###### votekill -name-
 Start a vote to kill a player. Vote with /kill
 ###### reload
-Reload the bot commands
+Reload the bot commands, config and processes
 ###### help
 Links to here
