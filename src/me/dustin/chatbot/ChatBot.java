@@ -16,6 +16,7 @@ public class ChatBot {
     private static Config config;
     private static ClientConnection clientConnection;
     private static ChatBotGui gui;
+    private static long connectionTime;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();
@@ -88,15 +89,19 @@ public class ChatBot {
             if (getGui() != null)
                 getGui().setClientConnection(clientConnection);
             clientConnection.connect();
-
+            connectionTime = System.currentTimeMillis();
             while (clientConnection.isConnected()) {
                 clientConnection.tick();
+                if (getGui() != null) {
+                    getGui().getFrame().setTitle("ChatBot - Connected for: " + GeneralHelper.getDurationString(System.currentTimeMillis() - connectionTime));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         if (getConfig().isReconnect()) {
             GeneralHelper.print("Client disconnected, reconnecting in " + getConfig().getReconnectDelay() + " seconds...", GeneralHelper.ANSI_PURPLE);
+            connectionTime = System.currentTimeMillis();
             Thread.sleep(getConfig().getReconnectDelay() * 1000L);
             connectionLoop(ip, port, session);
         }

@@ -62,6 +62,10 @@ public class ChatBotGui {
         }
     }
 
+    public JFrame getFrame() {
+        return frame;
+    }
+
     public void updateComponents() {
         SwingUtilities.updateComponentTreeUI(frame);
     }

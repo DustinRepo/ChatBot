@@ -7,10 +7,18 @@ import me.dustin.chatbot.ChatBot;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 
 public class GeneralHelper {
+
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -46,6 +54,49 @@ public class GeneralHelper {
             sb.append("\n");
         }
         in.close();
+        return sb.toString();
+    }
+
+    public static String getDurationString(long ms) {
+        if (ms <= 0) {
+            return "-";
+        }
+
+        long days = TimeUnit.MILLISECONDS.toDays(ms);
+        ms -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(ms);
+        ms -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(ms);
+        ms -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(ms);
+
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) {
+            sb.append(days);
+            sb.append("d ");
+        }
+        if (hours > 0) {
+            String s = String.format("%02d", hours);
+            if (s.startsWith("0"))
+                s = s.substring(1);
+            sb.append(s);
+            sb.append("h ");
+        }
+        if (minutes > 0) {
+            String s = String.format("%02d", minutes);
+            if (s.startsWith("0"))
+                s = s.substring(1);
+            sb.append(s);
+            sb.append("min ");
+        }
+        if (seconds > 0) {
+            String s = String.format("%02d", seconds);
+            if (s.startsWith("0"))
+                s = s.substring(1);
+            sb.append(s);
+            sb.append("s");
+        }
+
         return sb.toString();
     }
 
