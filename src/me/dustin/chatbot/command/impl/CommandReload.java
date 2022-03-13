@@ -15,9 +15,10 @@ public class CommandReload extends Command {
     @Override
     public void run(String str, UUID sender) {
         getClientConnection().getCommandManager().init();
+        getClientConnection().loadProcesses();
+        getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
         try {
             ChatBot.getConfig().loadConfig();
-            getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing()));
             sendChat("Reloaded commands and config!");
         } catch (Exception e) {
             sendChat("Error in config! " + e.getMessage());

@@ -17,6 +17,9 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacke
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
+import me.dustin.chatbot.process.ProcessManager;
+import me.dustin.chatbot.process.impl.AntiAFKProcess;
+import me.dustin.chatbot.process.impl.CrackedLoginProcess;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -48,6 +51,7 @@ public class ClientConnection {
     private final PacketCrypt packetCrypt;
     private final TPSHelper tpsHelper;
     private final EventManager eventManager;
+    private final ProcessManager processManager;
 
     private ClientBoundPacketHandler clientBoundPacketHandler;
     private NetworkState networkState = NetworkState.LOGIN;
@@ -83,15 +87,18 @@ public class ClientConnection {
         )), this);
         this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler(this);
         this.commandManager = new CommandManager(this);
+        this.processManager = new ProcessManager(this);
         this.packetCrypt = new PacketCrypt();
         this.tpsHelper = new TPSHelper();
         this.playerManager = new PlayerManager();
         this.eventManager = new EventManager();
-        eventManager.register(this);
+        getEventManager().register(this);
+        getEventManager().register(ChatBot.getGui());
     }
 
     @EventPointer
-    private final EventListener<EventLoginSuccess> eventListener = new EventListener<>(event -> {
+    private final EventListener<EventLoginSuccess> eventLoginSuccessEventListener = new EventListener<>(event -> {
+        loadProcesses();
         new Thread(() -> {
             try {
                 //wait 2 seconds so vanilla servers don't throw a shit-fit
@@ -102,6 +109,14 @@ public class ClientConnection {
             }
         }).start();
     });
+
+    public void loadProcesses() {
+        getProcessManager().stopAll();
+        if (ChatBot.getConfig().isAntiAFK())
+            getProcessManager().addProcess(new AntiAFKProcess(this));
+        if (ChatBot.getConfig().isCrackedLogin())
+            getProcessManager().addProcess(new CrackedLoginProcess(this));
+    }
 
     public void connect() {
         this.isConnected = true;
@@ -137,6 +152,7 @@ public class ClientConnection {
 
     public void close() {
         try {
+            getProcessManager().stopAll();
             socket.close();
             isConnected = false;
             if (ChatBot.getGui() != null) {
@@ -148,6 +164,7 @@ public class ClientConnection {
     }
 
     public void tick() {
+        getProcessManager().tick();
         getClientPlayer().tick();
         if (ChatBot.getConfig().getAnnouncementDelay() > 0) {
             if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
@@ -234,6 +251,10 @@ public class ClientConnection {
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public ProcessManager getProcessManager() {
+        return processManager;
     }
 
     public PacketCrypt getPacketCrypt() {

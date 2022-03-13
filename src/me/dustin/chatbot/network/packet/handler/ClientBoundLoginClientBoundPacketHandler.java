@@ -68,7 +68,6 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
         getClientConnection().setNetworkState(ClientConnection.NetworkState.PLAY);
         getClientConnection().setClientBoundPacketHandler(new ClientBoundPlayClientBoundPacketHandler(getClientConnection()));
         getClientConnection().getClientPlayer().updateKeepAlive();
-        getClientConnection().getClientPlayer().updateAntiAFK();
         getClientConnection().getTpsHelper().clear();
         GeneralHelper.print("Login Success Packet. You are connected", GeneralHelper.TextColors.GREEN);
         GeneralHelper.print("Setting NETWORK_STATE to PLAY", GeneralHelper.TextColors.GREEN);

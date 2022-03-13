@@ -61,7 +61,10 @@ public class ChatMessage {
         if (body.toString().startsWith(" ")) {
             body = new StringBuilder(body.substring(1));
         }
-        return new ChatMessage(name.toString(), body.toString());
+        ChatMessage chatMessage = new ChatMessage(name.toString(), body.toString());
+        if (chatMessage.getMessage().isEmpty())
+            return new ChatMessage("", jsonData);
+        return chatMessage;
     }
 
     private static String getExtra(JsonObject jsonObject) {

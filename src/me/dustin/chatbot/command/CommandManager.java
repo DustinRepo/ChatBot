@@ -1,10 +1,14 @@
 package me.dustin.chatbot.command;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.ClassHelper;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
 import me.dustin.chatbot.network.player.OtherPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,8 @@ public class CommandManager {
 
     private long lastMessage = -1;
     public void init() {
+        getClientConnection().getEventManager().unregister(this);
+        getClientConnection().getEventManager().register(this);
         commands.clear();
         List<Class<?>> classes = ClassHelper.INSTANCE.getClasses("me.dustin.chatbot.command.impl", Command.class);
         classes.forEach(clazz -> {
@@ -35,7 +41,11 @@ public class CommandManager {
         });
     }
 
-    public boolean parse(String string, UUID sender) {
+    @EventPointer
+    private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
+        ClientBoundChatMessagePacket clientBoundChatMessagePacket = event.getChatMessagePacket();
+        UUID sender = clientBoundChatMessagePacket.getSender();
+        String string = event.getChatMessagePacket().getMessage().getBody();
         String[] sA = string.split(" ");
         if (sA.length > 2 && sA[1].equalsIgnoreCase("whispers:")) {
             string = string.substring(sA[0].length() + sA[1].length() + 2);
@@ -44,10 +54,10 @@ public class CommandManager {
             }
         }
         if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || sender.toString().equalsIgnoreCase(getClientConnection().getSession().getUuid())) {
-            return false;
+            return;
         }
         if (System.currentTimeMillis() - lastMessage < ChatBot.getConfig().getMessageDelay()) {
-            return false;
+            return;
         }
         try {
             String cmd = string.split(" ")[0].replace(ChatBot.getConfig().getCommandPrefix(), "");
@@ -62,15 +72,14 @@ public class CommandManager {
                     try {
                         command.run(input, sender);
                         lastMessage = System.currentTimeMillis();
-                        return true;
+                        return;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
         } catch (IndexOutOfBoundsException e) {}
-        return false;
-    }
+    });
 
     public ArrayList<Command> getCommands() {
         return commands;

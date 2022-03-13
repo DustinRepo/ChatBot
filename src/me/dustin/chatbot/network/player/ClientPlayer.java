@@ -18,7 +18,6 @@ public class ClientPlayer {
     private double x,y,z;
     private float yaw, pitch;
 
-    private long afkTimer = -1;
     private long lastKeepAlive = -1;
 
     public ClientPlayer(String name, UUID uuid, ClientConnection clientConnection) {
@@ -33,14 +32,6 @@ public class ClientPlayer {
                 GeneralHelper.print("Time out detected, closing connection.", GeneralHelper.TextColors.PURPLE);
                 getClientConnection().close();
                 return;
-            }
-            if (ChatBot.getConfig().isAntiAFK() && System.currentTimeMillis() - afkTimer >= ChatBot.getConfig().getAntiAFKDelay() * 1000L) {
-                Random random = new Random();
-                float yaw = random.nextInt(360) - 180;
-                float pitch = random.nextInt(180) - 90;
-                getClientConnection().sendPacket(new ServerBoundPlayerRotationPacket(yaw, pitch, true));
-                getClientConnection().sendPacket(new ServerBoundPlayerSwingPacket(ServerBoundPlayerSwingPacket.MAIN_HAND));
-                updateAntiAFK();
             }
         }
     }
@@ -119,9 +110,5 @@ public class ClientPlayer {
 
     public void updateKeepAlive() {
         this.lastKeepAlive = System.currentTimeMillis();
-    }
-
-    public void updateAntiAFK() {
-        this.afkTimer = System.currentTimeMillis();
     }
 }

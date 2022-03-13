@@ -3,7 +3,10 @@ package me.dustin.chatbot.network.packet.handler;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.command.impl.CommandPlugins;
+import me.dustin.chatbot.event.EventAddPlayer;
+import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventReceiveTabComplete;
+import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.*;
@@ -42,22 +45,15 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     }
 
     public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
-        ChatMessage chatMessage = ChatMessage.of(clientBoundChatMessagePacket.getMessage());
+        new EventReceiveChatMessage(clientBoundChatMessagePacket).run(getClientConnection());
+
+        ChatMessage chatMessage = clientBoundChatMessagePacket.getMessage();
         String printMessage = chatMessage.getMessage();
         if (clientBoundChatMessagePacket.getType() == ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT && !chatMessage.getSenderName().isEmpty()) {
             String n = chatMessage.getSenderName().contains("<") ? chatMessage.getSenderName() : "<" + chatMessage.getSenderName() + "> ";
             printMessage = n + " " + chatMessage.getBody();
         }
         GeneralHelper.print(printMessage, GeneralHelper.TextColors.CYAN);
-
-        UUID sender = clientBoundChatMessagePacket.getSender();
-        if (!getClientConnection().getCommandManager().parse(chatMessage.getBody(), sender) && ChatBot.getConfig().isCrackedLogin()) {
-            if (chatMessage.getBody().contains("/register")) {
-                getClientConnection().sendPacket(new ServerBoundChatPacket("/register " + ChatBot.getConfig().getCrackedLoginPassword() + " " + ChatBot.getConfig().getCrackedLoginPassword()));
-            } else if (chatMessage.getBody().contains("/login")) {
-                getClientConnection().sendPacket(new ServerBoundChatPacket("/login " + ChatBot.getConfig().getCrackedLoginPassword()));
-            }
-        }
     }
 
     public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {
@@ -78,17 +74,13 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
                 case ClientBoundPlayerInfoPacket.ADD_PLAYER -> {
                     if (!getClientConnection().getPlayerManager().getPlayers().contains(player)) {
                         getClientConnection().getPlayerManager().getPlayers().add(player);
-                        if (ChatBot.getGui() != null) {
-                            ChatBot.getGui().getPlayerList().addElement(player.getName());
-                        }
+                        new EventAddPlayer(player).run(getClientConnection());
                     }
                 }
                 case ClientBoundPlayerInfoPacket.REMOVE_PLAYER -> {
                     if (player != null) {
                         getClientConnection().getPlayerManager().getPlayers().remove(player);
-                        if (ChatBot.getGui() != null) {
-                            ChatBot.getGui().getPlayerList().removeElement(player.getName());
-                        }
+                        new EventRemovePlayer(player).run(getClientConnection());
                     }
                 }
             }

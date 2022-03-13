@@ -1,7 +1,11 @@
 package me.dustin.chatbot.gui;
 
+import me.dustin.chatbot.event.EventAddPlayer;
+import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
@@ -46,6 +50,16 @@ public class ChatBotGui {
         });
         setLookAndFeel();
     }
+
+    @EventPointer
+    private final EventListener<EventAddPlayer> eventAddPlayerEventListener = new EventListener<>(event -> {
+        getPlayerList().addElement(event.getPlayer().getName());
+    });
+
+    @EventPointer
+    private final EventListener<EventRemovePlayer> eventRemovePlayerEventListener = new EventListener<>(event -> {
+        getPlayerList().removeElement(event.getPlayer().getName());
+    });
 
     public void setLookAndFeel() {
         try {
