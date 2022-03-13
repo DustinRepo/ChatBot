@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.dustin.chatbot.ChatBot;
 
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -20,26 +24,23 @@ public class GeneralHelper {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
     public static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     public static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    public static void print(String s, String color) {
+    public static void print(String s, TextColors color) {
         if (ChatBot.getGui() != null) {
-            ChatBot.getGui().getOutput().append(s + "\n");
-            ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
+            try {
+                StyledDocument document = ChatBot.getGui().getOutput().getStyledDocument();
+                document.insertString(document.getLength(), s + "\n", ChatBot.getConfig().isColorConsole() ? color.getStyle() : null);
+                ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         if (ChatBot.getConfig() != null && ChatBot.getConfig().isColorConsole()) {
-            System.out.println(color + s + ANSI_RESET);
+            System.out.println(color.getAnsi() + s + ANSI_RESET);
         } else {
             System.out.println(s);
         }
@@ -154,5 +155,69 @@ public class GeneralHelper {
         };
     }
 
+    public static void initTextColors(StyledDocument document) {
+        Style black = document.addStyle("black", null);
+        StyleConstants.setForeground(black, Color.BLACK);
+        TextColors.BLACK.setStyle(black);
+
+        Style red = document.addStyle("red", null);
+        StyleConstants.setForeground(red, Color.RED);
+        TextColors.RED.setStyle(red);
+
+        Style green = document.addStyle("green", null);
+        StyleConstants.setForeground(green, Color.GREEN);
+        TextColors.GREEN.setStyle(green);
+
+        Style yellow = document.addStyle("yellow", null);
+        StyleConstants.setForeground(yellow, Color.YELLOW);
+        TextColors.YELLOW.setStyle(yellow);
+
+        Style blue = document.addStyle("blue", null);
+        StyleConstants.setForeground(blue, Color.BLUE);
+        TextColors.BLUE.setStyle(blue);
+
+        Style purple = document.addStyle("purple", null);
+        StyleConstants.setForeground(purple, Color.MAGENTA);
+        TextColors.PURPLE.setStyle(purple);
+
+        Style cyan = document.addStyle("cyan", null);
+        StyleConstants.setForeground(cyan, Color.CYAN);
+        TextColors.CYAN.setStyle(cyan);
+
+        Style white = document.addStyle("white", null);
+        StyleConstants.setForeground(white, Color.WHITE);
+        TextColors.WHITE.setStyle(white);
+    }
+
     public record HttpResponse(String data, int responseCode){}
+
+    public enum TextColors {
+        BLACK("\u001B[30m", null),
+        RED("\u001B[31m", null),
+        GREEN("\u001B[32m", null),
+        YELLOW("\u001B[33m", null),
+        BLUE("\u001B[34m", null),
+        PURPLE("\u001B[35m", null),
+        CYAN("\u001B[36m", null),
+        WHITE("\u001B[37m", null);
+
+        private final String ansi;
+        private Style style;
+        TextColors(String ansi, Style style) {
+            this.ansi = ansi;
+            this.style = style;
+        }
+
+        public String getAnsi() {
+            return ansi;
+        }
+
+        public Style getStyle() {
+            return style;
+        }
+
+        public void setStyle(Style style) {
+            this.style = style;
+        }
+    }
 }

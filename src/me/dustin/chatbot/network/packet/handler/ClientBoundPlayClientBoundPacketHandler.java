@@ -10,7 +10,6 @@ import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.OtherPlayer;
 
-import java.awt.*;
 import java.util.UUID;
 
 public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHandler {
@@ -30,7 +29,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {
-        GeneralHelper.print("Disconnected: " + ChatMessage.of(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.ANSI_RED);
+        GeneralHelper.print("Disconnected: " + ChatMessage.of(clientBoundDisconnectPacket.getReason()).getMessage(), GeneralHelper.TextColors.RED);
         getClientConnection().close();
     }
 
@@ -48,7 +47,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
             String n = chatMessage.getSenderName().contains("<") ? chatMessage.getSenderName() : "<" + chatMessage.getSenderName() + "> ";
             printMessage = n + " " + chatMessage.getBody();
         }
-        GeneralHelper.print(printMessage, GeneralHelper.ANSI_CYAN);
+        GeneralHelper.print(printMessage, GeneralHelper.TextColors.CYAN);
 
         UUID sender = clientBoundChatMessagePacket.getSender();
         if (!getClientConnection().getCommandManager().parse(chatMessage.getBody(), sender) && ChatBot.getConfig().isCrackedLogin()) {

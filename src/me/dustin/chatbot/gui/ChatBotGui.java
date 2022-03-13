@@ -4,9 +4,6 @@ import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 
 import javax.swing.*;
-import javax.swing.text.DefaultCaret;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -14,10 +11,9 @@ public class ChatBotGui {
     private JFrame frame;
     private JPanel panel;
     private JButton sendButton;
-    private JTextArea output;
+    private JTextPane output;
     private JTextField input;
     private JList<String> playerList;
-    private JScrollPane outputScroll;
     private DefaultListModel<String> model;
 
     private ClientConnection clientConnection;
@@ -31,8 +27,6 @@ public class ChatBotGui {
         this.frame.setLocationRelativeTo(null);
         this.frame.add(this.panel);
         this.output.setText("");
-        this.output.setLineWrap(true);
-        this.output.setWrapStyleWord(true);
 
         model = new DefaultListModel<>();
         playerList.setModel(model);
@@ -70,7 +64,7 @@ public class ChatBotGui {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
-    public JTextArea getOutput() {
+    public JTextPane getOutput() {
         return output;
     }
 

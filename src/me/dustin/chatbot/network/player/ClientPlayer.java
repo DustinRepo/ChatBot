@@ -30,7 +30,7 @@ public class ClientPlayer {
     public void tick() {
         if (getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
             if (System.currentTimeMillis() - lastKeepAlive >= ChatBot.getConfig().getKeepAliveCheckTime() * 1000L) {
-                GeneralHelper.print("Time out detected, closing connection.", GeneralHelper.ANSI_PURPLE);
+                GeneralHelper.print("Time out detected, closing connection.", GeneralHelper.TextColors.PURPLE);
                 getClientConnection().close();
                 return;
             }

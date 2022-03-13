@@ -87,7 +87,7 @@ public class ClientConnection {
         this.lastAnnouncement = System.currentTimeMillis();
         this.commandManager.init();
         this.getClientPlayer().updateKeepAlive();
-        GeneralHelper.print("Sending Handshake and LoginStart packets...", GeneralHelper.ANSI_GREEN);
+        GeneralHelper.print("Sending Handshake and LoginStart packets...", GeneralHelper.TextColors.GREEN);
         sendPacket(new ServerBoundHandshakePacket(ChatBot.getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
     }
@@ -157,7 +157,7 @@ public class ClientConnection {
                     //TODO: test this to see if it actually works.
                     //it seems unnecessary currently, doesn't seem most packets go over the threshold
                     /*if (size > this.getCompressionThreshold()) {
-                        GeneralHelper.print("Compressing packet", GeneralHelper.ANSI_PURPLE);
+                        GeneralHelper.print("Compressing packet", GeneralHelper.TextColors.PURPLE);
                         byte[] compressed = new byte[1024];
 
                         Deflater deflater = new Deflater();
