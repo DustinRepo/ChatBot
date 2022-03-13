@@ -63,10 +63,10 @@ public class ChatMessage {
         if (body.toString().startsWith(" ")) {
             body = new StringBuilder(body.substring(1));
         }
-        ChatMessage chatMessage = new ChatMessage(name.toString(), body.toString());
-        if (chatMessage.getMessage().isEmpty())
-            return new ChatMessage("", jsonData);
-        return chatMessage;
+        if (jsonObject.get("text") != null) {
+            body.append(jsonObject.get("text").getAsString());
+        }
+        return new ChatMessage(name.toString(), body.toString());
     }
 
     private static String getExtra(JsonObject jsonObject) {
