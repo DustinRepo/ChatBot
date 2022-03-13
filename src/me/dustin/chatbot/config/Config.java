@@ -22,6 +22,7 @@ public class Config {
     private String loginCommand;
     private String passwordCreateCommand;
 
+    private boolean log;
     private boolean announcements;
     private boolean greenText;
     private boolean colorConsole;
@@ -61,6 +62,7 @@ public class Config {
         loginCommand = parser.readString("loginCommand");
         passwordCreateCommand = parser.readString("passwordCreateCommand");
 
+        log = parser.readBoolean("log");
         colorConsole = parser.readBoolean("consoleColor");
         crackedLogin = parser.readBoolean("crackedLogin");
         announcements = parser.readBoolean("announcements");
@@ -129,6 +131,10 @@ public class Config {
 
     public String getPasswordCreateCommand() {
         return passwordCreateCommand;
+    }
+
+    public boolean isLog() {
+        return log;
     }
 
     public boolean isAnnouncements() {

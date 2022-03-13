@@ -11,39 +11,60 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.*;
 
 public class GeneralHelper {
 
-
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     private static final String ANSI_RESET = "\u001B[0m";
 
     public static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     public static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
+    private static Logger logger;
+
     public static void print(String s, TextColors color) {
+        String timeStampString = getCurrentTimeStamp();
+        timeStampString = String.format("[%s] ", timeStampString);
         if (ChatBot.getGui() != null) {
             try {
                 StyledDocument document = ChatBot.getGui().getOutput().getStyledDocument();
+                document.insertString(document.getLength(), timeStampString, null);
                 document.insertString(document.getLength(), s + "\n", ChatBot.getConfig().isColorConsole() ? color.getStyle() : null);
+
                 ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         if (ChatBot.getConfig() != null && ChatBot.getConfig().isColorConsole()) {
-            System.out.println(color.getAnsi() + s + ANSI_RESET);
+            System.out.println(timeStampString + color.getAnsi() + s + ANSI_RESET);
         } else {
-            System.out.println(s);
+            System.out.println(timeStampString + s);
         }
+        if (logger != null)
+            logger.info(s);
+    }
+
+    public static String getCurrentTimeStamp() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
+        Date now = new Date();
+        return sdfDate.format(now);
+    }
+
+    public static String getCurrentTimeStamp(long ms) {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
+        Date now = new Date(ms);
+        return sdfDate.format(now);
     }
 
     public static String readFile(File file) throws IOException {
@@ -155,7 +176,25 @@ public class GeneralHelper {
         };
     }
 
-    public static void initTextColors(StyledDocument document) {
+    public static void initLogger() {
+        try {
+            logger = Logger.getLogger("ChatBot");
+            File logsFolder = new File(new File("").getAbsolutePath(), "logs");
+            if (!logsFolder.exists())
+                logsFolder.mkdirs();
+            EasyFormatter easyFormatter = new EasyFormatter();
+            FileHandler fileHandler = new FileHandler(new File(logsFolder, getCurrentTimeStamp().substring(0, getCurrentTimeStamp().length() - 1) + ".txt").getAbsolutePath(), true);
+            fileHandler.setFormatter(easyFormatter);
+
+            logger.setUseParentHandlers(false);
+            logger.addHandler(fileHandler);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void initTextColors() {
+        StyledDocument document = ChatBot.getGui().getOutput().getStyledDocument();
         Style black = document.addStyle("black", null);
         StyleConstants.setForeground(black, Color.BLACK);
         TextColors.BLACK.setStyle(black);
@@ -190,6 +229,17 @@ public class GeneralHelper {
     }
 
     public record HttpResponse(String data, int responseCode){}
+
+    static class EasyFormatter extends Formatter {
+
+        @Override
+        public String format(LogRecord record) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(getCurrentTimeStamp(record.getMillis())).append(':');;
+            sb.append(record.getMessage()).append('\n');
+            return sb.toString();
+        }
+    }
 
     public enum TextColors {
         BLACK("\u001B[30m", null),

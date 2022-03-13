@@ -49,7 +49,7 @@ public class ChatBot {
 
         if (!noGui) {
             gui = new ChatBotGui();
-            GeneralHelper.initTextColors(getGui().getOutput().getStyledDocument());
+            GeneralHelper.initTextColors();
         }
 
         int port = 25565;
@@ -85,13 +85,15 @@ public class ChatBot {
         GeneralHelper.print("Connection closed.", GeneralHelper.TextColors.RED);
     }
 
-    private static void connectionLoop(String ip, int port, Session session) throws InterruptedException, IOException {
+    private static void connectionLoop(String ip, int port, Session session) throws InterruptedException {
         try {
             clientConnection = new ClientConnection(ip, port, session);
             if (getGui() != null)
                 getGui().setClientConnection(clientConnection);
             clientConnection.connect();
             timer.reset();
+            if (ChatBot.getConfig().isLog())
+                GeneralHelper.initLogger();
             while (clientConnection.isConnected()) {
                 clientConnection.tick();
                 if (getGui() != null) {
