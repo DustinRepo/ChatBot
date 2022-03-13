@@ -85,8 +85,10 @@ public class GeneralHelper {
                     document.insertString(document.getLength(), s.substring(1), color.getStyle());
                 System.out.print(color.getAnsi() + s + ANSI_RESET);
             }
-            if (document != null)
+            if (document != null) {
                 document.insertString(document.getLength(), "\n", TextColors.WHITE.getStyle());
+                ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
+            }
             System.out.print(ANSI_RESET + "\n");
         } catch (Exception e) {}
     }
