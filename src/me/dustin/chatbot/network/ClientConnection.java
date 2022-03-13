@@ -18,6 +18,7 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
 import me.dustin.chatbot.process.ProcessManager;
+import me.dustin.chatbot.process.impl.AnnouncmentProcess;
 import me.dustin.chatbot.process.impl.AntiAFKProcess;
 import me.dustin.chatbot.process.impl.CrackedLoginProcess;
 import me.dustin.events.EventManager;
@@ -60,9 +61,6 @@ public class ClientConnection {
     private boolean isConnected;
 
     private final ClientPlayer clientPlayer;
-
-    private long lastAnnouncement = -1;
-    private final String[] announcements = new String[]{"Use {PREFIX}help to get a list of my commands", "I can try to grab the server's plugins! use !plugins", "I can get you a player's skin directly from Minecraft! Use !skin <name>", "Use {PREFIX}coinflip to flip a coin", "Use {PREFIX}worstping or {PREFIX}bestping to see who has the lowest/highest ping", "Use {PREFIX}coffee to get a picture of coffee", "Need to report someone? Use {PREFIX}report <name> <reason>", "Use {PREFIX}isEven to see if a number is even!", "Need to see server TPS? {PREFIX}tps", "Want to use this bot program? https://github.com/DustinRepo/ChatBot"};
 
     public ClientConnection(String ip, int port, Session session) throws IOException {
         this.ip = ip;
@@ -116,11 +114,12 @@ public class ClientConnection {
             getProcessManager().addProcess(new AntiAFKProcess(this));
         if (ChatBot.getConfig().isCrackedLogin())
             getProcessManager().addProcess(new CrackedLoginProcess(this));
+        if (ChatBot.getConfig().getAnnouncementDelay() > 0)
+            getProcessManager().addProcess(new AnnouncmentProcess(this));
     }
 
     public void connect() {
         this.isConnected = true;
-        this.lastAnnouncement = System.currentTimeMillis();
         this.commandManager.init();
         this.getClientPlayer().updateKeepAlive();
         GeneralHelper.print("Sending Handshake and LoginStart packets...", GeneralHelper.TextColors.GREEN);
@@ -166,15 +165,6 @@ public class ClientConnection {
     public void tick() {
         getProcessManager().tick();
         getClientPlayer().tick();
-        if (ChatBot.getConfig().getAnnouncementDelay() > 0) {
-            if (System.currentTimeMillis() - lastAnnouncement >= ChatBot.getConfig().getAnnouncementDelay() * 1000L && getNetworkState() == NetworkState.PLAY) {
-                int size = announcements.length;
-                Random random = new Random();
-                int select = random.nextInt(size);
-                sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements[select].replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
-                lastAnnouncement = System.currentTimeMillis();
-            }
-        }
         getClientBoundPacketHandler().listen();
     }
 
