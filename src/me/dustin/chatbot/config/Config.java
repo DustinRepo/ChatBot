@@ -4,11 +4,14 @@ import me.dustin.chatbot.helper.GeneralHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Config {
 
     private final File configFile;
 
+    private ArrayList<String> loginKeywords;
+    private ArrayList<String> passwordKeywords;
     private String proxyString;
     private String proxyUsername;
     private String proxyPassword;
@@ -16,6 +19,8 @@ public class Config {
     private String accountType;
     private String crackedLoginPassword;
     private String locale;
+    private String loginCommand;
+    private String passwordCreateCommand;
 
     private boolean announcements;
     private boolean greenText;
@@ -25,6 +30,7 @@ public class Config {
     private boolean antiAFK;
     private boolean allowServerListing;
     private boolean skinBlink;
+    private boolean passwordCreateUseTwice;
 
     private int protocolVersion;
     private int reconnectDelay;
@@ -43,6 +49,8 @@ public class Config {
 
     public void loadConfig() throws IOException {
         ConfigParser parser = new ConfigParser(GeneralHelper.readFile(configFile));
+        loginKeywords = parser.readStringArray("loginKeywords");
+        passwordKeywords = parser.readStringArray("passwordKeywords");
         proxyString = parser.readString("proxy");
         proxyUsername = parser.readString("proxyUsername");
         proxyPassword = parser.readString("proxyPassword");
@@ -50,6 +58,8 @@ public class Config {
         accountType = parser.readString("accountType");
         crackedLoginPassword = parser.readString("crackedLoginPassword");
         locale = parser.readString("locale");
+        loginCommand = parser.readString("loginCommand");
+        passwordCreateCommand = parser.readString("passwordCreateCommand");
 
         colorConsole = parser.readBoolean("consoleColor");
         crackedLogin = parser.readBoolean("crackedLogin");
@@ -59,6 +69,7 @@ public class Config {
         antiAFK = parser.readBoolean("antiAFK");
         allowServerListing = parser.readBoolean("allowServerListing");
         skinBlink = parser.readBoolean("skinBlink");
+        passwordCreateUseTwice = parser.readBoolean("passwordCreateUseTwice");
 
         protocolVersion = parser.readInt("protocolVersion");
         reconnectDelay = parser.readInt("reconnectDelay");
@@ -74,6 +85,14 @@ public class Config {
 
     public File getConfigFile() {
         return configFile;
+    }
+
+    public ArrayList<String> getLoginKeywords() {
+        return loginKeywords;
+    }
+
+    public ArrayList<String> getPasswordKeywords() {
+        return passwordKeywords;
     }
 
     public String getProxyString() {
@@ -104,6 +123,14 @@ public class Config {
         return locale;
     }
 
+    public String getLoginCommand() {
+        return loginCommand;
+    }
+
+    public String getPasswordCreateCommand() {
+        return passwordCreateCommand;
+    }
+
     public boolean isAnnouncements() {
         return announcements;
     }
@@ -128,12 +155,16 @@ public class Config {
         return antiAFK;
     }
 
+    public boolean isAllowServerListing() {
+        return allowServerListing;
+    }
+
     public boolean isSkinBlink() {
         return skinBlink;
     }
 
-    public boolean isAllowServerListing() {
-        return allowServerListing;
+    public boolean isPasswordCreateUseTwice() {
+        return passwordCreateUseTwice;
     }
 
     public int getProtocolVersion() {
@@ -163,7 +194,6 @@ public class Config {
     public int getSkinBlinkDelay() {
         return skinBlinkDelay;
     }
-
 
     public File getLoginFile() {
         return loginFile;

@@ -22,10 +22,19 @@ public class CrackedLoginProcess extends ChatBotProcess {
     @EventPointer
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
         ChatMessage chatMessage = event.getChatMessagePacket().getMessage();
-        if (chatMessage.getBody().contains("/register")) {
-            getClientConnection().sendPacket(new ServerBoundChatPacket("/register " + ChatBot.getConfig().getCrackedLoginPassword() + " " + ChatBot.getConfig().getCrackedLoginPassword()));
-        } else if (chatMessage.getBody().contains("/login")) {
-            getClientConnection().sendPacket(new ServerBoundChatPacket("/login " + ChatBot.getConfig().getCrackedLoginPassword()));
+        for (String s : ChatBot.getConfig().getLoginKeywords()) {
+            if (chatMessage.getBody().contains(s)) {
+                getClientConnection().sendPacket(new ServerBoundChatPacket(ChatBot.getConfig().getPasswordCreateCommand() + " " + ChatBot.getConfig().getCrackedLoginPassword() + (ChatBot.getConfig().isPasswordCreateUseTwice() ? " " + ChatBot.getConfig().getCrackedLoginPassword() : "")));
+                stop();
+                return;
+            }
+        }
+        for (String s : ChatBot.getConfig().getLoginKeywords()) {
+            if (chatMessage.getBody().contains(s)) {
+                getClientConnection().sendPacket(new ServerBoundChatPacket(ChatBot.getConfig().getLoginCommand() + " " + ChatBot.getConfig().getCrackedLoginPassword()));
+                stop();
+                return;
+            }
         }
     });
 

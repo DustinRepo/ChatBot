@@ -1,7 +1,11 @@
 package me.dustin.chatbot.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ConfigParser {
 
@@ -27,6 +31,19 @@ public class ConfigParser {
 
     public boolean readBoolean(String name) {
         return Boolean.parseBoolean(configMap.get(name));
+    }
+
+    public ArrayList<String> readStringArray(String name) {
+        ArrayList<String> strings = new ArrayList<>();
+        String s = configMap.get(name);
+        Pattern p = Pattern.compile("\"([^\"]*)\"");
+        Matcher m = p.matcher(s);
+        while (m.find()) {
+            strings.add(m.group(1));
+            s = s.replace("\"" + m.group(1) + "\"", "");
+        }
+        strings.addAll(Arrays.stream(s.split(" ")).toList());
+        return strings;
     }
 
 }
