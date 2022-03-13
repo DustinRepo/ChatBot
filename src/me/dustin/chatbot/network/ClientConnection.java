@@ -11,14 +11,13 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundLoginStartPacket;
 import me.dustin.chatbot.network.crypt.PacketCrypt;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
 import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
 import me.dustin.chatbot.process.ProcessManager;
-import me.dustin.chatbot.process.impl.AnnouncmentProcess;
+import me.dustin.chatbot.process.impl.AnnouncementProcess;
 import me.dustin.chatbot.process.impl.AntiAFKProcess;
 import me.dustin.chatbot.process.impl.CrackedLoginProcess;
 import me.dustin.chatbot.process.impl.SkinBlinkProcess;
@@ -36,7 +35,6 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 public class ClientConnection {
@@ -116,7 +114,7 @@ public class ClientConnection {
         if (ChatBot.getConfig().isCrackedLogin())
             getProcessManager().addProcess(new CrackedLoginProcess(this));
         if (ChatBot.getConfig().isAnnouncements())
-            getProcessManager().addProcess(new AnnouncmentProcess(this));
+            getProcessManager().addProcess(new AnnouncementProcess(this));
         if (ChatBot.getConfig().isSkinBlink())
         getProcessManager().addProcess(new SkinBlinkProcess(this));
     }

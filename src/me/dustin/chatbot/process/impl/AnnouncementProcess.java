@@ -8,9 +8,9 @@ import me.dustin.chatbot.process.ChatBotProcess;
 
 import java.util.Random;
 
-public class AnnouncmentProcess extends ChatBotProcess {
+public class AnnouncementProcess extends ChatBotProcess {
     private final Timer timer = new Timer();
-    public AnnouncmentProcess(ClientConnection clientConnection) {
+    public AnnouncementProcess(ClientConnection clientConnection) {
         super(clientConnection);
     }
     private final String[] announcements = new String[]{
