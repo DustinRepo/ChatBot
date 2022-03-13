@@ -3,6 +3,7 @@ package me.dustin.chatbot.command;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.ClassHelper;
+import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.Timer;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
@@ -46,7 +47,7 @@ public class CommandManager {
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
         ClientBoundChatMessagePacket clientBoundChatMessagePacket = event.getChatMessagePacket();
         UUID sender = clientBoundChatMessagePacket.getSender();
-        String string = event.getChatMessagePacket().getMessage().getBody();
+        String string = GeneralHelper.strip(event.getChatMessagePacket().getMessage().getBody());
         String[] sA = string.split(" ");
         if (sA.length > 2 && sA[1].equalsIgnoreCase("whispers:")) {
             string = string.substring(sA[0].length() + sA[1].length() + 2);

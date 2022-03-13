@@ -1,6 +1,8 @@
 # Chat Bot
 An external chat bot for Minecraft made in Java.
 
+![](screenshot.png)
+
 ## Features
 ```
 Auto-Reconnect: Automatically reconnect to the server if you get disconnected

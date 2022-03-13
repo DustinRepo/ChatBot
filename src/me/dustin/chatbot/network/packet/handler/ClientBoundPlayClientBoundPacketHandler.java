@@ -48,12 +48,11 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         new EventReceiveChatMessage(clientBoundChatMessagePacket).run(getClientConnection());
 
         ChatMessage chatMessage = clientBoundChatMessagePacket.getMessage();
-        String printMessage = chatMessage.getMessage();
         if (clientBoundChatMessagePacket.getType() == ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT && !chatMessage.getSenderName().isEmpty()) {
             String n = chatMessage.getSenderName().contains("<") ? chatMessage.getSenderName() : "<" + chatMessage.getSenderName() + "> ";
-            printMessage = n + " " + chatMessage.getBody();
+            chatMessage = new ChatMessage(n, chatMessage.getBody());
         }
-        GeneralHelper.print(printMessage, GeneralHelper.TextColors.CYAN);
+        GeneralHelper.printChat(chatMessage);
     }
 
     public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {

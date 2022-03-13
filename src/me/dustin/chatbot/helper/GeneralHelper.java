@@ -3,6 +3,7 @@ package me.dustin.chatbot.helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.chat.ChatMessage;
 
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -18,14 +19,17 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
+import java.util.regex.Pattern;
 
 public class GeneralHelper {
 
 
     private static final String ANSI_RESET = "\u001B[0m";
+    private static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)\u00a7[0-9A-FK-OR]");
 
     public static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     public static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -49,10 +53,46 @@ public class GeneralHelper {
         if (ChatBot.getConfig() != null && ChatBot.getConfig().isColorConsole()) {
             System.out.println(timeStampString + color.getAnsi() + s + ANSI_RESET);
         } else {
-            System.out.println(timeStampString + s);
+            System.out.println(timeStampString + strip(s));
         }
         if (logger != null)
             logger.info(s);
+    }
+
+    public static void printChat(ChatMessage chatMessage) {
+        String m = chatMessage.getMessage();
+        if (!m.contains("§") || !ChatBot.getConfig().isColorConsole()) {
+            print(m, TextColors.WHITE);
+            return;
+        }
+        printColorText(chatMessage.getMessage());
+        logger.info(chatMessage.getMessage());
+    }
+
+    private static void printColorText(String text) {
+        TextColors color = TextColors.WHITE;
+        StyledDocument document = ChatBot.getGui() != null ? ChatBot.getGui().getOutput().getStyledDocument() : null;
+        String timeStampString = String.format("[%s] ", getCurrentTimeStamp());
+        try {
+            if (document != null)
+                document.insertString(document.getLength(), timeStampString, color.getStyle());
+            System.out.print(ANSI_RESET + timeStampString);
+            for (String s : text.split("§")) {
+                if (s.length() == 0)
+                    continue;
+                color = convertMCColor(s.charAt(0));
+                if (document != null)
+                    document.insertString(document.getLength(), s.substring(1), color.getStyle());
+                System.out.print(color.getAnsi() + s + ANSI_RESET);
+            }
+            if (document != null)
+                document.insertString(document.getLength(), "\n", TextColors.WHITE.getStyle());
+            System.out.print(ANSI_RESET + "\n");
+        } catch (Exception e) {}
+    }
+
+    public static String strip(String string) {
+        return string == null ? null : FORMATTING_CODE_PATTERN.matcher(string).replaceAll("");
     }
 
     public static String getCurrentTimeStamp() {
@@ -223,9 +263,24 @@ public class GeneralHelper {
         StyleConstants.setForeground(cyan, Color.CYAN);
         TextColors.CYAN.setStyle(cyan);
 
-        Style white = document.addStyle("white", null);
-        StyleConstants.setForeground(white, Color.WHITE);
-        TextColors.WHITE.setStyle(white);
+        Style gray = document.addStyle("gray", null);
+        StyleConstants.setForeground(gray, Color.GRAY);
+        TextColors.GRAY.setStyle(gray);
+    }
+
+    public static TextColors convertMCColor(char color) {
+        switch (color) {
+            case '4', 'c' -> { return TextColors.RED; }
+            case '6', 'e' -> { return TextColors.YELLOW; }
+            case '2', 'a' -> { return TextColors.GREEN; }
+            case 'b', '3' -> { return TextColors.CYAN; }
+            case '1', '9' -> { return TextColors.BLUE; }
+            case 'd', '5' -> { return TextColors.PURPLE; }
+            case 'f' -> { return TextColors.WHITE; }
+            case '7' -> { return TextColors.GRAY; }
+            case '8', '0' -> { return TextColors.BLACK; }
+        }
+        return TextColors.WHITE;
     }
 
     public record HttpResponse(String data, int responseCode){}
@@ -242,14 +297,15 @@ public class GeneralHelper {
     }
 
     public enum TextColors {
-        BLACK("\u001B[30m", null),
         RED("\u001B[31m", null),
+        BLACK("\u001B[30m", null),
         GREEN("\u001B[32m", null),
         YELLOW("\u001B[33m", null),
         BLUE("\u001B[34m", null),
         PURPLE("\u001B[35m", null),
         CYAN("\u001B[36m", null),
-        WHITE("\u001B[37m", null);
+        WHITE(ANSI_RESET, null),
+        GRAY("\u001B[37m", null);
 
         private final String ansi;
         private Style style;

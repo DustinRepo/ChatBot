@@ -31,13 +31,15 @@ public class ChatMessage {
     public static ChatMessage of(String jsonData) {
         StringBuilder name = new StringBuilder();
         StringBuilder body = new StringBuilder();
-
         JsonObject jsonObject = GeneralHelper.gson.fromJson(jsonData, JsonObject.class);
         JsonArray with = jsonObject.getAsJsonArray("with");
         if (with != null) {
             for (int i = 0; i < with.size(); i++) {
                 try {
                     JsonObject object = with.get(i).getAsJsonObject();
+                    if (object.get("color") != null) {
+                        name.append("§").append(colorChar(object.get("color").getAsString()));
+                    }
                     String text = object.get("text").getAsString();
                     name.append(text);
                 } catch (Exception e) {
@@ -74,6 +76,9 @@ public class ChatMessage {
             for (int i = 0; i < extra.size(); i++) {
                 try {
                     JsonObject object = extra.get(i).getAsJsonObject();
+                    if (object.get("color") != null) {
+                        s.append("§").append(colorChar(object.get("color").getAsString()));
+                    }
                     String text = object.get("text").getAsString();
                     s.append(text);
 
@@ -85,5 +90,27 @@ public class ChatMessage {
             }
         }
         return s.toString();
+    }
+
+    private static char colorChar(String name) {
+        switch (name.toLowerCase()) {
+            case "dark_red" -> { return '4'; }
+            case "red" -> { return 'c'; }
+            case "gold" -> { return '6'; }
+            case "yellow" -> { return 'e'; }
+            case "dark_green)" -> { return '2'; }
+            case "green" -> { return 'a'; }
+            case "aqua" -> { return 'b'; }
+            case "dark_aqua" -> { return '3'; }
+            case "dark_blue" -> { return '1'; }
+            case "blue" -> { return '9'; }
+            case "light_purple" -> { return 'd'; }
+            case "dark_purple" -> { return '5'; }
+            case "white" -> { return 'f'; }
+            case "gray" -> { return '7'; }
+            case "dark_gray" -> { return '8'; }
+            case "black" -> { return '0'; }
+        }
+        return 'f';
     }
 }
