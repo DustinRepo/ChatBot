@@ -43,21 +43,21 @@ public class ServerBoundClientSettingsPacket extends Packet {
 
     public enum SkinPart {
         CAPE(0), JACKET(1), LEFT_SLEEVE(2), RIGHT_SLEEVE(3), LEFT_PANTS(4), RIGHT_PANTS(5), HAT(6);
-        private final int value;
-        SkinPart(int value) {
-            this.value = 1 << value;
+        private final int bitFlag;
+        SkinPart(int bitFlag) {
+            this.bitFlag = 1 << bitFlag;
         }
 
         public static int all() {
             int all = 0;
             for (SkinPart playerModelPart : SkinPart.values()) {
-                all |= playerModelPart.getValue();
+                all |= playerModelPart.getBitFlag();
             }
             return all;
         }
 
-        public int getValue() {
-            return value;
+        public int getBitFlag() {
+            return bitFlag;
         }
     }
 }

@@ -24,20 +24,10 @@ public class SkinBlinkProcess extends ChatBotProcess {
         if (timer.hasPassed(ChatBot.getConfig().getSkinBlinkDelay())) {
             Random random = new Random();
             int enabledSkinParts = 0;
-            if (random.nextBoolean())
-                enabledSkinParts |= ServerBoundClientSettingsPacket.SkinPart.CAPE.getValue();
-            if (random.nextBoolean())
-                enabledSkinParts |= ServerBoundClientSettingsPacket.SkinPart.HAT.getValue();
-            if (random.nextBoolean())
-                enabledSkinParts |= ServerBoundClientSettingsPacket.SkinPart.JACKET.getValue();
-            if (random.nextBoolean())
-                enabledSkinParts |= ServerBoundClientSettingsPacket.SkinPart.LEFT_SLEEVE.getValue();
-            if (random.nextBoolean())
-                enabledSkinParts |= ServerBoundClientSettingsPacket.SkinPart.RIGHT_SLEEVE.getValue();
-            if (random.nextBoolean())
-                enabledSkinParts |= ServerBoundClientSettingsPacket.SkinPart.LEFT_PANTS.getValue();
-            if (random.nextBoolean())
-                enabledSkinParts |= ServerBoundClientSettingsPacket.SkinPart.RIGHT_PANTS.getValue();
+            for (ServerBoundClientSettingsPacket.SkinPart part : ServerBoundClientSettingsPacket.SkinPart.values()) {
+                if (random.nextBoolean())
+                    enabledSkinParts |= part.getBitFlag();
+            }
             getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), enabledSkinParts));
             timer.reset();
         }
