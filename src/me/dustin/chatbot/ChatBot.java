@@ -18,6 +18,7 @@ public class ChatBot {
     private static ClientConnection clientConnection;
     private static ChatBotGui gui;
     private static final StopWatch stopWatch = new StopWatch();
+    private static final StopWatch threadCheckStopWatch = new StopWatch();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();
@@ -80,11 +81,26 @@ public class ChatBot {
         }
         GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, GeneralHelper.TextColors.GREEN);
 
-        connectionLoop(ip, port, session);
-
+        startThread(ip, port, session);
         if (clientConnection != null)
             clientConnection.getProcessManager().stopAll();
         GeneralHelper.print("Connection closed.", GeneralHelper.TextColors.RED);
+    }
+
+    public static void startThread(String ip, int port, Session session) {
+        new Thread(() -> {
+            try {
+                connectionLoop(ip, port, session);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        threadCheckStopWatch.reset();
+        while(threadCheckStopWatch.getPassed() < 10000) {//10 seconds
+            threadCheckStopWatch.update();
+        }
+        GeneralHelper.print("Thread has stopped responding. Killing and restarting", GeneralHelper.TextColors.RED);
+        startThread(ip, port, session);
     }
 
     private static void connectionLoop(String ip, int port, Session session) throws InterruptedException {
@@ -100,6 +116,7 @@ public class ChatBot {
             clientConnection.connect();
             stopWatch.reset();
             while (clientConnection.isConnected()) {
+                threadCheckStopWatch.reset();
                 clientConnection.tick();
                 if (getGui() != null) {
                     getGui().getFrame().setTitle("ChatBot - Connected for: " + GeneralHelper.getDurationString(connectionTime()));

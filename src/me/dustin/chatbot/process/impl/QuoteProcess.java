@@ -37,7 +37,7 @@ public class QuoteProcess extends ChatBotProcess {
 
     @EventPointer
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
-        if (event.getChatMessagePacket().getType() != ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT || event.getChatMessagePacket().getSender() == null)
+        if (event.getChatMessagePacket().getSender() == null)
             return;
         String uuid = event.getChatMessagePacket().getSender().toString().replace("-", "");
         if (GeneralHelper.matchUUIDs(uuid, getClientConnection().getSession().getUuid()))

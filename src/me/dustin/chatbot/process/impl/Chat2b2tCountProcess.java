@@ -37,7 +37,7 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
     @EventPointer
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
         ClientBoundChatMessagePacket packet = event.getChatMessagePacket();
-        if (packet.getType() != ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT || packet.getSender() == null)
+        if (packet.getSender() == null)
             return;
         String m = GeneralHelper.strip(packet.getMessage().getBody());
         if (handleCommand(m)) {
