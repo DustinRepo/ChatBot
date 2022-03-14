@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.MCAPIHelper;
-import me.dustin.chatbot.helper.Timer;
+import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
 import me.dustin.chatbot.process.ChatBotProcess;
@@ -18,7 +18,7 @@ import java.util.*;
 
 public class QuoteProcess extends ChatBotProcess {
     private final File file;
-    private final Timer saveFileTimer = new Timer();
+    private final StopWatch saveFileStopWatch = new StopWatch();
     public Map<String, ArrayList<String>> quotes = new HashMap<>();
     public QuoteProcess(ClientConnection clientConnection) {
         super(clientConnection);
@@ -94,9 +94,9 @@ public class QuoteProcess extends ChatBotProcess {
 
     @Override
     public void tick() {
-        if (saveFileTimer.hasPassed(30 * 1000L)) {
+        if (saveFileStopWatch.hasPassed(30 * 1000L)) {
             saveFile();
-            saveFileTimer.reset();
+            saveFileStopWatch.reset();
         }
     }
 

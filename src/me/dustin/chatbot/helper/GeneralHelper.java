@@ -65,7 +65,8 @@ public class GeneralHelper {
             return;
         }
         printColorText(chatMessage.getMessage());
-        logger.info(chatMessage.getMessage());
+        if (logger != null)
+            logger.info(chatMessage.getMessage());
     }
 
     private static void printColorText(String text) {

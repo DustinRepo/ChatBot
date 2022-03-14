@@ -1,8 +1,7 @@
 package me.dustin.chatbot.process.impl;
 
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.config.Config;
-import me.dustin.chatbot.helper.Timer;
+import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.chatbot.process.ChatBotProcess;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class AnnouncementProcess extends ChatBotProcess {
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
     private final ArrayList<String> announcements = new ArrayList<>();
     public AnnouncementProcess(ClientConnection clientConnection) {
         super(clientConnection);
@@ -33,17 +32,17 @@ public class AnnouncementProcess extends ChatBotProcess {
 
     @Override
     public void init() {
-        timer.reset();
+        stopWatch.reset();
     }
 
     @Override
     public void tick() {
-        if (timer.hasPassed(ChatBot.getConfig().getAnnouncementDelay() * 1000L) && getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
+        if (stopWatch.hasPassed(ChatBot.getConfig().getAnnouncementDelay() * 1000L) && getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
             int size = announcements.size();
             Random random = new Random();
             int select = random.nextInt(size);
             getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements.get(select).replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
-            timer.reset();
+            stopWatch.reset();
         }
     }
 

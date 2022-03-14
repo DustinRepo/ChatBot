@@ -5,7 +5,7 @@ import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.config.Config;
 import me.dustin.chatbot.gui.ChatBotGui;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.helper.Timer;
+import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 
 import javax.swing.*;
@@ -17,7 +17,7 @@ public class ChatBot {
     private static Config config;
     private static ClientConnection clientConnection;
     private static ChatBotGui gui;
-    private static Timer timer = new Timer();
+    private static StopWatch stopWatch = new StopWatch();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();
@@ -89,6 +89,8 @@ public class ChatBot {
 
     private static void connectionLoop(String ip, int port, Session session) throws InterruptedException {
         try {
+            if (ChatBot.getConfig().isLog())
+                GeneralHelper.initLogger();
             if (clientConnection != null)
                 clientConnection.getProcessManager().stopAll();
 
@@ -96,9 +98,7 @@ public class ChatBot {
             if (getGui() != null)
                 getGui().setClientConnection(clientConnection);
             clientConnection.connect();
-            timer.reset();
-            if (ChatBot.getConfig().isLog())
-                GeneralHelper.initLogger();
+            stopWatch.reset();
             while (clientConnection.isConnected()) {
                 clientConnection.tick();
                 if (getGui() != null) {
@@ -110,14 +110,14 @@ public class ChatBot {
         }
         if (getConfig().isReconnect()) {
             GeneralHelper.print("Client disconnected, reconnecting in " + getConfig().getReconnectDelay() + " seconds...", GeneralHelper.TextColors.PURPLE);
-            timer.reset();
+            stopWatch.reset();
             Thread.sleep(getConfig().getReconnectDelay() * 1000L);
             connectionLoop(ip, port, session);
         }
     }
 
     public static long connectionTime() {
-        return timer.getPassed();
+        return stopWatch.getPassed();
     }
 
     public static ChatBotGui getGui() {

@@ -2,25 +2,22 @@ package me.dustin.chatbot.process.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.MCAPIHelper;
-import me.dustin.chatbot.helper.Timer;
+import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
 import me.dustin.chatbot.process.ChatBotProcess;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class Chat2b2tCountProcess extends ChatBotProcess {
     private final File file;
-    private final Timer saveFileTimer = new Timer();
+    private final StopWatch saveFileStopWatch = new StopWatch();
 
     private final Map<String, Integer> counts = new HashMap<>();
     public Chat2b2tCountProcess(ClientConnection clientConnection) {
@@ -95,9 +92,9 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
 
     @Override
     public void tick() {
-        if (saveFileTimer.hasPassed(30 * 1000L)) {
+        if (saveFileStopWatch.hasPassed(30 * 1000L)) {
             saveFile();
-            saveFileTimer.reset();
+            saveFileStopWatch.reset();
         }
     }
 

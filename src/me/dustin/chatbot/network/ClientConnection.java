@@ -76,9 +76,7 @@ public class ClientConnection {
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
         this.session = session;
-        this.clientPlayer = new ClientPlayer(session.getUsername(), UUID.fromString(session.getUuid().replaceFirst(
-                "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
-        )), this);
+        this.clientPlayer = new ClientPlayer(session.getUsername(), GeneralHelper.uuidFromStringNoDashes(session.getUuid()), this);
         this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler(this);
         this.commandManager = new CommandManager(this);
         this.processManager = new ProcessManager(this);

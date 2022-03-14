@@ -4,11 +4,9 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.ClassHelper;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.helper.Timer;
+import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
-import me.dustin.chatbot.network.player.OtherPlayer;
-import me.dustin.chatbot.network.player.PlayerManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
@@ -20,7 +18,7 @@ public class CommandManager {
 
     private final ArrayList<Command> commands = new ArrayList<>();
     private final ClientConnection clientConnection;
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     public CommandManager(ClientConnection clientConnection) {
         this.clientConnection = clientConnection;
@@ -58,7 +56,7 @@ public class CommandManager {
         if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) ||  GeneralHelper.matchUUIDs(sender.toString(), getClientConnection().getSession().getUuid())) {
             return;
         }
-        if (!timer.hasPassed(ChatBot.getConfig().getMessageDelay())) {
+        if (!stopWatch.hasPassed(ChatBot.getConfig().getMessageDelay())) {
             return;
         }
         try {
@@ -73,7 +71,7 @@ public class CommandManager {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
                     try {
                         command.run(input, sender);
-                        timer.reset();
+                        stopWatch.reset();
                         return;
                     } catch (Exception e) {
                         e.printStackTrace();
