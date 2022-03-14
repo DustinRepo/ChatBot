@@ -29,7 +29,7 @@ public class Chat2b2tProcess extends ChatBotProcess {
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
         if (event.getChatMessagePacket().getType() != ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT || event.isCancelled())
             return;
-        String body = event.getChatMessagePacket().getMessage().getBody().toLowerCase();
+        String body = GeneralHelper.strip(event.getChatMessagePacket().getMessage().getBody().toLowerCase());
        if (timer.hasPassed(ChatBot.getConfig().getMessageDelay()) && (body.contains("2b2t") || body.contains("2b") || body.contains("2builders2tools") || body.contains("2 builders 2 tools") || body.contains("oldest anarchy server in minecraft")) && !GeneralHelper.matchUUIDs(event.getChatMessagePacket().getSender().toString(), getClientConnection().getSession().getUuid())) {
            getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + "Congrats. We only made it " + chatCount + " messages before someone mentioned 2b2t."));
            chatCount = 0;

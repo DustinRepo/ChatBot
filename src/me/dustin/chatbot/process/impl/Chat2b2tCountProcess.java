@@ -42,7 +42,7 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
         ClientBoundChatMessagePacket packet = event.getChatMessagePacket();
         if (packet.getType() != ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT || packet.getSender() == null)
             return;
-        String m = packet.getMessage().getBody();
+        String m = GeneralHelper.strip(packet.getMessage().getBody());
         if (handleCommand(m)) {
             event.cancel();
             return;

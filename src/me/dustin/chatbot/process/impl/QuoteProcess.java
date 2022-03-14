@@ -42,7 +42,7 @@ public class QuoteProcess extends ChatBotProcess {
         String uuid = event.getChatMessagePacket().getSender().toString().replace("-", "");
         if (GeneralHelper.matchUUIDs(uuid, getClientConnection().getSession().getUuid()))
             return;
-        String body = event.getChatMessagePacket().getMessage().getBody();
+        String body = GeneralHelper.strip(event.getChatMessagePacket().getMessage().getBody());
         handleCommand(body);
         if (quotes.containsKey(uuid))
             quotes.get(uuid).add(body);
