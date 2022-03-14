@@ -23,6 +23,6 @@ public class CommandReport extends Command {
             return;
         }
 
-        sendChat(name + " has been reported" + (reason.equalsIgnoreCase(name) ? "" : "for: " + reason) + ". Administrators will handle them shortly.");
+        sendChat(name + " has been reported" + (reason.equalsIgnoreCase(name) ? "" : " for: " + reason) + ". Administrators will handle them shortly.");
     }
 }
