@@ -36,7 +36,7 @@ public class ServerBoundClientSettingsPacket extends Packet {
         writeVarInt(packet, 1);//main hand - 0 = left 1 = right
         if (ChatBot.getConfig().getProtocolVersion() > 340)
             packet.writeBoolean(false);//text filtering
-        if (ChatBot.getConfig().getProtocolVersion() > 757)//1.18, I *think* the version this was added
+        if (ChatBot.getConfig().getProtocolVersion() >= 757)//1.18, I *think* the version this was added
             packet.writeBoolean(allowServerListings);
 
         writeVarInt(out, baos.toByteArray().length);
