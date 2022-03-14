@@ -53,8 +53,6 @@ public class ChatMessage {
             String translate = jsonObject.get("translate").getAsString();
             if (!translate.equalsIgnoreCase("chat.type.text"))
                 body.append(" ").append(translate);
-            else
-                name = new StringBuilder("<").append(name).append(">");
         }
         body.append(getExtra(jsonObject));
         if (body.toString().startsWith("<") && body.toString().contains("> ") && name.toString().isEmpty()) {//crude way to move player name to actual name field if the text is set up weird

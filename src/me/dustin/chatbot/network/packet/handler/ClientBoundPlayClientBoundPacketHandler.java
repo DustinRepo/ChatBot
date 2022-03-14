@@ -57,13 +57,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
 
     public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
         new EventReceiveChatMessage(clientBoundChatMessagePacket).run(getClientConnection());
-
-        ChatMessage chatMessage = clientBoundChatMessagePacket.getMessage();
-        if (clientBoundChatMessagePacket.getType() == ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT && !chatMessage.getSenderName().isEmpty()) {
-            String n = chatMessage.getSenderName().contains("<") ? chatMessage.getSenderName() : "<" + chatMessage.getSenderName() + "> ";
-            chatMessage = new ChatMessage(n, chatMessage.getBody());
-        }
-        GeneralHelper.printChat(chatMessage);
+        GeneralHelper.printChat(clientBoundChatMessagePacket.getMessage());
     }
 
     public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {

@@ -96,7 +96,7 @@ public class ChatBot {
             }
         }).start();
         threadCheckStopWatch.reset();
-        while(threadCheckStopWatch.getPassed() < 10000) {//10 seconds
+        while(threadCheckStopWatch.getPassed() < getConfig().getKeepAliveCheckTime()) {
             threadCheckStopWatch.update();
         }
         GeneralHelper.print("Thread has stopped responding. Killing and restarting", GeneralHelper.TextColors.RED);
@@ -119,7 +119,7 @@ public class ChatBot {
                 threadCheckStopWatch.reset();
                 clientConnection.tick();
                 if (getGui() != null) {
-                    getGui().getFrame().setTitle("ChatBot - Connected for: " + GeneralHelper.getDurationString(connectionTime()));
+                    getGui().getFrame().setTitle("ChatBot - Connected to: " + ip + ":" + port + " for: " + GeneralHelper.getDurationString(connectionTime()));
                 }
             }
         } catch (Exception e) {
