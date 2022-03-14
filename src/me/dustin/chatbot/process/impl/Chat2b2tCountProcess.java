@@ -51,6 +51,8 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
         if (GeneralHelper.matchUUIDs(uuid, getClientConnection().getSession().getUuid()))
             return;
         int matches = GeneralHelper.countMatches(m.toLowerCase(), "2b2t") + GeneralHelper.countMatches(m.toLowerCase(), "2builders2tools") + GeneralHelper.countMatches(m.toLowerCase(), "oldest anarchy server in minecraft");
+        if (matches == 0)
+            matches = GeneralHelper.countMatches(m.toLowerCase(), "2b");
         if (matches > 0) {
             if (counts.containsKey(uuid)) {
                 counts.replace(uuid, counts.get(uuid) + matches);
