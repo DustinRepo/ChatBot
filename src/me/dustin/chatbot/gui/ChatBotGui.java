@@ -51,7 +51,8 @@ public class ChatBotGui {
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                clientConnection.getProcessManager().stopAll();
+                if (clientConnection != null)
+                    clientConnection.getProcessManager().stopAll();
                 System.exit(0);
             }
         });
