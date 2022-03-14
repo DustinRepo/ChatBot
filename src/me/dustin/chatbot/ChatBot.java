@@ -17,7 +17,7 @@ public class ChatBot {
     private static Config config;
     private static ClientConnection clientConnection;
     private static ChatBotGui gui;
-    private static StopWatch stopWatch = new StopWatch();
+    private static final StopWatch stopWatch = new StopWatch();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();

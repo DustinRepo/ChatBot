@@ -2,6 +2,7 @@ package me.dustin.chatbot.network.packet.c2s.play;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.packet.Packet;
 
 import java.io.ByteArrayOutputStream;
@@ -24,7 +25,7 @@ public class ServerBoundTabCompletePacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
 
-        writeVarInt(packet, 0x06);//packet id
+        writeVarInt(packet, ChatBot.getConfig().getProtocolVersion() == 340 ? 0x01 : 0x06);//packet id
         writeVarInt(packet, transactionId);
         writeString(packet, cmd);
 

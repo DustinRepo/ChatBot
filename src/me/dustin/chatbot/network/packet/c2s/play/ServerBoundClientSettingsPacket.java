@@ -2,6 +2,7 @@ package me.dustin.chatbot.network.packet.c2s.play;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.packet.Packet;
 
 import java.io.ByteArrayOutputStream;
@@ -26,15 +27,17 @@ public class ServerBoundClientSettingsPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
 
-        writeVarInt(packet, 0x05);//packet id
+        writeVarInt(packet, ChatBot.getConfig().getProtocolVersion() == 340 ? 0x04 : 0x05);//packet id
         writeString(packet, locale);
         packet.writeByte(8);//render distance
         writeVarInt(packet, 0);//chat mode. 0 = enabled
         packet.writeBoolean(true);//chat colors
         packet.writeByte(enabledSkinParts);
         writeVarInt(packet, 1);//main hand - 0 = left 1 = right
-        packet.writeBoolean(false);//text filtering
-        packet.writeBoolean(allowServerListings);
+        if (ChatBot.getConfig().getProtocolVersion() > 340)
+            packet.writeBoolean(false);//text filtering
+        if (ChatBot.getConfig().getProtocolVersion() > 757)//1.18, I *think* the version this was added
+            packet.writeBoolean(allowServerListings);
 
         writeVarInt(out, baos.toByteArray().length);
         out.write(baos.toByteArray());

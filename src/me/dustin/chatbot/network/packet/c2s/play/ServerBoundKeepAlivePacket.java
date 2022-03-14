@@ -2,6 +2,7 @@ package me.dustin.chatbot.network.packet.c2s.play;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.packet.Packet;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class ServerBoundKeepAlivePacket extends Packet {
     public ByteArrayDataOutput createPacket() throws IOException {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeByte(0x09);
-        out.writeByte(0x0F);
+        out.writeByte(ChatBot.getConfig().getProtocolVersion() == 340 ? 0xB : 0x0F);
         out.writeLong(id);
         return out;
     }

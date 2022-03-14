@@ -22,14 +22,25 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         super(clientConnection);
         getPacketMap().put(0x0F, ClientBoundChatMessagePacket.class);
         getPacketMap().put(0x1A, ClientBoundDisconnectPlayPacket.class);
-        getPacketMap().put(0x21, ClientBoundKeepAlivePacket.class);
-        getPacketMap().put(0x35, ClientBoundPlayerDeadPacket.class);
-        getPacketMap().put(0x36, ClientBoundPlayerInfoPacket.class);
-        getPacketMap().put(0x38, ClientBoundPlayerPositionAndLookPacket.class);
-        getPacketMap().put(0x3C, ClientBoundResourcePackSendPacket.class);
-        getPacketMap().put(0x11, ClientBoundTabCompletePacket.class);
-        getPacketMap().put(0x52, ClientBoundUpdateHealthPacket.class);
-        getPacketMap().put(0x59, ClientBoundWorldTimePacket.class);
+        if (ChatBot.getConfig().getProtocolVersion() == 340) {//1.12 packet ids
+            getPacketMap().put(0x1F, ClientBoundKeepAlivePacket.class);
+            getPacketMap().put(0x2D, ClientBoundPlayerDeadPacket.class);
+            getPacketMap().put(0x2E, ClientBoundPlayerInfoPacket.class);
+            getPacketMap().put(0x2F, ClientBoundPlayerPositionAndLookPacket.class);
+            getPacketMap().put(0x34, ClientBoundResourcePackSendPacket.class);
+            getPacketMap().put(0xe, ClientBoundTabCompletePacket.class);
+            getPacketMap().put(0x41, ClientBoundUpdateHealthPacket.class);
+            getPacketMap().put(0x47, ClientBoundWorldTimePacket.class);
+        } else {
+            getPacketMap().put(0x21, ClientBoundKeepAlivePacket.class);
+            getPacketMap().put(0x35, ClientBoundPlayerDeadPacket.class);
+            getPacketMap().put(0x36, ClientBoundPlayerInfoPacket.class);
+            getPacketMap().put(0x38, ClientBoundPlayerPositionAndLookPacket.class);
+            getPacketMap().put(0x3C, ClientBoundResourcePackSendPacket.class);
+            getPacketMap().put(0x11, ClientBoundTabCompletePacket.class);
+            getPacketMap().put(0x52, ClientBoundUpdateHealthPacket.class);
+            getPacketMap().put(0x59, ClientBoundWorldTimePacket.class);
+        }
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {

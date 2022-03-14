@@ -1,5 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
@@ -23,6 +24,13 @@ public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
     @Override
     public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
         DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+        if (ChatBot.getConfig().getProtocolVersion() == 340) {//1.12
+            int size = readVarInt(dataInputStream);
+            for (int i = 0; i < size - 1; i++) {
+                matches.add(new TabCompleteMatch(readString(dataInputStream), false, ""));
+            }
+            return;
+        }
         id = readVarInt(dataInputStream);
         start = readVarInt(dataInputStream);
         length = readVarInt(dataInputStream);

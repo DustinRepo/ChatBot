@@ -1,5 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
@@ -25,10 +26,12 @@ public class ClientBoundResourcePackSendPacket extends Packet.ClientBoundPacket 
         DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
         url = readString(dataInputStream);
         hash = readString(dataInputStream);
-        forced = dataInputStream.readBoolean();
-        hasPrompt = dataInputStream.readBoolean();
-        if (hasPrompt) {
-            prompt = readString(dataInputStream);
+        if (ChatBot.getConfig().getProtocolVersion() > 340) {
+            forced = dataInputStream.readBoolean();
+            hasPrompt = dataInputStream.readBoolean();
+            if (hasPrompt) {
+                prompt = readString(dataInputStream);
+            }
         }
         super.createPacket(byteArrayInputStream);
     }

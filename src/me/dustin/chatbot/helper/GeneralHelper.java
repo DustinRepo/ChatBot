@@ -81,9 +81,12 @@ public class GeneralHelper {
                 if (s.length() == 0)
                     continue;
                 color = convertMCColor(s.charAt(0));
+                String s1 = color == null ? s : s.substring(1);
+                if (color == null)
+                    color = TextColors.WHITE;
                 if (document != null)
-                    document.insertString(document.getLength(), s.substring(1), color.getStyle());
-                System.out.print(color.getAnsi() + s + ANSI_RESET);
+                    document.insertString(document.getLength(), s1, color.getStyle());
+                System.out.print(color.getAnsi() + s1 + ANSI_RESET);
             }
             if (document != null) {
                 document.insertString(document.getLength(), "\n", TextColors.WHITE.getStyle());
@@ -313,7 +316,7 @@ public class GeneralHelper {
             case '7' -> { return TextColors.GRAY; }
             case '8', '0' -> { return TextColors.BLACK; }
         }
-        return TextColors.WHITE;
+        return null;
     }
 
     public static Logger getLogger() {

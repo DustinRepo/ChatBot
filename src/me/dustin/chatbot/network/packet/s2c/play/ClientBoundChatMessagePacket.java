@@ -1,6 +1,8 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
+import me.dustin.chatbot.helper.MCAPIHelper;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -25,7 +27,11 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
         DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
         message = ChatMessage.of(readString(dataInputStream));
         type = dataInputStream.readByte();
-        sender = readUUID(dataInputStream);
+        if (ChatBot.getConfig().getProtocolVersion() > 340)
+            sender = readUUID(dataInputStream);
+        else if (!message.getSenderName().isEmpty()) {
+            sender = MCAPIHelper.getUUIDFromName(message.getSenderName());
+        }
     }
 
     @Override
