@@ -43,9 +43,7 @@ public class QuoteProcess extends ChatBotProcess {
         if (GeneralHelper.matchUUIDs(uuid, getClientConnection().getSession().getUuid()))
             return;
         String body = event.getChatMessagePacket().getMessage().getBody();
-        if (handleCommand(body)) {
-            return;
-        }
+        handleCommand(body);
         if (quotes.containsKey(uuid))
             quotes.get(uuid).add(body);
         else {
@@ -55,39 +53,37 @@ public class QuoteProcess extends ChatBotProcess {
         }
     }, Priority.LAST);
 
-    public boolean handleCommand(String str) {
+    public void handleCommand(String str) {
         if (str.startsWith("!quote ")) {
             if (str.split(" ").length == 1) {
                 sendChat("Error! You have to specify a player name!");
-                return true;
+                return;
             }
             String name = str.split(" ")[1];
             UUID uuid = MCAPIHelper.getUUIDFromName(name);
             if (uuid == null) {
                 sendChat("Error! Could not get UUID from name!");
-                return true;
+                return;
             }
             if (name.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
                 sendChat("I do not track myself in this stat.");
-                return true;
+                return;
             }
             String id = uuid.toString().replace("-", "");
             if (GeneralHelper.matchUUIDs(id, getClientConnection().getSession().getUuid()))
-                return true;
+                return;
             ArrayList<String> quotes = this.quotes.get(id);
             if (quotes == null || quotes.isEmpty()) {
                 sendChat("I don't have any quotes from " + name + " yet");
-                return true;
+                return;
             }
             Random random = new Random();
             String quote = quotes.get(random.nextInt(quotes.size()));
             sendChat("<" + name + "> " + quote);
-            return true;
         } else if (str.equalsIgnoreCase("!quote")) {
             sendChat("Error! You have to specify a player name!");
-            return true;
+            return;
         }
-        return false;
     }
 
     @Override

@@ -82,11 +82,16 @@ public class ChatBot {
 
         connectionLoop(ip, port, session);
 
+        if (clientConnection != null)
+            clientConnection.getProcessManager().stopAll();
         GeneralHelper.print("Connection closed.", GeneralHelper.TextColors.RED);
     }
 
     private static void connectionLoop(String ip, int port, Session session) throws InterruptedException {
         try {
+            if (clientConnection != null)
+                clientConnection.getProcessManager().stopAll();
+
             clientConnection = new ClientConnection(ip, port, session);
             if (getGui() != null)
                 getGui().setClientConnection(clientConnection);
