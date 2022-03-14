@@ -1,8 +1,5 @@
 package me.dustin.chatbot.network.player;
 
-import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 
 import java.util.UUID;
@@ -16,7 +13,6 @@ public class ClientPlayer {
     private double x,y,z;
     private float yaw, pitch;
 
-    private final StopWatch keepAliveStopWatch = new StopWatch();
     public ClientPlayer(String name, UUID uuid, ClientConnection clientConnection) {
         this.name = name;
         this.uuid = uuid;
@@ -24,13 +20,6 @@ public class ClientPlayer {
     }
 
     public void tick() {
-        if (getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
-            if (keepAliveStopWatch.hasPassed(ChatBot.getConfig().getKeepAliveCheckTime() * 1000L)) {
-                GeneralHelper.print("Time out detected, closing connection.", GeneralHelper.TextColors.PURPLE);
-                getClientConnection().close();
-                return;
-            }
-        }
     }
 
     public ClientConnection getClientConnection() {
@@ -103,9 +92,5 @@ public class ClientPlayer {
 
     public void movePitch(float pitch) {
         this.pitch += pitch;
-    }
-
-    public void updateKeepAlive() {
-        keepAliveStopWatch.reset();
     }
 }

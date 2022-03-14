@@ -96,11 +96,12 @@ public class ChatBot {
             }
         }).start();
         threadCheckStopWatch.reset();
-        while(threadCheckStopWatch.getPassed() < getConfig().getKeepAliveCheckTime()) {
+        while(getClientConnection() == null || !threadCheckStopWatch.hasPassed(getConfig().getKeepAliveCheckTime())) {
             threadCheckStopWatch.update();
         }
         GeneralHelper.print("Thread has stopped responding. Killing and restarting", GeneralHelper.TextColors.RED);
-        startThread(ip, port, session);
+        if (getClientConnection() != null)
+            getClientConnection().close();
     }
 
     private static void connectionLoop(String ip, int port, Session session) throws InterruptedException {

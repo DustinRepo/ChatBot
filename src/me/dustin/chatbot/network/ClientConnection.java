@@ -124,7 +124,6 @@ public class ClientConnection {
     public void connect() {
         this.isConnected = true;
         this.commandManager.init();
-        this.getClientPlayer().updateKeepAlive();
         GeneralHelper.print("Sending Handshake and LoginStart packets...", GeneralHelper.TextColors.GREEN);
         sendPacket(new ServerBoundHandshakePacket(ChatBot.getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
