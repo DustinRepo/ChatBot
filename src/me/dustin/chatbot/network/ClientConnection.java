@@ -119,6 +119,8 @@ public class ClientConnection {
             getProcessManager().addProcess(new Chat2b2tProcess(this));
         if (ChatBot.getConfig().is2b2tCount())
             getProcessManager().addProcess(new Chat2b2tCountProcess(this));
+        if (ChatBot.getConfig().isQuotes())
+            getProcessManager().addProcess(new QuoteProcess(this));
     }
 
     public void connect() {
@@ -185,8 +187,7 @@ public class ClientConnection {
                     byte[] packetData = new byte[size];
                     first.readFully(packetData, 0, size);
 
-                    //TODO: test this to see if it actually works.
-                    //it seems unnecessary currently, doesn't seem most packets go over the threshold
+                    //TODO: test this to see if it actually works. it seems unnecessary currently, doesn't seem most packets go over the threshold
                     /*if (size > this.getCompressionThreshold()) {
                         GeneralHelper.print("Compressing packet", GeneralHelper.TextColors.PURPLE);
                         byte[] compressed = new byte[1024];

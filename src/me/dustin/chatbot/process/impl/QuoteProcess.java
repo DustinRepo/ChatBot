@@ -2,33 +2,31 @@ package me.dustin.chatbot.process.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.MCAPIHelper;
 import me.dustin.chatbot.helper.Timer;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
 import me.dustin.chatbot.process.ChatBotProcess;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
-public class Chat2b2tCountProcess extends ChatBotProcess {
+public class QuoteProcess extends ChatBotProcess {
     private final File file;
     private final Timer saveFileTimer = new Timer();
-
-    private final Map<String, Integer> counts = new HashMap<>();
-    public Chat2b2tCountProcess(ClientConnection clientConnection) {
+    public Map<String, ArrayList<String>> quotes = new HashMap<>();
+    public QuoteProcess(ClientConnection clientConnection) {
         super(clientConnection);
-        File parentFolder = new File(new File("").getAbsolutePath(), "trackers");
+        String ipString = clientConnection.getIp() + (clientConnection.getPort() == 25565 ? "" : ":" + clientConnection.getPort());
+        File parentFolder = new File(new File("").getAbsolutePath() + File.separator + "trackers", ipString);
         if (!parentFolder.exists())
             parentFolder.mkdirs();
-        this.file = new File(parentFolder, "2b2tCount.json");
+        this.file = new File(parentFolder, "quotes.json");
     }
 
     @Override
@@ -39,28 +37,26 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
 
     @EventPointer
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
-        ClientBoundChatMessagePacket packet = event.getChatMessagePacket();
-        if (packet.getType() != ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT || packet.getSender() == null)
+        if (event.getChatMessagePacket().getType() != ClientBoundChatMessagePacket.MESSAGE_TYPE_CHAT || event.getChatMessagePacket().getSender() == null)
             return;
-        String m = packet.getMessage().getBody();
-        if (handleCommand(m)) {
-            event.cancel();
-            return;
-        }
-        String uuid = packet.getSender().toString().replace("-","");
+        String uuid = event.getChatMessagePacket().getSender().toString().replace("-", "");
         if (GeneralHelper.matchUUIDs(uuid, getClientConnection().getSession().getUuid()))
             return;
-        int matches = GeneralHelper.countMatches(m.toLowerCase(), "2b2t") + GeneralHelper.countMatches(m.toLowerCase(), "2builders2tools") + GeneralHelper.countMatches(m.toLowerCase(), "oldest anarchy server in minecraft");
-        if (matches > 0) {
-            if (counts.containsKey(uuid)) {
-                counts.replace(uuid, counts.get(uuid) + matches);
-            } else
-                counts.put(uuid, matches);
+        String body = event.getChatMessagePacket().getMessage().getBody();
+        if (handleCommand(body)) {
+            return;
         }
-    });
+        if (quotes.containsKey(uuid))
+            quotes.get(uuid).add(body);
+        else {
+            ArrayList<String> arrayList = new ArrayList<>();
+            arrayList.add(body);
+            quotes.put(uuid, arrayList);
+        }
+    }, Priority.LAST);
 
     public boolean handleCommand(String str) {
-        if (str.startsWith("!2b2tcount ")) {
+        if (str.startsWith("!quote ")) {
             if (str.split(" ").length == 1) {
                 sendChat("Error! You have to specify a player name!");
                 return true;
@@ -78,13 +74,16 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
             String id = uuid.toString().replace("-", "");
             if (GeneralHelper.matchUUIDs(id, getClientConnection().getSession().getUuid()))
                 return true;
-            int count = counts.getOrDefault(id, 0);
-            if (count > 0)
-                sendChat(name + " has mentioned 2b2t " + count + " times");
-            else
-                sendChat(name + " hasn't mentioned 2b2t yet");
+            ArrayList<String> quotes = this.quotes.get(id);
+            if (quotes == null || quotes.isEmpty()) {
+                sendChat("I don't have any quotes from " + name + " yet");
+                return true;
+            }
+            Random random = new Random();
+            String quote = quotes.get(random.nextInt(quotes.size()));
+            sendChat("<" + name + "> " + quote);
             return true;
-        } else if (str.equalsIgnoreCase("!2b2tcount")) {
+        } else if (str.equalsIgnoreCase("!quote")) {
             sendChat("Error! You have to specify a player name!");
             return true;
         }
@@ -101,8 +100,8 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
 
     @Override
     public void stop() {
-        getClientConnection().getEventManager().unregister(this);
         saveFile();
+        getClientConnection().getEventManager().unregister(this);
     }
 
     public void readFile() {
@@ -113,18 +112,29 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
             String uuid = jsonObject.get("uuid").getAsString();
-            int count = jsonObject.get("count").getAsInt();
-            counts.put(uuid, count);
+            JsonArray quotesArray = jsonObject.get("quotes").getAsJsonArray();
+            ArrayList<String> list = new ArrayList<>();
+            for (int ii = 0; ii < quotesArray.size(); ii++) {
+                list.add(quotesArray.get(ii).getAsString());
+            }
+            if (quotes.containsKey(uuid))
+                quotes.get(uuid).addAll(list);
+            else
+                quotes.put(uuid, list);
         }
     }
 
     public void saveFile() {
         JsonArray jsonArray = new JsonArray();
 
-        counts.forEach((s, i) -> {
+        quotes.forEach((s, i) -> {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("uuid", s);
-            jsonObject.addProperty("count", i);
+            JsonArray quotesArray = new JsonArray();
+            for (String s1 : i) {
+                quotesArray.add(s1);
+            }
+            jsonObject.add("quotes", quotesArray);
             jsonArray.add(jsonObject);
         });
         ArrayList<String> list = new ArrayList<>(List.of(GeneralHelper.prettyGson.toJson(jsonArray).split("\n")));

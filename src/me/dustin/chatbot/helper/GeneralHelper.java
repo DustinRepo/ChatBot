@@ -123,15 +123,19 @@ public class GeneralHelper {
         return i;
     }
 
-    public static String readFile(File file) throws IOException {
+    public static String readFile(File file) {
         StringBuilder sb = new StringBuilder();
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-        String inString;
-        while ((inString = in.readLine()) != null) {
-            sb.append(inString);
-            sb.append("\n");
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+            String inString;
+            while ((inString = in.readLine()) != null) {
+                sb.append(inString);
+                sb.append("\n");
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        in.close();
         return sb.toString();
     }
 

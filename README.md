@@ -51,6 +51,8 @@ Play Russian Roulette
 Report a player for bad behavior
 ###### plugins
 Tries to get the server plugins and returns them
+###### quote -name-
+Gets a quote from that player
 ###### namemc -name-
 Get the link for a NameMC search
 ###### skin -name-

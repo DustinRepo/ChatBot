@@ -24,7 +24,7 @@ public abstract class ClientBoundPacketHandler {
     public void listen() {
         try {
             ByteArrayInputStream packetData = getPacketData();
-            if (packetData != null) {
+            if (packetData != null && packetData.available() > 0) {
                 int packetId = Packet.readVarInt(packetData);
                 Class<? extends Packet.ClientBoundPacket> c = packetMap.get(packetId);
                 if (c != null) {
@@ -55,6 +55,9 @@ public abstract class ClientBoundPacketHandler {
             int[] dataLengths = Packet.readVarIntt(dataInputStream);
             int dataLength = dataLengths[0];
             int packetLegth = length-dataLengths[1];
+            //TODO: make sure this doesn't break, but I am pretty sure it fixes the random hangs
+            if (packetLegth > 32676)
+                return new ByteArrayInputStream(new byte[0]);
             if (dataLength != 0) {
                 return readCompressed(packetLegth, dataLength);
             } else {
