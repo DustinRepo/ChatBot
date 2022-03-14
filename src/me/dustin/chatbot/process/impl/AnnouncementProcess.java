@@ -1,30 +1,35 @@
 package me.dustin.chatbot.process.impl;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.config.Config;
 import me.dustin.chatbot.helper.Timer;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.chatbot.process.ChatBotProcess;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class AnnouncementProcess extends ChatBotProcess {
     private final Timer timer = new Timer();
+    private final ArrayList<String> announcements = new ArrayList<>();
     public AnnouncementProcess(ClientConnection clientConnection) {
         super(clientConnection);
+        announcements.add("Use {PREFIX}help to get a list of my commands");
+        announcements.add("I can try to grab the server's plugins! use !plugins");
+        announcements.add("I can get you a player's skin directly from Minecraft! Use !skin <name>");
+        announcements.add("Use {PREFIX}coinflip to flip a coin");
+        announcements.add("Use {PREFIX}worstping or {PREFIX}bestping to see who has the lowest/highest ping");
+        announcements.add("Use {PREFIX}coffee to get a picture of coffee");
+        announcements.add("Need to report someone? Use {PREFIX}report <name> <reason>");
+        announcements.add("Use {PREFIX}isEven to see if a number is even!");
+        announcements.add("Need to see server TPS? {PREFIX}tps");
+        announcements.add("Want to use this bot program? https://github.com/DustinRepo/ChatBot");
+        if (ChatBot.getConfig().is2b2tCount())
+            announcements.add("Use {PREFIX}2b2tcount <name> to see how many times someone has mentioned 2b2t!");
+        if (ChatBot.getConfig().isQuotes())
+            announcements.add("Use {PREFIX}quote <name> to get a random quote from a player!");
     }
-    private final String[] announcements = new String[]{
-            "Use {PREFIX}help to get a list of my commands",
-            "I can try to grab the server's plugins! use !plugins",
-            "I can get you a player's skin directly from Minecraft! Use !skin <name>",
-            "Use {PREFIX}coinflip to flip a coin",
-            "Use {PREFIX}worstping or {PREFIX}bestping to see who has the lowest/highest ping", "Use {PREFIX}coffee to get a picture of coffee",
-            "Need to report someone? Use {PREFIX}report <name> <reason>",
-            "Use {PREFIX}isEven to see if a number is even!",
-            "Need to see server TPS? {PREFIX}tps",
-            "Want to use this bot program? https://github.com/DustinRepo/ChatBot",
-            "Use {PREFIX}2b2tcount to see how many times someone has mentioned 2b2t!"
-    };
 
     @Override
     public void init() {
@@ -34,10 +39,10 @@ public class AnnouncementProcess extends ChatBotProcess {
     @Override
     public void tick() {
         if (timer.hasPassed(ChatBot.getConfig().getAnnouncementDelay() * 1000L) && getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
-            int size = announcements.length;
+            int size = announcements.size();
             Random random = new Random();
-            int select = random.nextInt(ChatBot.getConfig().is2b2tCount() ? size : size - 1);
-            getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements[select].replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
+            int select = random.nextInt(size);
+            getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements.get(select).replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
             timer.reset();
         }
     }
