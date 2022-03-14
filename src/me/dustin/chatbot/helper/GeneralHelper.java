@@ -17,12 +17,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Map;
-import java.util.Random;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
+import java.util.logging.Formatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -315,6 +313,16 @@ public class GeneralHelper {
             case '8', '0' -> { return TextColors.BLACK; }
         }
         return TextColors.WHITE;
+    }
+
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    public static UUID uuidFromStringNoDashes(String uuid) {
+        return UUID.fromString(uuid.replaceFirst(
+                "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
+        ));
     }
 
     public record HttpResponse(String data, int responseCode){}

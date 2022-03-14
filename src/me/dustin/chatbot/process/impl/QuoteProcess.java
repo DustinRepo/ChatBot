@@ -81,8 +81,14 @@ public class QuoteProcess extends ChatBotProcess {
             String quote = quotes.get(random.nextInt(quotes.size()));
             sendChat("<" + name + "> " + quote);
         } else if (str.equalsIgnoreCase("!quote")) {
-            sendChat("Error! You have to specify a player name!");
-            return;
+            if (quotes.isEmpty())
+                return;
+            ArrayList<String> uuids = new ArrayList<>(quotes.keySet());
+            Random r = new Random();
+            String uuid = uuids.get(r.nextInt(uuids.size()));
+            ArrayList<String> qs = quotes.get(uuid);
+            String quote = qs.get(r.nextInt(qs.size()));
+            sendChat("<" + MCAPIHelper.getNameFromUUID(GeneralHelper.uuidFromStringNoDashes(uuid)) + "> " + quote);
         }
     }
 
