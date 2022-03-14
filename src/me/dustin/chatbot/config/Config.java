@@ -32,6 +32,8 @@ public class Config {
     private boolean allowServerListing;
     private boolean skinBlink;
     private boolean passwordCreateUseTwice;
+    private boolean twoB2tCheck;
+    private boolean twoB2tCount;
 
     private int protocolVersion;
     private int reconnectDelay;
@@ -72,6 +74,8 @@ public class Config {
         allowServerListing = parser.readBoolean("allowServerListing");
         skinBlink = parser.readBoolean("skinBlink");
         passwordCreateUseTwice = parser.readBoolean("passwordCreateUseTwice");
+        twoB2tCheck = parser.readBoolean("2b2tCheck");
+        twoB2tCount = parser.readBoolean("2b2tCount");
 
         protocolVersion = parser.readInt("protocolVersion");
         reconnectDelay = parser.readInt("reconnectDelay");
@@ -167,6 +171,14 @@ public class Config {
 
     public boolean isSkinBlink() {
         return skinBlink;
+    }
+
+    public boolean is2b2tCheck() {
+        return twoB2tCheck;
+    }
+
+    public boolean is2b2tCount() {
+        return twoB2tCount;
     }
 
     public boolean isPasswordCreateUseTwice() {

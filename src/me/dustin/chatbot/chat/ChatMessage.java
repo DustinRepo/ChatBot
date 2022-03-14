@@ -43,7 +43,9 @@ public class ChatMessage {
                     String text = object.get("text").getAsString();
                     name.append(text);
                 } catch (Exception e) {
-                    body.append(" ").append(with.get(i).getAsString());
+                    try {
+                        body.append(" ").append(with.get(i).getAsString());
+                    } catch (Exception e1) {}
                 }
             }
         }

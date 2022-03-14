@@ -17,10 +17,7 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
 import me.dustin.chatbot.process.ProcessManager;
-import me.dustin.chatbot.process.impl.AnnouncementProcess;
-import me.dustin.chatbot.process.impl.AntiAFKProcess;
-import me.dustin.chatbot.process.impl.CrackedLoginProcess;
-import me.dustin.chatbot.process.impl.SkinBlinkProcess;
+import me.dustin.chatbot.process.impl.*;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -96,15 +93,16 @@ public class ClientConnection {
     @EventPointer
     private final EventListener<EventLoginSuccess> eventLoginSuccessEventListener = new EventListener<>(event -> {
         loadProcesses();
-        new Thread(() -> {
-            try {
-                //wait 2 seconds so vanilla servers don't throw a shit-fit
-                Thread.sleep(2000);
-                sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        if (!ChatBot.getConfig().isSkinBlink())
+            new Thread(() -> {
+                try {
+                    //wait 5 seconds so vanilla servers don't throw a shit-fit
+                    Thread.sleep(5000);
+                    sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
     });
 
     public void loadProcesses() {
@@ -116,7 +114,11 @@ public class ClientConnection {
         if (ChatBot.getConfig().isAnnouncements())
             getProcessManager().addProcess(new AnnouncementProcess(this));
         if (ChatBot.getConfig().isSkinBlink())
-        getProcessManager().addProcess(new SkinBlinkProcess(this));
+            getProcessManager().addProcess(new SkinBlinkProcess(this));
+        if (ChatBot.getConfig().is2b2tCheck())
+            getProcessManager().addProcess(new Chat2b2tProcess(this));
+        if (ChatBot.getConfig().is2b2tCount())
+            getProcessManager().addProcess(new Chat2b2tCountProcess(this));
     }
 
     public void connect() {
@@ -214,6 +216,14 @@ public class ClientConnection {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     public DataInputStream getIn() {

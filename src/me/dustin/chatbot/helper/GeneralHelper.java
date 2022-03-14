@@ -23,6 +23,7 @@ import java.util.Random;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GeneralHelper {
@@ -97,6 +98,10 @@ public class GeneralHelper {
         return string == null ? null : FORMATTING_CODE_PATTERN.matcher(string).replaceAll("");
     }
 
+    public static boolean matchUUIDs(String s, String s1) {
+        return s.replace("-", "").equalsIgnoreCase(s1.replace("-", ""));
+    }
+
     public static String getCurrentTimeStamp() {
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
         Date now = new Date();
@@ -109,6 +114,15 @@ public class GeneralHelper {
         return sdfDate.format(now);
     }
 
+    public static int countMatches(String in, String search) {
+        Matcher m = Pattern.compile(search).matcher(in);
+        int i = 0;
+        while (m.find()) {
+            i++;
+        }
+        return i;
+    }
+
     public static String readFile(File file) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
@@ -119,6 +133,20 @@ public class GeneralHelper {
         }
         in.close();
         return sb.toString();
+    }
+
+    public static void writeFile(File file, java.util.List<String> content) {
+        try {
+            PrintWriter printWriter = new PrintWriter(file);
+            StringBuilder stringBuilder = new StringBuilder();
+            content.forEach(string -> {
+                stringBuilder.append(string + "\r\n");
+            });
+            printWriter.print(stringBuilder);
+            printWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String getDurationString(long ms) {

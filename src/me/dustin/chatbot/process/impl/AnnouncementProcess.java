@@ -22,7 +22,8 @@ public class AnnouncementProcess extends ChatBotProcess {
             "Need to report someone? Use {PREFIX}report <name> <reason>",
             "Use {PREFIX}isEven to see if a number is even!",
             "Need to see server TPS? {PREFIX}tps",
-            "Want to use this bot program? https://github.com/DustinRepo/ChatBot"
+            "Want to use this bot program? https://github.com/DustinRepo/ChatBot",
+            "Use {PREFIX}2b2tcount to see how many times someone has mentioned 2b2t!"
     };
 
     @Override
@@ -35,7 +36,7 @@ public class AnnouncementProcess extends ChatBotProcess {
         if (timer.hasPassed(ChatBot.getConfig().getAnnouncementDelay() * 1000L) && getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
             int size = announcements.length;
             Random random = new Random();
-            int select = random.nextInt(size);
+            int select = random.nextInt(ChatBot.getConfig().is2b2tCount() ? size : size - 1);
             getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements[select].replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
             timer.reset();
         }

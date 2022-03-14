@@ -30,9 +30,6 @@ Customizable prefix: Customize the prefix in the config.cfg file
 5. Input the ip when prompted
 ```
 
-## PSA
-Chat message parsing is still being worked on and improved. If you find a server this bot doesn't work on, please open an issue or contact me on Discord at untrusted#9025
-
 ## Commands
 Below are a list of commands currently in ChatBot
 
@@ -44,6 +41,8 @@ Print a random bible verse in chat
 Check if a number is even using the isEven API
 ###### coffee
 Returns a link to a random picture of coffee
+###### 2b2tcount -name-
+See how many times a player has mentioned 2b2t
 ###### coinflip
 Flip a coin
 ###### roulette / russianRoulette

@@ -55,7 +55,7 @@ public class CommandManager {
                 sender = getClientConnection().getPlayerManager().get(sA[1]).getUuid();
             }
         }
-        if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || sender.toString().equalsIgnoreCase(getClientConnection().getSession().getUuid())) {
+        if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) ||  GeneralHelper.matchUUIDs(sender.toString(), getClientConnection().getSession().getUuid())) {
             return;
         }
         if (!timer.hasPassed(ChatBot.getConfig().getMessageDelay())) {
