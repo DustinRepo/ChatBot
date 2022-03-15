@@ -22,7 +22,11 @@ public class ServerBoundClientStatusPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream clientStatusPacket = new DataOutputStream(baos);
 
-        writeVarInt(clientStatusPacket, ChatBot.getConfig().getProtocolVersion() == 340 ? 0x03 : 0x04);
+        int packetId = 0x04;
+        if (ChatBot.getConfig().getProtocolVersion() <= 404)
+            packetId = 0x03;
+
+        writeVarInt(clientStatusPacket, packetId);
         writeVarInt(clientStatusPacket, action);
 
         writeVarInt(out, baos.toByteArray().length);

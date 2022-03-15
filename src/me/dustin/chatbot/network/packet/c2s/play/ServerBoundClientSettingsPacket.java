@@ -27,14 +27,18 @@ public class ServerBoundClientSettingsPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
 
-        writeVarInt(packet, ChatBot.getConfig().getProtocolVersion() == 340 ? 0x04 : 0x05);//packet id
+        int packetId = 0x05;
+        if (ChatBot.getConfig().getProtocolVersion() <= 404)
+            packetId = 0x04;
+
+        writeVarInt(packet, packetId);//packet id
         writeString(packet, locale);
         packet.writeByte(8);//render distance
         writeVarInt(packet, 0);//chat mode. 0 = enabled
         packet.writeBoolean(true);//chat colors
         packet.writeByte(enabledSkinParts);
         writeVarInt(packet, 1);//main hand - 0 = left 1 = right
-        if (ChatBot.getConfig().getProtocolVersion() > 340)
+        if (ChatBot.getConfig().getProtocolVersion() > 754)
             packet.writeBoolean(false);//text filtering
         if (ChatBot.getConfig().getProtocolVersion() >= 757)//1.18, I *think* the version this was added
             packet.writeBoolean(allowServerListings);

@@ -14,7 +14,7 @@ public class ServerBoundResourcePackStatusPacket extends Packet {
 
     public static final int SUCCESSFULLY_LOADED = 0, DECLINED = 1, FAILED_DL = 2, ACCEPTED = 3;
 
-    private int result;
+    private final int result;
 
     public ServerBoundResourcePackStatusPacket(int result) {
         this.result = result;
@@ -26,8 +26,16 @@ public class ServerBoundResourcePackStatusPacket extends Packet {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
-
-        packet.write(ChatBot.getConfig().getProtocolVersion() == 340 ? 0x18 : 0x21);//packet id
+        int packetId = 0x21;
+        if (ChatBot.getConfig().getProtocolVersion() <= 736)
+            packetId = 0x20;
+        if (ChatBot.getConfig().getProtocolVersion() <= 578)
+            packetId = 0x1F;
+        if (ChatBot.getConfig().getProtocolVersion() <= 404)
+            packetId = 0x1D;
+        if (ChatBot.getConfig().getProtocolVersion() == 340)
+            packetId = 0x18;
+        packet.write(packetId);//packet id
         writeVarInt(packet, result);
 
         writeVarInt(out, baos.toByteArray().length);

@@ -35,6 +35,8 @@ public class ChatMessage {
     }
 
     public static ChatMessage of(String jsonData) {
+        if (jsonData.isEmpty())
+            return new ChatMessage("", "");
         StringBuilder name = new StringBuilder();
         StringBuilder body = new StringBuilder();
         JsonObject jsonObject = GeneralHelper.gson.fromJson(jsonData, JsonObject.class);

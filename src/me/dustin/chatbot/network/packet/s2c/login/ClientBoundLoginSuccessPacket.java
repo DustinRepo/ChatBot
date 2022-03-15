@@ -22,7 +22,7 @@ public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
     public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
         DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
 
-        if (ChatBot.getConfig().getProtocolVersion() == 340) {//1.12.2
+        if (ChatBot.getConfig().getProtocolVersion() <= 578) {//1.15.2 and below
             String s = readString(dataInputStream);
             String s1 = readString(dataInputStream);
             uuid = s.length() > 0 ? UUID.fromString(s) : null;

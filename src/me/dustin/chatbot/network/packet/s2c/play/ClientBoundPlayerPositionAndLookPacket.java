@@ -30,7 +30,7 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
         pitch = dataInputStream.readFloat();
         flags = dataInputStream.readByte();
         teleportId = readVarInt(dataInputStream);
-        if (ChatBot.getConfig().getProtocolVersion() > 340)
+        if (ChatBot.getConfig().getProtocolVersion() > 754)//1.16.5
             dismount = dataInputStream.readBoolean();
         super.createPacket(byteArrayInputStream);
     }

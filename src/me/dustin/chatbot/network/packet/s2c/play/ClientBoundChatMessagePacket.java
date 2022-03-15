@@ -27,7 +27,7 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
         DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
         message = ChatMessage.of(readString(dataInputStream));
         type = dataInputStream.readByte();
-        if (ChatBot.getConfig().getProtocolVersion() > 340)
+        if (ChatBot.getConfig().getProtocolVersion() > 578)
             sender = readUUID(dataInputStream);
         else if (!message.getSenderName().isEmpty()) {
             sender = MCAPIHelper.getUUIDFromName(message.getSenderName());

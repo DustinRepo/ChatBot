@@ -25,7 +25,13 @@ public class ServerBoundTabCompletePacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
 
-        writeVarInt(packet, ChatBot.getConfig().getProtocolVersion() == 340 ? 0x01 : 0x06);//packet id
+        int packetId = 0x06;
+        if (ChatBot.getConfig().getProtocolVersion() <= 404)//1.13.2
+            packetId = 0x05;
+        if (ChatBot.getConfig().getProtocolVersion() <= 340)//1.12.2
+            packetId = 0x01;
+
+        writeVarInt(packet, packetId);//packet id
         writeVarInt(packet, transactionId);
         writeString(packet, cmd);
 

@@ -24,8 +24,16 @@ public class ServerBoundPlayerSwingPacket extends Packet {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(baos);
-
-        dataOutputStream.write(ChatBot.getConfig().getProtocolVersion() == 340 ? 0x1D : 0x2C);//packet id
+        int packetId = 0x2C;
+        if (ChatBot.getConfig().getProtocolVersion() <= 736)
+            packetId = 0x2b;
+        if (ChatBot.getConfig().getProtocolVersion() <= 578)
+            packetId = 0x2a;
+        if (ChatBot.getConfig().getProtocolVersion() <= 404)
+            packetId = 0x27;
+        if (ChatBot.getConfig().getProtocolVersion() <= 340)
+            packetId = 0x1D;
+        dataOutputStream.write(packetId);//packet id
         writeVarInt(dataOutputStream, hand);
 
         writeVarInt(out, baos.toByteArray().length);

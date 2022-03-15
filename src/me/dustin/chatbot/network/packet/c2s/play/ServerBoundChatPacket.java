@@ -24,7 +24,11 @@ public class ServerBoundChatPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(baos);
 
-        writeVarInt(dataOutputStream, ChatBot.getConfig().getProtocolVersion() == 340 ? 0x02 : 0x03);
+        int packetId = 0x03;
+        if (ChatBot.getConfig().getProtocolVersion() <= 404)//1.13.2
+            packetId = 0x02;
+
+        writeVarInt(dataOutputStream, packetId);
         writeString(dataOutputStream, message);
 
         writeVarInt(out, baos.toByteArray().length);
