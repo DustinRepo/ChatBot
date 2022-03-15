@@ -64,9 +64,13 @@ public class ChatBotGui {
             }
         });
         new Timer(1000, e -> {
-            if (clientConnection != null && stopWatch.hasPassed(ChatBot.getConfig().getKeepAliveCheckTime() * 1000L)) {
-                GeneralHelper.print("Thread stopped responding, closing connection...", ChatMessage.TextColors.DARK_RED);
-                clientConnection.close();
+            if (clientConnection != null && clientConnection.getNetworkState() == ClientConnection.NetworkState.PLAY) {
+                if (stopWatch.hasPassed(ChatBot.getConfig().getKeepAliveCheckTime() * 1000L)) {
+                    GeneralHelper.print("Thread stopped responding, closing connection...", ChatMessage.TextColors.DARK_RED);
+                    clientConnection.close();
+                }
+            } else {
+                stopWatch.reset();
             }
         }).start();
         setLookAndFeel();
