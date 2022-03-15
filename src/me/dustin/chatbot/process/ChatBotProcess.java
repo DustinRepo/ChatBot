@@ -8,7 +8,6 @@ import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 public abstract class ChatBotProcess {
 
     private final ClientConnection clientConnection;
-    private final StopWatch messageStopWatch = new StopWatch();
 
     public ChatBotProcess(ClientConnection clientConnection) {
         this.clientConnection = clientConnection;
@@ -23,9 +22,6 @@ public abstract class ChatBotProcess {
     }
 
     public void sendChat(String message) {
-        if (!messageStopWatch.hasPassed(ChatBot.getConfig().getMessageDelay()))
-            return;
-        messageStopWatch.reset();
-        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message));
+        getClientConnection().getClientPlayer().chat(message);
     }
 }

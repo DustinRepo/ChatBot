@@ -41,7 +41,7 @@ public class AnnouncementProcess extends ChatBotProcess {
             int size = announcements.size();
             Random random = new Random();
             int select = random.nextInt(size);
-            getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() ? ">" : "") + announcements.get(select).replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix())));
+            getClientConnection().getClientPlayer().chat(announcements.get(select).replace("{PREFIX}", ChatBot.getConfig().getCommandPrefix()));
             stopWatch.reset();
         }
     }

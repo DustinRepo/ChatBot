@@ -1,6 +1,9 @@
 package me.dustin.chatbot.network.player;
 
+import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 
 import java.util.UUID;
 
@@ -13,6 +16,8 @@ public class ClientPlayer {
     private double x,y,z;
     private float yaw, pitch;
 
+    private final StopWatch messageStopwatch = new StopWatch();
+
     public ClientPlayer(String name, UUID uuid, ClientConnection clientConnection) {
         this.name = name;
         this.uuid = uuid;
@@ -20,6 +25,14 @@ public class ClientPlayer {
     }
 
     public void tick() {
+    }
+
+    public void chat(String message) {
+        if (!messageStopwatch.hasPassed(ChatBot.getConfig().getMessageDelay())) {
+            return;
+        }
+        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message));
+        messageStopwatch.reset();
     }
 
     public ClientConnection getClientConnection() {

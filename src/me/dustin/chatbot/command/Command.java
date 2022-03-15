@@ -37,6 +37,6 @@ public abstract class Command {
     }
 
     public void sendChat(String message) {
-        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message));
+        getClientConnection().getClientPlayer().chat(message);
     }
 }

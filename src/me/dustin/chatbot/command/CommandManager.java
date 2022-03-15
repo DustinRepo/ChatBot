@@ -18,7 +18,6 @@ public class CommandManager {
 
     private final ArrayList<Command> commands = new ArrayList<>();
     private final ClientConnection clientConnection;
-    private final StopWatch stopWatch = new StopWatch();
 
     public CommandManager(ClientConnection clientConnection) {
         this.clientConnection = clientConnection;
@@ -56,9 +55,6 @@ public class CommandManager {
         if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || (sender != null && GeneralHelper.matchUUIDs(sender.toString(), getClientConnection().getSession().getUuid()))) {
             return;
         }
-        if (!stopWatch.hasPassed(ChatBot.getConfig().getMessageDelay())) {
-            return;
-        }
         try {
             String cmd = string.split(" ")[0].replace(ChatBot.getConfig().getCommandPrefix(), "");
             String input;
@@ -71,7 +67,6 @@ public class CommandManager {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
                     try {
                         command.run(input, sender);
-                        stopWatch.reset();
                         return;
                     } catch (Exception e) {
                         e.printStackTrace();
