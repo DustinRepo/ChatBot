@@ -13,10 +13,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
@@ -27,7 +23,7 @@ import java.util.regex.Pattern;
 public class GeneralHelper {
 
 
-    private static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RESET = "\u001B[0m";
     private static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)\u00a7[0-9A-FK-OR]");
 
     public static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -35,7 +31,7 @@ public class GeneralHelper {
 
     private static Logger logger;
 
-    public static void print(String s, TextColors color) {
+    public static void print(String s, ChatMessage.TextColors color) {
         String timeStampString = getCurrentTimeStamp();
         timeStampString = String.format("[%s] ", timeStampString);
         if (ChatBot.getGui() != null) {
@@ -49,7 +45,7 @@ public class GeneralHelper {
                 e.printStackTrace();
             }
         }
-        if (ChatBot.getConfig() != null && ChatBot.getConfig().isColorConsole()) {
+        if (ChatBot.getConfig().isColorConsole()) {
             System.out.println(timeStampString + color.getAnsi() + s + ANSI_RESET);
         } else {
             System.out.println(timeStampString + strip(s));
@@ -63,7 +59,7 @@ public class GeneralHelper {
             chatMessage = new ChatMessage("<" + chatMessage.getSenderName() + (chatMessage.getSenderName().contains("§") ? "§f" : "") +">", chatMessage.getBody());
         String m = chatMessage.getMessage();
         if (!m.contains("§") || !ChatBot.getConfig().isColorConsole()) {
-            print(m, TextColors.WHITE);
+            print(m, ChatMessage.TextColors.WHITE);
             return;
         }
         printColorText(chatMessage.getMessage());
@@ -72,26 +68,26 @@ public class GeneralHelper {
     }
 
     private static void printColorText(String text) {
-        TextColors color = TextColors.WHITE;
+        ChatMessage.TextColors color;
         StyledDocument document = ChatBot.getGui() != null ? ChatBot.getGui().getOutput().getStyledDocument() : null;
         String timeStampString = String.format("[%s] ", getCurrentTimeStamp());
         try {
             if (document != null)
-                document.insertString(document.getLength(), timeStampString, color.getStyle());
+                document.insertString(document.getLength(), timeStampString, ChatMessage.TextColors.GRAY.getStyle());
             System.out.print(ANSI_RESET + timeStampString);
             for (String s : text.split("§")) {
                 if (s.length() == 0)
                     continue;
-                color = convertMCColor(s.charAt(0));
+                color = ChatMessage.TextColors.getFromChar(s.charAt(0));
                 String s1 = color == null ? s : s.substring(1);
                 if (color == null)
-                    color = TextColors.WHITE;
+                    color = ChatMessage.TextColors.WHITE;
                 if (document != null)
                     document.insertString(document.getLength(), s1, color.getStyle());
                 System.out.print(color.getAnsi() + s1 + ANSI_RESET);
             }
             if (document != null) {
-                document.insertString(document.getLength(), "\n", TextColors.WHITE.getStyle());
+                document.insertString(document.getLength(), "\n", ChatMessage.TextColors.WHITE.getStyle());
                 ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
             }
             System.out.print(ANSI_RESET + "\n");
@@ -271,56 +267,6 @@ public class GeneralHelper {
         }
     }
 
-    public static void initTextColors() {
-        StyledDocument document = ChatBot.getGui().getOutput().getStyledDocument();
-        Style black = document.addStyle("black", null);
-        StyleConstants.setForeground(black, Color.BLACK);
-        TextColors.BLACK.setStyle(black);
-
-        Style red = document.addStyle("red", null);
-        StyleConstants.setForeground(red, Color.RED);
-        TextColors.RED.setStyle(red);
-
-        Style green = document.addStyle("green", null);
-        StyleConstants.setForeground(green, Color.GREEN);
-        TextColors.GREEN.setStyle(green);
-
-        Style yellow = document.addStyle("yellow", null);
-        StyleConstants.setForeground(yellow, Color.YELLOW);
-        TextColors.YELLOW.setStyle(yellow);
-
-        Style blue = document.addStyle("blue", null);
-        StyleConstants.setForeground(blue, Color.BLUE);
-        TextColors.BLUE.setStyle(blue);
-
-        Style purple = document.addStyle("purple", null);
-        StyleConstants.setForeground(purple, Color.MAGENTA);
-        TextColors.PURPLE.setStyle(purple);
-
-        Style cyan = document.addStyle("cyan", null);
-        StyleConstants.setForeground(cyan, Color.CYAN);
-        TextColors.CYAN.setStyle(cyan);
-
-        Style gray = document.addStyle("gray", null);
-        StyleConstants.setForeground(gray, Color.GRAY);
-        TextColors.GRAY.setStyle(gray);
-    }
-
-    public static TextColors convertMCColor(char color) {
-        switch (color) {
-            case '4', 'c' -> { return TextColors.RED; }
-            case '6', 'e' -> { return TextColors.YELLOW; }
-            case '2', 'a' -> { return TextColors.GREEN; }
-            case 'b', '3' -> { return TextColors.CYAN; }
-            case '1', '9' -> { return TextColors.BLUE; }
-            case 'd', '5' -> { return TextColors.PURPLE; }
-            case 'f' -> { return TextColors.WHITE; }
-            case '7' -> { return TextColors.GRAY; }
-            case '8', '0' -> { return TextColors.BLACK; }
-        }
-        return null;
-    }
-
     public static Logger getLogger() {
         return logger;
     }
@@ -341,37 +287,6 @@ public class GeneralHelper {
             sb.append(getCurrentTimeStamp(record.getMillis())).append(':');;
             sb.append(record.getMessage()).append('\n');
             return sb.toString();
-        }
-    }
-
-    public enum TextColors {
-        RED("\u001B[31m", null),
-        BLACK("\u001B[30m", null),
-        GREEN("\u001B[32m", null),
-        YELLOW("\u001B[33m", null),
-        BLUE("\u001B[34m", null),
-        PURPLE("\u001B[35m", null),
-        CYAN("\u001B[36m", null),
-        WHITE(ANSI_RESET, null),
-        GRAY("\u001B[37m", null);
-
-        private final String ansi;
-        private Style style;
-        TextColors(String ansi, Style style) {
-            this.ansi = ansi;
-            this.style = style;
-        }
-
-        public String getAnsi() {
-            return ansi;
-        }
-
-        public Style getStyle() {
-            return style;
-        }
-
-        public void setStyle(Style style) {
-            this.style = style;
         }
     }
 }

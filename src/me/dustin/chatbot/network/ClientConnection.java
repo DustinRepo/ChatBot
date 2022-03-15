@@ -3,6 +3,7 @@ package me.dustin.chatbot.network;
 import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.account.Session;
+import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.command.CommandManager;
 import me.dustin.chatbot.event.EventLoginSuccess;
 import me.dustin.chatbot.helper.GeneralHelper;
@@ -124,7 +125,7 @@ public class ClientConnection {
     public void connect() {
         this.isConnected = true;
         this.commandManager.init();
-        GeneralHelper.print("Sending Handshake and LoginStart packets...", GeneralHelper.TextColors.GREEN);
+        GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColors.GREEN);
         sendPacket(new ServerBoundHandshakePacket(ChatBot.getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
     }
@@ -186,7 +187,7 @@ public class ClientConnection {
 
                     //TODO: test this to see if it actually works. it seems unnecessary currently, doesn't seem most packets go over the threshold
                     /*if (size > this.getCompressionThreshold()) {
-                        GeneralHelper.print("Compressing packet", GeneralHelper.TextColors.PURPLE);
+                        GeneralHelper.print("Compressing packet", ChatMessage.TextColors.PURPLE);
                         byte[] compressed = new byte[1024];
 
                         Deflater deflater = new Deflater();

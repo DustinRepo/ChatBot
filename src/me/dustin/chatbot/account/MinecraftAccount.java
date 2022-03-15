@@ -2,6 +2,7 @@ package me.dustin.chatbot.account;
 
 import me.dustin.chatbot.account.login.MSLoginHelper;
 import me.dustin.chatbot.account.login.MojangLoginHelper;
+import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 
 public class MinecraftAccount {
@@ -64,11 +65,11 @@ public class MinecraftAccount {
 
     public Session login() {
         if (this instanceof MicrosoftAccount microsoftAccount) {
-            GeneralHelper.print("Logging in to Microsoft account...", GeneralHelper.TextColors.YELLOW);
+            GeneralHelper.print("Logging in to Microsoft account...", ChatMessage.TextColors.YELLOW);
             MSLoginHelper msLoginHelper = new MSLoginHelper(microsoftAccount);
-            return msLoginHelper.login(s -> GeneralHelper.print(s, GeneralHelper.TextColors.YELLOW));
+            return msLoginHelper.login(s -> GeneralHelper.print(s, ChatMessage.TextColors.YELLOW));
         } else {
-            GeneralHelper.print("Logging in to Mojang account...", GeneralHelper.TextColors.YELLOW);
+            GeneralHelper.print("Logging in to Mojang account...", ChatMessage.TextColors.YELLOW);
             MojangAccount mojangAccount = (MojangAccount)this;
             MojangLoginHelper mojangLoginHelper = new MojangLoginHelper(mojangAccount);
             return mojangLoginHelper.login();

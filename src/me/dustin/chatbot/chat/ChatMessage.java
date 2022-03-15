@@ -2,7 +2,13 @@ package me.dustin.chatbot.chat;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.GeneralHelper;
+
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import java.awt.*;
 
 public class ChatMessage {
 
@@ -38,7 +44,9 @@ public class ChatMessage {
                 try {
                     JsonObject object = with.get(i).getAsJsonObject();
                     if (object.get("color") != null) {
-                        name.append("§").append(colorChar(object.get("color").getAsString()));
+                        TextColors textColors = TextColors.getFromName(object.get("color").getAsString());
+                        if (textColors != null)
+                            name.append("§").append(textColors.getChar());
                     }
                     String text = object.get("text").getAsString();
                     name.append(text);
@@ -77,7 +85,9 @@ public class ChatMessage {
                 try {
                     JsonObject object = extra.get(i).getAsJsonObject();
                     if (object.get("color") != null) {
-                        s.append("§").append(colorChar(object.get("color").getAsString()));
+                        TextColors textColors = TextColors.getFromName(object.get("color").getAsString());
+                        if (textColors != null)
+                            s.append("§").append(textColors.getChar());
                     }
                     String text = object.get("text").getAsString();
                     s.append(text);
@@ -92,25 +102,76 @@ public class ChatMessage {
         return s.toString();
     }
 
-    private static char colorChar(String name) {
-        switch (name.toLowerCase()) {
-            case "dark_red" -> { return '4'; }
-            case "red" -> { return 'c'; }
-            case "gold" -> { return '6'; }
-            case "yellow" -> { return 'e'; }
-            case "dark_green)" -> { return '2'; }
-            case "green" -> { return 'a'; }
-            case "aqua" -> { return 'b'; }
-            case "dark_aqua" -> { return '3'; }
-            case "dark_blue" -> { return '1'; }
-            case "blue" -> { return '9'; }
-            case "light_purple" -> { return 'd'; }
-            case "dark_purple" -> { return '5'; }
-            case "white" -> { return 'f'; }
-            case "gray" -> { return '7'; }
-            case "dark_gray" -> { return '8'; }
-            case "black" -> { return '0'; }
+    public enum TextColors {
+        DARK_RED("dark_red", '4', "\u001B[31m", new Color(170, 0, 0)),
+        RED("red", 'c', "\u001B[31m", new Color(255, 85, 85)),
+        GOLD("gold", '6', "\u001B[33m", new Color(255, 170, 0)),
+        YELLOW("yellow", 'e', "\u001B[33m", new Color(255, 255, 85)),
+        DARK_GREEN("dark_green", '2', "\u001B[32m", new Color(0, 170, 0)),
+        GREEN("green", 'a', "\u001B[32m", new Color(85, 255, 85)),
+        AQUA("aqua", 'b', "\u001B[36m", new Color(85, 255, 255)),
+        DARK_AQUA("dark_aqua", '3', "\u001B[36m", new Color(0, 170, 170)),
+        DARK_BLUE("dark_blue", '1', "\u001B[34m", new Color(0, 0, 170)),
+        BLUE("blue", '9', "\u001B[34m", new Color(85, 85, 255)),
+        LIGHT_PURPLE("light_purple", 'd', "\u001B[35m", new Color(255, 85, 255)),
+        DARK_PURPLE("dark_purple", '5', "\u001B[35m", new Color(170, 0, 170)),
+        WHITE("white", 'f', "\u001B[0m", new Color(255, 255, 255)),
+        GRAY("gray", '7', "\u001B[37m", new Color(170, 170, 170)),
+        DARK_GRAY("dark_gray", '8', "\u001B[37m", new Color(85, 85, 85)),
+        BLACK("black", '0', "\u001B[30m", new Color(0, 0, 0));
+
+
+        private final String ansi, name;
+        private final char char_;
+        private final Color color;
+        private Style style;
+        TextColors(String name, char char_, String ansi, Color color) {
+            this.ansi = ansi;
+            this.name = name;
+            this.char_ = char_;
+            this.color = color;
         }
-        return 'f';
+
+        public static TextColors getFromName(String name) {
+            for (TextColors value : TextColors.values()) {
+                if (value.getName().equalsIgnoreCase(name))
+                    return value;
+            }
+            return null;
+        }
+
+        public static TextColors getFromChar(char char_) {
+            for (TextColors value : TextColors.values()) {
+                if (value.getChar() == char_)
+                    return value;
+            }
+            return null;
+        }
+
+        public String getAnsi() {
+            return ansi;
+        }
+
+        public Style getStyle() {
+            if (style == null) {
+                StyledDocument document = ChatBot.getGui().getOutput().getStyledDocument();
+                Style s = document.addStyle(this.getName(), null);
+                StyleConstants.setForeground(s, getColor());
+                style = s;
+            }
+            return style;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
+        public char getChar() {
+            return char_;
+        }
     }
 }

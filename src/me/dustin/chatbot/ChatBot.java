@@ -2,6 +2,7 @@ package me.dustin.chatbot;
 
 import me.dustin.chatbot.account.MinecraftAccount;
 import me.dustin.chatbot.account.Session;
+import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.config.Config;
 import me.dustin.chatbot.gui.ChatBotGui;
 import me.dustin.chatbot.helper.GeneralHelper;
@@ -20,7 +21,7 @@ public class ChatBot {
     private static final StopWatch stopWatch = new StopWatch();
     private static final StopWatch threadCheckStopWatch = new StopWatch();
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         String jarPath = new File("").getAbsolutePath();
         config = new Config(new File(jarPath, "config.cfg"));
         String ip = null;
@@ -37,12 +38,12 @@ public class ChatBot {
 
         if (ip == null) {
             if (noGui) {
-                GeneralHelper.print("ERROR: No IP specified in arguments! Use --ip=<ip:port>!", GeneralHelper.TextColors.RED);
+                GeneralHelper.print("ERROR: No IP specified in arguments! Use --ip=<ip:port>!", ChatMessage.TextColors.RED);
                 return;
             } else {
                 ip = JOptionPane.showInputDialog("Input ip or ip:port");
                 if (ip == null) {
-                    GeneralHelper.print("ERROR: You have to specify an IP!", GeneralHelper.TextColors.RED);
+                    GeneralHelper.print("ERROR: You have to specify an IP!", ChatMessage.TextColors.RED);
                     return;
                 }
             }
@@ -50,7 +51,6 @@ public class ChatBot {
 
         if (!noGui) {
             gui = new ChatBotGui();
-            GeneralHelper.initTextColors();
         }
 
         int port = 25565;
@@ -60,7 +60,7 @@ public class ChatBot {
         }
         File loginFile = config.getLoginFile();
         if (!loginFile.exists()) {
-            GeneralHelper.print("ERROR: No login file!", GeneralHelper.TextColors.RED);
+            GeneralHelper.print("ERROR: No login file!", ChatMessage.TextColors.RED);
             return;
         }
 
@@ -70,21 +70,21 @@ public class ChatBot {
             case "MSA" -> minecraftAccount = new MinecraftAccount.MicrosoftAccount(loginInfo[0], loginInfo[1]);
             case "MOJ" -> minecraftAccount = loginInfo.length > 1 ? new MinecraftAccount.MojangAccount(loginInfo[0], loginInfo[1]) : new MinecraftAccount.MojangAccount(loginInfo[0]);
             default -> {
-                GeneralHelper.print("ERROR: Unknown account type in config!", GeneralHelper.TextColors.RED);
+                GeneralHelper.print("ERROR: Unknown account type in config!", ChatMessage.TextColors.RED);
                 return;
             }
         }
         Session session = minecraftAccount.login();
         if (session == null) {
-            GeneralHelper.print("ERROR: Login failed!", GeneralHelper.TextColors.RED);
+            GeneralHelper.print("ERROR: Login failed!", ChatMessage.TextColors.RED);
             return;
         }
-        GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, GeneralHelper.TextColors.GREEN);
+        GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, ChatMessage.TextColors.GREEN);
 
         startThread(ip, port, session);
         if (clientConnection != null)
             clientConnection.getProcessManager().stopAll();
-        GeneralHelper.print("Connection closed.", GeneralHelper.TextColors.RED);
+        GeneralHelper.print("Connection closed.", ChatMessage.TextColors.RED);
     }
 
     public static void startThread(String ip, int port, Session session) {
@@ -99,7 +99,7 @@ public class ChatBot {
         while(getClientConnection() == null || !threadCheckStopWatch.hasPassed(getConfig().getKeepAliveCheckTime())) {
             threadCheckStopWatch.update();
         }
-        GeneralHelper.print("Thread has stopped responding. Killing and restarting", GeneralHelper.TextColors.RED);
+        GeneralHelper.print("Thread has stopped responding. Killing and restarting", ChatMessage.TextColors.RED);
         if (getClientConnection() != null)
             getClientConnection().close();
     }
@@ -127,7 +127,7 @@ public class ChatBot {
             e.printStackTrace();
         }
         if (getConfig().isReconnect()) {
-            GeneralHelper.print("Client disconnected, reconnecting in " + getConfig().getReconnectDelay() + " seconds...", GeneralHelper.TextColors.PURPLE);
+            GeneralHelper.print("Client disconnected, reconnecting in " + getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColors.DARK_PURPLE);
             stopWatch.reset();
             Thread.sleep(getConfig().getReconnectDelay() * 1000L);
             connectionLoop(ip, port, session);

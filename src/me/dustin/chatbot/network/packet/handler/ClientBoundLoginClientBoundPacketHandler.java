@@ -26,7 +26,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
     }
 
     public void handleEncryptionRequest(ClientBoundEncryptionStartPacket encryptionStartPacket) {
-        GeneralHelper.print("Received EncryptionRequest", GeneralHelper.TextColors.GREEN);
+        GeneralHelper.print("Received EncryptionRequest", ChatMessage.TextColors.GREEN);
         if (encryptionStartPacket.getPublicKey() == null)
             return;
         try {
@@ -36,7 +36,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
             getClientConnection().getPacketCrypt().generateCiphers();
 
             String serverHash = new BigInteger(getClientConnection().getPacketCrypt().hash(encryptionStartPacket.getServerID().getBytes("ISO_8859_1"), getClientConnection().getPacketCrypt().getSecretKey().getEncoded(), getClientConnection().getPacketCrypt().getPublicKey().getEncoded())).toString(16);
-            GeneralHelper.print("Contacting Auth Servers...", GeneralHelper.TextColors.GREEN);
+            GeneralHelper.print("Contacting Auth Servers...", ChatMessage.TextColors.GREEN);
             getClientConnection().contactAuthServers(serverHash);
 
             byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
@@ -45,7 +45,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
             ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
 
             getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
-            GeneralHelper.print("Encrypting connection...", GeneralHelper.TextColors.GREEN);
+            GeneralHelper.print("Encrypting connection...", ChatMessage.TextColors.GREEN);
             getClientConnection().activateEncryption();
 
         } catch (Exception e) {
@@ -54,13 +54,13 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
     }
 
     public void handleCompressionPacket(ClientBoundSetCompressionPacket clientBoundSetCompressionPacket) {
-        GeneralHelper.print("Setting compression threshold to: " + clientBoundSetCompressionPacket.getCompressionThreshold(), GeneralHelper.TextColors.GREEN);
+        GeneralHelper.print("Setting compression threshold to: " + clientBoundSetCompressionPacket.getCompressionThreshold(), ChatMessage.TextColors.GREEN);
         getClientConnection().setCompressionThreshold(clientBoundSetCompressionPacket.getCompressionThreshold());
     }
 
     public void handlePluginRequestPacket(ClientBoundPluginRequestPacket clientBoundPluginRequestPacket) {
         int id = clientBoundPluginRequestPacket.getMessageId();
-        GeneralHelper.print("Received Plugin Request packet " + id + " " + clientBoundPluginRequestPacket.getIdentifier(), GeneralHelper.TextColors.GREEN);
+        GeneralHelper.print("Received Plugin Request packet " + id + " " + clientBoundPluginRequestPacket.getIdentifier(), ChatMessage.TextColors.GREEN);
         getClientConnection().sendPacket(new ServerBoundPluginResponsePacket(id));
     }
 
@@ -68,8 +68,8 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
         getClientConnection().setNetworkState(ClientConnection.NetworkState.PLAY);
         getClientConnection().setClientBoundPacketHandler(new ClientBoundPlayClientBoundPacketHandler(getClientConnection()));
         getClientConnection().getTpsHelper().clear();
-        GeneralHelper.print("Login Success Packet. You are connected", GeneralHelper.TextColors.GREEN);
-        GeneralHelper.print("Setting NETWORK_STATE to PLAY", GeneralHelper.TextColors.GREEN);
+        GeneralHelper.print("Login Success Packet. You are connected", ChatMessage.TextColors.GREEN);
+        GeneralHelper.print("Setting NETWORK_STATE to PLAY", ChatMessage.TextColors.GREEN);
         new EventLoginSuccess().run(getClientConnection());
     }
 
