@@ -77,7 +77,6 @@ public class ChatBotGui {
                 stopWatch.reset();
             }
         }).start();
-        setLookAndFeel();
     }
 
     @EventPointer
@@ -93,15 +92,6 @@ public class ChatBotGui {
     public void tick() {
         stopWatch.reset();
         frame.setTitle("ChatBot - Connected to: " + clientConnection.getIp() + ":" + clientConnection.getPort() + " for: " + GeneralHelper.getDurationString(ChatBot.connectionTime()));
-    }
-
-    public void setLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-            updateComponents();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public JFrame getFrame() {

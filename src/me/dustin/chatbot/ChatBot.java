@@ -35,6 +35,16 @@ public class ChatBot {
             }
         }
 
+        if (!noGui) {
+            gui = new ChatBotGui();
+            try {
+                UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+                gui.updateComponents();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         if (ip == null) {
             if (noGui) {
                 GeneralHelper.print("ERROR: No IP specified in arguments! Use --ip=<ip:port>!", ChatMessage.TextColors.RED);
@@ -46,10 +56,6 @@ public class ChatBot {
                     return;
                 }
             }
-        }
-
-        if (!noGui) {
-            gui = new ChatBotGui();
         }
 
         int port = 25565;
