@@ -27,7 +27,7 @@ public class Chat2b2tProcess extends ChatBotProcess {
 
     @EventPointer
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
-        if (event.isCancelled())
+        if (event.getChatMessagePacket().getSender() == null || event.isCancelled())
             return;
         String body = GeneralHelper.strip(event.getChatMessagePacket().getMessage().getBody().toLowerCase());
         System.out.println(body);
