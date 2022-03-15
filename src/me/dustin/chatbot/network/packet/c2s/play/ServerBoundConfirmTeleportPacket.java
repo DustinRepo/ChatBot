@@ -3,6 +3,7 @@ package me.dustin.chatbot.network.packet.c2s.play;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.PacketIDs;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -22,7 +23,7 @@ public class ServerBoundConfirmTeleportPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
 
-        writeVarInt(packet, 0x00);//packet id
+        writeVarInt(packet, PacketIDs.ServerBound.CONFIRM_TELEPORT.getPacketId());//packet id
         writeVarInt(packet, id);
 
         writeVarInt(out, baos.toByteArray().length);

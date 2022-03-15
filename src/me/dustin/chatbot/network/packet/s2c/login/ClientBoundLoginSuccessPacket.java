@@ -1,12 +1,11 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.helper.Protocols;
+import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.UUID;

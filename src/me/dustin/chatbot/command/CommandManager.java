@@ -53,7 +53,7 @@ public class CommandManager {
                 sender = getClientConnection().getPlayerManager().get(sA[1]).getUuid();
             }
         }
-        if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) ||  GeneralHelper.matchUUIDs(sender.toString(), getClientConnection().getSession().getUuid())) {
+        if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || (sender != null && GeneralHelper.matchUUIDs(sender.toString(), getClientConnection().getSession().getUuid()))) {
             return;
         }
         if (!stopWatch.hasPassed(ChatBot.getConfig().getMessageDelay())) {

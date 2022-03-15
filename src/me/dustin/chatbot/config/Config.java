@@ -1,7 +1,7 @@
 package me.dustin.chatbot.config;
 
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.helper.Protocols;
+import me.dustin.chatbot.network.Protocols;
 
 import java.io.File;
 import java.io.IOException;

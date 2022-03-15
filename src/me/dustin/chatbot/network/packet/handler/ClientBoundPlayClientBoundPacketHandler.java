@@ -2,127 +2,33 @@ package me.dustin.chatbot.network.packet.handler;
 
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
-import me.dustin.chatbot.command.impl.CommandPlugins;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventReceiveTabComplete;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.helper.Protocols;
+import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.c2s.play.*;
 import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.OtherPlayer;
 
-import java.util.UUID;
-
 public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public ClientBoundPlayClientBoundPacketHandler(ClientConnection clientConnection) {
         super(clientConnection);
-
-        int protocolVersion = ChatBot.getConfig().getProtocolVersion();
-        //https://wiki.vg/Protocol_version_numbers - select the "page" part and it will show all packets, their IDs, and how they're constructed
-        if (protocolVersion >= Protocols.V1_17.getProtocolVer()) {//all 1.17 - 1.18.2 compatible packets
-            getPacketMap().put(0x1A, ClientBoundDisconnectPlayPacket.class);
-            getPacketMap().put(0x0F, ClientBoundChatMessagePacket.class);
-            getPacketMap().put(0x21, ClientBoundKeepAlivePacket.class);
-            getPacketMap().put(0x35, ClientBoundPlayerDeadPacket.class);
-            getPacketMap().put(0x36, ClientBoundPlayerInfoPacket.class);
-            getPacketMap().put(0x38, ClientBoundPlayerPositionAndLookPacket.class);
-            getPacketMap().put(0x3C, ClientBoundResourcePackSendPacket.class);
-            getPacketMap().put(0x11, ClientBoundTabCompletePacket.class);
-            getPacketMap().put(0x52, ClientBoundUpdateHealthPacket.class);
-            getPacketMap().put(0x59, ClientBoundWorldTimePacket.class);
-        } else if (protocolVersion >= Protocols.V1_16_2.getProtocolVer()){//1.16.2 - 1.16.5
-            getPacketMap().put(0x1F, ClientBoundKeepAlivePacket.class);
-            getPacketMap().put(0x19, ClientBoundDisconnectPlayPacket.class);
-            getPacketMap().put(0x0E, ClientBoundChatMessagePacket.class);
-            getPacketMap().put(0x31, ClientBoundPlayerDeadPacket.class);
-            getPacketMap().put(0x32, ClientBoundPlayerInfoPacket.class);
-            getPacketMap().put(0x34, ClientBoundPlayerPositionAndLookPacket.class);
-            getPacketMap().put(0x38, ClientBoundResourcePackSendPacket.class);
-            getPacketMap().put(0x0F, ClientBoundTabCompletePacket.class);
-            getPacketMap().put(0x49, ClientBoundUpdateHealthPacket.class);
-            getPacketMap().put(0x4E, ClientBoundWorldTimePacket.class);
-        } else if (protocolVersion >= Protocols.V1_16.getProtocolVer()) {//1.16 and 1.16.1
-            getPacketMap().put(0x20, ClientBoundKeepAlivePacket.class);
-            getPacketMap().put(0x1A, ClientBoundDisconnectPlayPacket.class);
-            getPacketMap().put(0x0E, ClientBoundChatMessagePacket.class);
-            getPacketMap().put(0x32, ClientBoundPlayerDeadPacket.class);
-            getPacketMap().put(0x33, ClientBoundPlayerInfoPacket.class);
-            getPacketMap().put(0x35, ClientBoundPlayerPositionAndLookPacket.class);
-            getPacketMap().put(0x39, ClientBoundResourcePackSendPacket.class);
-            getPacketMap().put(0x10, ClientBoundTabCompletePacket.class);
-            getPacketMap().put(0x4A, ClientBoundUpdateHealthPacket.class);
-            getPacketMap().put(0x4E, ClientBoundWorldTimePacket.class);
-        } else if (protocolVersion >= Protocols.V1_15.getProtocolVer()) {//1.15 - 1.15.2
-            getPacketMap().put(0x21, ClientBoundKeepAlivePacket.class);
-            getPacketMap().put(0x1B, ClientBoundDisconnectPlayPacket.class);
-            getPacketMap().put(0xF, ClientBoundChatMessagePacket.class);
-            getPacketMap().put(0x33, ClientBoundPlayerDeadPacket.class);
-            getPacketMap().put(0x34, ClientBoundPlayerInfoPacket.class);
-            getPacketMap().put(0x36, ClientBoundPlayerPositionAndLookPacket.class);
-            getPacketMap().put(0x3A, ClientBoundResourcePackSendPacket.class);
-            getPacketMap().put(0x11, ClientBoundTabCompletePacket.class);
-            getPacketMap().put(0x49, ClientBoundUpdateHealthPacket.class);
-            getPacketMap().put(0x4F, ClientBoundWorldTimePacket.class);
-        } else if (protocolVersion >= Protocols.V1_14.getProtocolVer()) {//1.14 - 1.14.4
-            getPacketMap().put(0x20, ClientBoundKeepAlivePacket.class);
-            getPacketMap().put(0x1A, ClientBoundDisconnectPlayPacket.class);
-            getPacketMap().put(0xE, ClientBoundChatMessagePacket.class);
-            getPacketMap().put(0x32, ClientBoundPlayerDeadPacket.class);
-            getPacketMap().put(0x33, ClientBoundPlayerInfoPacket.class);
-            getPacketMap().put(0x35, ClientBoundPlayerPositionAndLookPacket.class);
-            getPacketMap().put(0x39, ClientBoundResourcePackSendPacket.class);
-            getPacketMap().put(0x10, ClientBoundTabCompletePacket.class);
-            getPacketMap().put(0x48, ClientBoundUpdateHealthPacket.class);//only difference in IDs between this and 1.16
-            getPacketMap().put(0x4E, ClientBoundWorldTimePacket.class);
-        } else if (protocolVersion >= Protocols.V1_13.getProtocolVer()) {//1.13 - 1.13.2
-            getPacketMap().put(0x21, ClientBoundKeepAlivePacket.class);
-            getPacketMap().put(0x1B, ClientBoundDisconnectPlayPacket.class);
-            getPacketMap().put(0x0E, ClientBoundChatMessagePacket.class);
-            getPacketMap().put(0x2F, ClientBoundPlayerDeadPacket.class);
-            getPacketMap().put(0x30, ClientBoundPlayerInfoPacket.class);
-            getPacketMap().put(0x32, ClientBoundPlayerPositionAndLookPacket.class);
-            getPacketMap().put(0x37, ClientBoundResourcePackSendPacket.class);
-            getPacketMap().put(0x10, ClientBoundTabCompletePacket.class);
-            getPacketMap().put(0x44, ClientBoundUpdateHealthPacket.class);
-            getPacketMap().put(0x4A, ClientBoundWorldTimePacket.class);
-        } else if (ChatBot.getConfig().getProtocolVersion() == Protocols.V1_12_2.getProtocolVer()) {//1.12.2
-            getPacketMap().put(0x1F, ClientBoundKeepAlivePacket.class);
-            getPacketMap().put(0x1A, ClientBoundDisconnectPlayPacket.class);
-            getPacketMap().put(0x0F, ClientBoundChatMessagePacket.class);
-            getPacketMap().put(0x2D, ClientBoundPlayerDeadPacket.class);
-            getPacketMap().put(0x2E, ClientBoundPlayerInfoPacket.class);
-            getPacketMap().put(0x2F, ClientBoundPlayerPositionAndLookPacket.class);
-            getPacketMap().put(0x34, ClientBoundResourcePackSendPacket.class);
-            getPacketMap().put(0x0E, ClientBoundTabCompletePacket.class);
-            getPacketMap().put(0x41, ClientBoundUpdateHealthPacket.class);
-            getPacketMap().put(0x47, ClientBoundWorldTimePacket.class);
-        } else if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_12.getProtocolVer()) {//1.12 & 1.12.1
-            getPacketMap().put(0x1F, ClientBoundKeepAlivePacket.class);
-            getPacketMap().put(0x1A, ClientBoundDisconnectPlayPacket.class);
-            getPacketMap().put(0x0F, ClientBoundChatMessagePacket.class);
-            getPacketMap().put(0x0E, ClientBoundTabCompletePacket.class);
-
-            if (ChatBot.getConfig().getProtocolVersion() == Protocols.V1_12.getProtocolVer()) {
-                getPacketMap().put(0x2C, ClientBoundPlayerDeadPacket.class);
-                getPacketMap().put(0x2D, ClientBoundPlayerInfoPacket.class);
-                getPacketMap().put(0x2E, ClientBoundPlayerPositionAndLookPacket.class);
-                getPacketMap().put(0x33, ClientBoundResourcePackSendPacket.class);
-                getPacketMap().put(0x40, ClientBoundUpdateHealthPacket.class);
-                getPacketMap().put(0x46, ClientBoundWorldTimePacket.class);
-            } else {
-                getPacketMap().put(0x2D, ClientBoundPlayerDeadPacket.class);
-                getPacketMap().put(0x2E, ClientBoundPlayerInfoPacket.class);
-                getPacketMap().put(0x2F, ClientBoundPlayerPositionAndLookPacket.class);
-                getPacketMap().put(0x34, ClientBoundResourcePackSendPacket.class);
-                getPacketMap().put(0x41, ClientBoundUpdateHealthPacket.class);
-                getPacketMap().put(0x47, ClientBoundWorldTimePacket.class);
-            }
-        }
+        getPacketMap().put(PacketIDs.ClientBound.CHAT_MESSAGE.getPacketId(), ClientBoundChatMessagePacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.COMBAT_EVENT.getPacketId(), ClientBoundCombatEventPacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.DISCONNECT.getPacketId(), ClientBoundDisconnectPlayPacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.KEEP_ALIVE.getPacketId(), ClientBoundKeepAlivePacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.PLAYER_INFO.getPacketId(), ClientBoundPlayerInfoPacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.PLAYER_POS_LOOK.getPacketId(), ClientBoundPlayerPositionAndLookPacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.RESOURCE_PACK_SEND.getPacketId(), ClientBoundResourcePackSendPacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.TAB_COMPLETE.getPacketId(), ClientBoundTabCompletePacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.UPDATE_HEALTH.getPacketId(), ClientBoundUpdateHealthPacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.WORLD_TIME.getPacketId(), ClientBoundWorldTimePacket.class);
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {
@@ -183,8 +89,8 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         }
     }
 
-    public void handlePlayerDeadPacket(ClientBoundPlayerDeadPacket clientBoundPlayerDeadPacket) {
-        if (clientBoundPlayerDeadPacket.getType() == ClientBoundPlayerDeadPacket.ENTITY_DIED || !clientBoundPlayerDeadPacket.getMessage().isEmpty())
+    public void handlePlayerDeadPacket(ClientBoundCombatEventPacket clientBoundCombatEventPacket) {
+        if (clientBoundCombatEventPacket.getType() == ClientBoundCombatEventPacket.ENTITY_DIED || !clientBoundCombatEventPacket.getMessage().isEmpty())
             getClientConnection().sendPacket(new ServerBoundClientStatusPacket(ServerBoundClientStatusPacket.RESPAWN));
     }
 

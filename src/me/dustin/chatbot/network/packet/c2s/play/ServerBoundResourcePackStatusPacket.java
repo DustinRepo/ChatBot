@@ -3,10 +3,10 @@ package me.dustin.chatbot.network.packet.c2s.play;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.helper.Protocols;
+import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.PacketIDs;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,16 +27,8 @@ public class ServerBoundResourcePackStatusPacket extends Packet {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
-        int packetId = 0x21;
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_16_1.getProtocolVer())
-            packetId = 0x20;
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_15_2.getProtocolVer())
-            packetId = 0x1F;
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_13_2.getProtocolVer())
-            packetId = 0x1D;
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_12_2.getProtocolVer())
-            packetId = 0x18;
-        packet.write(packetId);//packet id
+
+        packet.write(PacketIDs.ServerBound.RESOURCE_PACK_STATUS.getPacketId());//packet id
         writeVarInt(packet, result);
 
         writeVarInt(out, baos.toByteArray().length);

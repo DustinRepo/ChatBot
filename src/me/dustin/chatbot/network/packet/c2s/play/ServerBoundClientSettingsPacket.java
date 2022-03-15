@@ -3,8 +3,9 @@ package me.dustin.chatbot.network.packet.c2s.play;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.helper.Protocols;
+import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.PacketIDs;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -28,11 +29,7 @@ public class ServerBoundClientSettingsPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream packet = new DataOutputStream(baos);
 
-        int packetId = 0x05;
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_13_2.getProtocolVer() && ChatBot.getConfig().getProtocolVersion() != Protocols.V1_12.getProtocolVer())
-            packetId = 0x04;
-
-        writeVarInt(packet, packetId);//packet id
+        writeVarInt(packet, PacketIDs.ServerBound.CLIENT_SETTINGS.getPacketId());//packet id
         writeString(packet, locale);
         packet.writeByte(8);//render distance
         writeVarInt(packet, 0);//chat mode. 0 = enabled

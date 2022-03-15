@@ -1,4 +1,6 @@
-package me.dustin.chatbot.helper;
+package me.dustin.chatbot.network;
+
+import me.dustin.chatbot.ChatBot;
 
 public enum Protocols {
     V1_18_2("1.18.2", 758),
@@ -23,8 +25,9 @@ public enum Protocols {
     V1_12_2("1.12.2", 340),
     V1_12_1("1.12.1", 338),
     V1_12("1.12", 335);
-    private String name;
-    private int protocolVer;
+    private final String name;
+    private final int protocolVer;
+    private static Protocols current;
     Protocols(String name, int protocolVer) {
         this.name = name;
         this.protocolVer = protocolVer;
@@ -36,6 +39,12 @@ public enum Protocols {
                 return value;
         }
         return V1_18_2;
+    }
+
+    public static Protocols getCurrent() {
+        if (current == null)
+            current = get(ChatBot.getConfig().getClientVersion());
+        return current;
     }
 
     public String getName() {
