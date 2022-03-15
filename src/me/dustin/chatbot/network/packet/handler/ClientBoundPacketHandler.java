@@ -1,5 +1,6 @@
 package me.dustin.chatbot.network.packet.handler;
 
+import me.dustin.chatbot.helper.BadPacketException;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.Packet;
@@ -25,7 +26,11 @@ public abstract class ClientBoundPacketHandler {
     public void listen() {
         try {
             DataInputStream packetData = getPacketData();
-            if (packetData != null && packetData.available() > 0 && packetData.available() <= 2097050) {//max incoming packet size
+            if (packetData == null)
+                return;
+            if (packetData.available() > 2097050)
+                throw new BadPacketException(String.format("Packet size is more than %d!", 2097050));
+            if (packetData.available() > 0) {
                 int packetId = Packet.readVarInt(packetData);
                 Class<? extends Packet.ClientBoundPacket> c = packetMap.get(packetId);
                 if (c != null) {
@@ -49,7 +54,7 @@ public abstract class ClientBoundPacketHandler {
         return clientConnection;
     }
 
-    public DataInputStream getPacketData() throws IOException {
+    public DataInputStream getPacketData() throws IOException, BadPacketException {
         DataInputStream dataInputStream = getClientConnection().getIn();
         if (getClientConnection().getCompressionThreshold() > 0) {
             int length = Packet.readVarInt(dataInputStream);
@@ -69,7 +74,7 @@ public abstract class ClientBoundPacketHandler {
         }
     }
 
-    private DataInputStream readCompressed(DataInputStream dataInputStream, int packetLength, int dataLength) throws IOException {
+    private DataInputStream readCompressed(DataInputStream dataInputStream, int packetLength, int dataLength) throws BadPacketException, IOException {
         if (dataLength >= getClientConnection().getCompressionThreshold()) {
             byte[] data = new byte[packetLength];
             dataInputStream.readFully(data, 0, packetLength);
@@ -82,12 +87,12 @@ public abstract class ClientBoundPacketHandler {
                 inflater.inflate(uncompressed);
             } catch (DataFormatException dataFormatException) {
                 dataFormatException.printStackTrace();
-                throw new IOException("Bad packet. DataFormatException");
+                throw new BadPacketException("Badly compressed packet");
             } finally {
                 inflater.end();
             }
             return new DataInputStream(new ByteArrayInputStream(uncompressed));
         } else
-            throw new IOException("Bad packet. dataLength was smaller than compression threshhold");
+            throw new BadPacketException("DataLength was smaller than compression threshhold! dl:" + dataLength + " threshold:" + getClientConnection().getCompressionThreshold());
     }
 }

@@ -19,9 +19,8 @@ public class ChatBot {
     private static ClientConnection clientConnection;
     private static ChatBotGui gui;
     private static final StopWatch stopWatch = new StopWatch();
-    private static final StopWatch threadCheckStopWatch = new StopWatch();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();
         config = new Config(new File(jarPath, "config.cfg"));
         String ip = null;
@@ -79,29 +78,13 @@ public class ChatBot {
             GeneralHelper.print("ERROR: Login failed!", ChatMessage.TextColors.RED);
             return;
         }
-        GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, ChatMessage.TextColors.GREEN);
+        GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, ChatMessage.TextColors.AQUA);
 
-        startThread(ip, port, session);
+        connectionLoop(ip, port, session);
+
         if (clientConnection != null)
             clientConnection.getProcessManager().stopAll();
         GeneralHelper.print("Connection closed.", ChatMessage.TextColors.RED);
-    }
-
-    public static void startThread(String ip, int port, Session session) {
-        new Thread(() -> {
-            try {
-                connectionLoop(ip, port, session);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-        threadCheckStopWatch.reset();
-        while(getClientConnection() == null || !threadCheckStopWatch.hasPassed(getConfig().getKeepAliveCheckTime())) {
-            threadCheckStopWatch.update();
-        }
-        GeneralHelper.print("Thread has stopped responding. Killing and restarting", ChatMessage.TextColors.RED);
-        if (getClientConnection() != null)
-            getClientConnection().close();
     }
 
     private static void connectionLoop(String ip, int port, Session session) throws InterruptedException {
@@ -117,10 +100,9 @@ public class ChatBot {
             clientConnection.connect();
             stopWatch.reset();
             while (clientConnection.isConnected()) {
-                threadCheckStopWatch.reset();
                 clientConnection.tick();
                 if (getGui() != null) {
-                    getGui().getFrame().setTitle("ChatBot - Connected to: " + ip + ":" + port + " for: " + GeneralHelper.getDurationString(connectionTime()));
+                    getGui().tick();
                 }
             }
         } catch (Exception e) {

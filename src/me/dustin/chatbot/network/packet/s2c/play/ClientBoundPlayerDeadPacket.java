@@ -1,6 +1,7 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.helper.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -22,14 +23,14 @@ public class ClientBoundPlayerDeadPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(DataInputStream dataInputStream) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() <= 754) {//1.16.5
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_16_5.getProtocolVer()) {//1.16.5
             this.type = readVarInt(dataInputStream);
             if (type != ENTITY_DIED)
                 return;
         }
         this.playerId = readVarInt(dataInputStream);
         this.killerId = dataInputStream.readInt();
-        if (ChatBot.getConfig().getProtocolVersion() >= 755 || type == ENTITY_DIED)//1.17 or the player actually died
+        if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer() || type == ENTITY_DIED)//1.17 or the player actually died
             this.message = readString(dataInputStream);
     }
 

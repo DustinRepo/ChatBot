@@ -1,6 +1,7 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.helper.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
@@ -24,7 +25,7 @@ public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(DataInputStream dataInputStream) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() == 340) {//1.12
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_12_2.getProtocolVer()) {//1.12
             int size = readVarInt(dataInputStream);
             for (int i = 0; i < size - 1; i++) {
                 this.matches.add(new TabCompleteMatch(readString(dataInputStream), false, ""));
@@ -33,18 +34,16 @@ public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
         }
         this.id = readVarInt(dataInputStream);
         this.start = readVarInt(dataInputStream);
-        try {//for some reason needed for length now? - done before packet handling overhaul
-            this.length = readVarInt(dataInputStream);
-            int arraylength = readVarInt(dataInputStream);
-            for (int i = 0; i < arraylength; i++) {
-                String m = readString(dataInputStream);
-                boolean tt = dataInputStream.readBoolean();
-                String s = "";
-                if (tt)
-                    s = readString(dataInputStream);
-                this.matches.add(new TabCompleteMatch(m, tt, s));
-            }
-        } catch (EOFException e) {}
+        this.length = readVarInt(dataInputStream);
+        int arraylength = readVarInt(dataInputStream);
+        for (int i = 0; i < arraylength; i++) {
+            String m = readString(dataInputStream);
+            boolean tt = dataInputStream.readBoolean();
+            String s = "";
+            if (tt)
+                s = readString(dataInputStream);
+            this.matches.add(new TabCompleteMatch(m, tt, s));
+        }
     }
 
     @Override

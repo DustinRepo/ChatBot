@@ -3,6 +3,7 @@ package me.dustin.chatbot.network.packet.c2s.play;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.helper.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 
 import java.io.ByteArrayOutputStream;
@@ -26,12 +27,14 @@ public class ServerBoundPlayerRotationPacket extends Packet {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(baos);
         int packetId = 0x13;
-        if (ChatBot.getConfig().getProtocolVersion() <= 754 && ChatBot.getConfig().getProtocolVersion() > 578)
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_16_5.getProtocolVer() && ChatBot.getConfig().getProtocolVersion() > Protocols.V1_15_2.getProtocolVer())
             packetId = 0x14;
-        if (ChatBot.getConfig().getProtocolVersion() <= 404)
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_13_2.getProtocolVer())
             packetId = 0x12;
-        if (ChatBot.getConfig().getProtocolVersion() <= 340)
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_12_2.getProtocolVer())
             packetId = 0xF;
+        if (ChatBot.getConfig().getProtocolVersion() == Protocols.V1_12.getProtocolVer())
+            packetId = 0x10;
         dataOutputStream.write(packetId);//packet id
         dataOutputStream.writeFloat(yaw);
         dataOutputStream.writeFloat(pitch);

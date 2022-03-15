@@ -3,6 +3,7 @@ package me.dustin.chatbot.network.packet.c2s.play;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.helper.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 
 import java.io.ByteArrayOutputStream;
@@ -25,7 +26,7 @@ public class ServerBoundChatPacket extends Packet {
         DataOutputStream dataOutputStream = new DataOutputStream(baos);
 
         int packetId = 0x03;
-        if (ChatBot.getConfig().getProtocolVersion() <= 404)//1.13.2
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_13_2.getProtocolVer() && ChatBot.getConfig().getProtocolVersion() != Protocols.V1_12.getProtocolVer())
             packetId = 0x02;
 
         writeVarInt(dataOutputStream, packetId);

@@ -1,13 +1,19 @@
 package me.dustin.chatbot.gui;
 
+import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventRemovePlayer;
+import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -21,6 +27,7 @@ public class ChatBotGui {
     private DefaultListModel<String> model;
 
     private ClientConnection clientConnection;
+    private final StopWatch stopWatch = new StopWatch();
 
     public ChatBotGui() {
         this.frame = new JFrame("ChatBot");
@@ -56,6 +63,12 @@ public class ChatBotGui {
                 System.exit(0);
             }
         });
+        new Timer(1000, e -> {
+            if (clientConnection != null && stopWatch.hasPassed(ChatBot.getConfig().getKeepAliveCheckTime() * 1000L)) {
+                GeneralHelper.print("Thread stopped responding, closing connection...", ChatMessage.TextColors.DARK_RED);
+                clientConnection.close();
+            }
+        }).start();
         setLookAndFeel();
     }
 
@@ -68,6 +81,11 @@ public class ChatBotGui {
     private final EventListener<EventRemovePlayer> eventRemovePlayerEventListener = new EventListener<>(event -> {
         getPlayerList().removeElement(event.getPlayer().getName());
     });
+
+    public void tick() {
+        stopWatch.reset();
+        frame.setTitle("ChatBot - Connected to: " + clientConnection.getIp() + ":" + clientConnection.getPort() + " for: " + GeneralHelper.getDurationString(ChatBot.connectionTime()));
+    }
 
     public void setLookAndFeel() {
         try {

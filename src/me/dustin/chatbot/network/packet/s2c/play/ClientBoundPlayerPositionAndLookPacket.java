@@ -1,6 +1,7 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.helper.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
@@ -29,7 +30,7 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
         pitch = dataInputStream.readFloat();
         flags = dataInputStream.readByte();
         teleportId = readVarInt(dataInputStream);
-        if (ChatBot.getConfig().getProtocolVersion() > 754)//1.16.5
+        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_16_5.getProtocolVer())//1.16.5
             dismount = dataInputStream.readBoolean();
     }
 

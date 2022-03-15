@@ -3,6 +3,7 @@ package me.dustin.chatbot.network.packet.c2s.play;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.helper.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 
 import java.io.ByteArrayOutputStream;
@@ -28,7 +29,7 @@ public class ServerBoundClientSettingsPacket extends Packet {
         DataOutputStream packet = new DataOutputStream(baos);
 
         int packetId = 0x05;
-        if (ChatBot.getConfig().getProtocolVersion() <= 404)
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_13_2.getProtocolVer() && ChatBot.getConfig().getProtocolVersion() != Protocols.V1_12.getProtocolVer())
             packetId = 0x04;
 
         writeVarInt(packet, packetId);//packet id
@@ -38,9 +39,9 @@ public class ServerBoundClientSettingsPacket extends Packet {
         packet.writeBoolean(true);//chat colors
         packet.writeByte(enabledSkinParts);
         writeVarInt(packet, 1);//main hand - 0 = left 1 = right
-        if (ChatBot.getConfig().getProtocolVersion() > 754)
+        if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer())
             packet.writeBoolean(false);//text filtering
-        if (ChatBot.getConfig().getProtocolVersion() >= 757)//1.18, I *think* the version this was added
+        if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_18.getProtocolVer())//1.18, I *think* the version this was added
             packet.writeBoolean(allowServerListings);
 
         writeVarInt(out, baos.toByteArray().length);

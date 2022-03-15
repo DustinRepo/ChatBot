@@ -1,6 +1,7 @@
 package me.dustin.chatbot.config;
 
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.Protocols;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,7 @@ public class Config {
     private String proxyString;
     private String proxyUsername;
     private String proxyPassword;
+    private String clientVersion;
     private String commandPrefix;
     private String accountType;
     private String crackedLoginPassword;
@@ -64,6 +66,8 @@ public class Config {
         locale = parser.readString("locale");
         loginCommand = parser.readString("loginCommand");
         passwordCreateCommand = parser.readString("passwordCreateCommand");
+        clientVersion = parser.readString("clientVersion");
+        protocolVersion = Protocols.get(clientVersion).getProtocolVer();
 
         log = parser.readBoolean("log");
         colorConsole = parser.readBoolean("consoleColor");
@@ -79,7 +83,6 @@ public class Config {
         twoB2tCount = parser.readBoolean("2b2tCount");
         quotes = parser.readBoolean("quotes");
 
-        protocolVersion = parser.readInt("protocolVersion");
         reconnectDelay = parser.readInt("reconnectDelay");
         messageDelay = parser.readInt("messageDelay");
         announcementDelay = parser.readInt("announcementDelay");
@@ -137,6 +140,10 @@ public class Config {
 
     public String getPasswordCreateCommand() {
         return passwordCreateCommand;
+    }
+
+    public String getClientVersion() {
+        return clientVersion;
     }
 
     public boolean isLog() {
