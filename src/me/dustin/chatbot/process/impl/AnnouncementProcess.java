@@ -23,7 +23,7 @@ public class AnnouncementProcess extends ChatBotProcess {
         announcements.add("Need to report someone? Use {PREFIX}report <name> <reason>");
         announcements.add("Use {PREFIX}isEven to see if a number is even!");
         announcements.add("Need to see server TPS? {PREFIX}tps");
-        announcements.add("Want to use this bot program? https://github.com/DustinRepo/ChatBot");
+        announcements.add("Want to use this bot program? It supports all versions from 1.12 - 1.18.2! https://github.com/DustinRepo/ChatBot");
         if (ChatBot.getConfig().is2b2tCount())
             announcements.add("Use {PREFIX}2b2tcount <name> to see how many times someone has mentioned 2b2t!");
         if (ChatBot.getConfig().isQuotes())
