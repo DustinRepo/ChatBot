@@ -46,13 +46,15 @@ public class ChatBotGui {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//they pressed enter
-                    clientConnection.sendPacket(new ServerBoundChatPacket(input.getText()));
+                    if (clientConnection != null)
+                        clientConnection.sendPacket(new ServerBoundChatPacket(input.getText()));
                     input.setText("");
                 }
             }
         });
         sendButton.addActionListener(actionEvent -> {
-            this.clientConnection.sendPacket(new ServerBoundChatPacket(input.getText()));
+            if (clientConnection != null)
+                this.clientConnection.sendPacket(new ServerBoundChatPacket(input.getText()));
             this.input.setText("");
         });
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -68,6 +70,8 @@ public class ChatBotGui {
                 if (stopWatch.hasPassed(ChatBot.getConfig().getKeepAliveCheckTime() * 1000L)) {
                     GeneralHelper.print("Thread stopped responding, closing connection...", ChatMessage.TextColors.DARK_RED);
                     clientConnection.close();
+                    clientConnection = null;
+                    stopWatch.reset();
                 }
             } else {
                 stopWatch.reset();
