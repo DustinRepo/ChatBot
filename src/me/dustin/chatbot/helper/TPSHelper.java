@@ -24,13 +24,17 @@ public class TPSHelper {
        return getTPS(reports.size());
     }
 
+    public int reportSize() {
+        return reports.size();
+    }
+
     public void clear() {
         reports.clear();
     }
 
     public void worldTime() {
         reports.add(System.currentTimeMillis());
-        while (reports.size() > 15) {
+        while (reports.size() > 60) {
             reports.remove(0);
         }
     }
