@@ -24,7 +24,7 @@ public abstract class ClientBoundPacketHandler {
 
     public void listen() {
         try {
-            ByteArrayInputStream packetData = getPacketData();
+            DataInputStream packetData = getPacketData();
             if (packetData != null && packetData.available() > 0 && packetData.available() <= 2097050) {//max incoming packet size
                 int packetId = Packet.readVarInt(packetData);
                 Class<? extends Packet.ClientBoundPacket> c = packetMap.get(packetId);
@@ -49,7 +49,7 @@ public abstract class ClientBoundPacketHandler {
         return clientConnection;
     }
 
-    public ByteArrayInputStream getPacketData() throws IOException {
+    public DataInputStream getPacketData() throws IOException {
         DataInputStream dataInputStream = getClientConnection().getIn();
         if (getClientConnection().getCompressionThreshold() > 0) {
             int length = Packet.readVarInt(dataInputStream);
@@ -57,17 +57,19 @@ public abstract class ClientBoundPacketHandler {
             int dataLength = dataLengths[0];
             int packetLegth = length-dataLengths[1];
             if (dataLength != 0) {
-                return readCompressed(packetLegth, dataLength);
+                return readCompressed(dataInputStream, packetLegth, dataLength);
             } else {
-                return readUncompressed(packetLegth);
+                byte[] readableBytes = new byte[packetLegth];
+                dataInputStream.readFully(readableBytes);
+                return new DataInputStream(new ByteArrayInputStream(readableBytes));
             }
         } else {
-            return readUncompressed();
+            Packet.readVarInt(dataInputStream);//read size even tho we don't use it since we don't expect it later
+            return dataInputStream;
         }
     }
 
-    private ByteArrayInputStream readCompressed(int packetLength, int dataLength) throws IOException {
-        DataInputStream dataInputStream = getClientConnection().getIn();
+    private DataInputStream readCompressed(DataInputStream dataInputStream, int packetLength, int dataLength) throws IOException {
         if (dataLength >= getClientConnection().getCompressionThreshold()) {
             byte[] data = new byte[packetLength];
             dataInputStream.readFully(data, 0, packetLength);
@@ -84,23 +86,8 @@ public abstract class ClientBoundPacketHandler {
             } finally {
                 inflater.end();
             }
-            return new ByteArrayInputStream(uncompressed);
+            return new DataInputStream(new ByteArrayInputStream(uncompressed));
         } else
             throw new IOException("Bad packet. dataLength was smaller than compression threshhold");
-    }
-
-    private ByteArrayInputStream readUncompressed() throws IOException {
-        DataInputStream dataInputStream = getClientConnection().getIn();
-        int size = Packet.readVarInt(dataInputStream);
-        byte[] readableBytes = new byte[size];
-        dataInputStream.readFully(readableBytes);
-        return new ByteArrayInputStream(readableBytes);
-    }
-
-    private ByteArrayInputStream readUncompressed(int size) throws IOException {
-        DataInputStream dataInputStream = getClientConnection().getIn();
-        byte[] readableBytes = new byte[size];
-        dataInputStream.readFully(readableBytes);
-        return new ByteArrayInputStream(readableBytes);
     }
 }

@@ -16,10 +16,8 @@ public class ClientBoundKeepAlivePacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
         this.id = dataInputStream.readLong();
-        super.createPacket(byteArrayInputStream);
     }
 
     public long getId() {

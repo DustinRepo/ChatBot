@@ -19,21 +19,18 @@ public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
 
         if (ChatBot.getConfig().getProtocolVersion() <= 578) {//1.15.2 and below
             String s = readString(dataInputStream);
             String s1 = readString(dataInputStream);
-            uuid = s.length() > 0 ? UUID.fromString(s) : null;
+            this.uuid = s.length() > 0 ? UUID.fromString(s) : null;
             this.username = s1;
             return;
         }
 
         this.uuid = readUUID(dataInputStream);
         this.username = readString(dataInputStream);
-
-        super.createPacket(byteArrayInputStream);
     }
 
     @Override

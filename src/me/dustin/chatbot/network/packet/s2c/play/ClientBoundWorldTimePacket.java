@@ -16,11 +16,9 @@ public class ClientBoundWorldTimePacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
-        worldAge = dataInputStream.readLong();
-        timeOfDay = dataInputStream.readLong();
-        super.createPacket(byteArrayInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
+        this.worldAge = dataInputStream.readLong();
+        this.timeOfDay = dataInputStream.readLong();
     }
 
     @Override

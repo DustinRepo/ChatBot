@@ -5,6 +5,7 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacke
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 
 public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
@@ -14,9 +15,8 @@ public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream dataInputStream) throws IOException {
-        compressionThreshold = readVarInt(dataInputStream);
-        super.createPacket(dataInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
+        this.compressionThreshold = readVarInt(dataInputStream);
     }
 
     public int getCompressionThreshold() {

@@ -23,14 +23,13 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
-        message = ChatMessage.of(readString(dataInputStream));
-        type = dataInputStream.readByte();
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
+        this.message = ChatMessage.of(readString(dataInputStream));
+        this.type = dataInputStream.readByte();
         if (ChatBot.getConfig().getProtocolVersion() > 578)
-            sender = readUUID(dataInputStream);
-        else if (!message.getSenderName().isEmpty()) {
-            sender = MCAPIHelper.getUUIDFromName(message.getSenderName());
+            this.sender = readUUID(dataInputStream);
+        else if (!this.message.getSenderName().isEmpty()) {
+            this.sender = MCAPIHelper.getUUIDFromName(this.message.getSenderName());
         }
     }
 

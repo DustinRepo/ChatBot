@@ -18,11 +18,9 @@ public class ClientBoundPluginRequestPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
-        messageId = readVarInt(dataInputStream);
-        identifier = readString(dataInputStream);
-        super.createPacket(byteArrayInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
+        this.messageId = readVarInt(dataInputStream);
+        this.identifier = readString(dataInputStream);
     }
 
     @Override

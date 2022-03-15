@@ -7,6 +7,7 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacket
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -22,28 +23,28 @@ public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
         if (ChatBot.getConfig().getProtocolVersion() == 340) {//1.12
             int size = readVarInt(dataInputStream);
             for (int i = 0; i < size - 1; i++) {
-                matches.add(new TabCompleteMatch(readString(dataInputStream), false, ""));
+                this.matches.add(new TabCompleteMatch(readString(dataInputStream), false, ""));
             }
             return;
         }
-        id = readVarInt(dataInputStream);
-        start = readVarInt(dataInputStream);
-        length = readVarInt(dataInputStream);
-        int arraylength = readVarInt(dataInputStream);
-        for (int i = 0; i < arraylength; i++) {
-            String m = readString(dataInputStream);
-            boolean tt = dataInputStream.readBoolean();
-            String s = "";
-            if (tt)
-                s = readString(dataInputStream);
-            matches.add(new TabCompleteMatch(m, tt, s));
-        }
-        super.createPacket(byteArrayInputStream);
+        this.id = readVarInt(dataInputStream);
+        this.start = readVarInt(dataInputStream);
+        try {//for some reason needed for length now? - done before packet handling overhaul
+            this.length = readVarInt(dataInputStream);
+            int arraylength = readVarInt(dataInputStream);
+            for (int i = 0; i < arraylength; i++) {
+                String m = readString(dataInputStream);
+                boolean tt = dataInputStream.readBoolean();
+                String s = "";
+                if (tt)
+                    s = readString(dataInputStream);
+                this.matches.add(new TabCompleteMatch(m, tt, s));
+            }
+        } catch (EOFException e) {}
     }
 
     @Override

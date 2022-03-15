@@ -21,8 +21,7 @@ public class ClientBoundPlayerDeadPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
         if (ChatBot.getConfig().getProtocolVersion() <= 754) {//1.16.5
             this.type = readVarInt(dataInputStream);
             if (type != ENTITY_DIED)
@@ -32,7 +31,6 @@ public class ClientBoundPlayerDeadPacket extends Packet.ClientBoundPacket {
         this.killerId = dataInputStream.readInt();
         if (ChatBot.getConfig().getProtocolVersion() >= 755 || type == ENTITY_DIED)//1.17 or the player actually died
             this.message = readString(dataInputStream);
-        super.createPacket();
     }
 
     @Override

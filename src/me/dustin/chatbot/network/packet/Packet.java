@@ -19,7 +19,7 @@ public class Packet {
         return null;
     }
 
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {}
+    public void createPacket(DataInputStream dataInputStream) throws IOException {}
 
     public String readString(DataInputStream dataInputStream) throws IOException {
         int strSize = readVarInt(dataInputStream);
@@ -116,7 +116,7 @@ public class Packet {
         int i = 0;
         int j = 0;
         while (true) {
-            int k = in.readNBytes(1)[0];
+            int k = in.read();
 
             i |= (k & 0x7F) << j++ * 7;
 
@@ -146,7 +146,23 @@ public class Packet {
             if ((k & 0x80) != 128) break;
         }
 
-        int[] result = {i,b};
-        return result;
+        return new int[]{i,b};
+    }
+
+    public static int[] readVarIntt(ByteArrayInputStream in) { //reads a varint from the stream, returning both the length and the value
+        int i = 0;
+        int j = 0;
+        int b = 0;
+        while (true){
+            int k = in.read();
+            b += 1;
+            i |= (k & 0x7F) << j++ * 7;
+
+            if (j > 5) throw new RuntimeException("VarInt too big");
+
+            if ((k & 0x80) != 128) break;
+        }
+
+        return new int[]{i,b};
     }
 }

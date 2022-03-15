@@ -22,13 +22,12 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
         int publicKeyLength;
         int verifyTokenLength;
 
 
-        serverID = readString(dataInputStream);
+        this.serverID = readString(dataInputStream);
 
         //public key
         publicKeyLength = readVarInt(dataInputStream);
@@ -45,10 +44,8 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
 
         //verifyToken
         verifyTokenLength = readVarInt(dataInputStream);
-        verifyToken = new byte[verifyTokenLength];
-        dataInputStream.readFully(verifyToken, 0, verifyTokenLength);
-
-        super.createPacket(byteArrayInputStream);
+        this.verifyToken = new byte[verifyTokenLength];
+        dataInputStream.readFully(this.verifyToken, 0, verifyTokenLength);
     }
 
     @Override

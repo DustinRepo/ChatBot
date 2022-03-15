@@ -26,18 +26,17 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
-        action = readVarInt(dataInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
+        this.action = readVarInt(dataInputStream);
         int playerNumbers = readVarInt(dataInputStream);
-        players = new OtherPlayer[playerNumbers];
+        this.players = new OtherPlayer[playerNumbers];
 
         for (int i = 0; i < playerNumbers; i++) {
             UUID uuid = readUUID(dataInputStream);
             OtherPlayer player = getClientConnection().getPlayerManager().get(uuid);
             if (player == null)
                 player = new OtherPlayer("", uuid);
-            switch (action) {
+            switch (this.action) {
                 case ADD_PLAYER -> {
                     player.setName(readString(dataInputStream));
                     int propertyListSize = readVarInt(dataInputStream);
@@ -75,9 +74,8 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
                 }
                 //we don't do anything for remove player because that's done in ClientBoundPlayClientBoundPacketHandler
             }
-            players[i] = player;
+            this.players[i] = player;
         }
-        super.createPacket(byteArrayInputStream);
     }
 
     @Override

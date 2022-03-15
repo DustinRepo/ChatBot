@@ -13,7 +13,7 @@ public class ClientBoundResourcePackSendPacket extends Packet.ClientBoundPacket 
 
     private String url;
     private String hash;
-    private boolean forced;
+    private boolean forced = true;//assume forced just incase
     private boolean hasPrompt;
     private String prompt;
 
@@ -22,18 +22,16 @@ public class ClientBoundResourcePackSendPacket extends Packet.ClientBoundPacket 
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
-        url = readString(dataInputStream);
-        hash = readString(dataInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
+        this.url = readString(dataInputStream);
+        this.hash = readString(dataInputStream);
         if (ChatBot.getConfig().getProtocolVersion() > 340) {
-            forced = dataInputStream.readBoolean();
-            hasPrompt = dataInputStream.readBoolean();
+            this.forced = dataInputStream.readBoolean();
+            this.hasPrompt = dataInputStream.readBoolean();
             if (hasPrompt) {
-                prompt = readString(dataInputStream);
+                this.prompt = readString(dataInputStream);
             }
         }
-        super.createPacket(byteArrayInputStream);
     }
 
     @Override

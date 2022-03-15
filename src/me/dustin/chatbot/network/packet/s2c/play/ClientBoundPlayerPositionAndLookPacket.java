@@ -21,8 +21,7 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
     }
 
     @Override
-    public void createPacket(ByteArrayInputStream byteArrayInputStream) throws IOException {
-        DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+    public void createPacket(DataInputStream dataInputStream) throws IOException {
         x = dataInputStream.readDouble();
         y = dataInputStream.readDouble();
         z = dataInputStream.readDouble();
@@ -32,7 +31,6 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
         teleportId = readVarInt(dataInputStream);
         if (ChatBot.getConfig().getProtocolVersion() > 754)//1.16.5
             dismount = dataInputStream.readBoolean();
-        super.createPacket(byteArrayInputStream);
     }
 
     @Override
