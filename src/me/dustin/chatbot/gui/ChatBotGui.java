@@ -91,7 +91,10 @@ public class ChatBotGui {
 
     public void tick() {
         stopWatch.reset();
-        frame.setTitle("ChatBot - Connected to: " + clientConnection.getIp() + ":" + clientConnection.getPort() + " for: " + GeneralHelper.getDurationString(ChatBot.connectionTime()));
+        if (clientConnection == null || !clientConnection.isConnected())
+            frame.setTitle("ChatBot - Disconnected");
+        else
+            frame.setTitle("ChatBot - Connected to: " + clientConnection.getIp() + ":" + clientConnection.getPort() + " for: " + GeneralHelper.getDurationString(ChatBot.connectionTime()));
     }
 
     public JFrame getFrame() {
