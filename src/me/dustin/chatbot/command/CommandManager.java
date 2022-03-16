@@ -1,5 +1,7 @@
 package me.dustin.chatbot.command;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.ClassHelper;
@@ -10,13 +12,16 @@ import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class CommandManager {
 
     private final ArrayList<Command> commands = new ArrayList<>();
+    private final ArrayList<CustomCommand> customCommands = new ArrayList<>();
     private final ClientConnection clientConnection;
 
     public CommandManager(ClientConnection clientConnection) {
@@ -27,6 +32,7 @@ public class CommandManager {
         getClientConnection().getEventManager().unregister(this);
         getClientConnection().getEventManager().register(this);
         commands.clear();
+        customCommands.clear();
         List<Class<?>> classes = ClassHelper.INSTANCE.getClasses("me.dustin.chatbot.command.impl", Command.class);
         classes.forEach(clazz -> {
             try {
@@ -38,6 +44,20 @@ public class CommandManager {
                 e.printStackTrace();
             }
         });
+        File customCommandsFile = new File(new File("").getAbsolutePath(), "custom.json");
+        if (customCommandsFile.exists()) {
+            JsonArray array = GeneralHelper.gson.fromJson(GeneralHelper.readFile(customCommandsFile), JsonArray.class);
+            for (int i = 0; i < array.size(); i++) {
+                JsonObject obj = array.get(i).getAsJsonObject();
+                JsonArray responseArray = obj.get("responses").getAsJsonArray();
+                ArrayList<String> responses = new ArrayList<>();
+                for (int ii = 0; ii < responseArray.size(); ii++) {
+                    responses.add(responseArray.get(ii).getAsString());
+                }
+                String name = obj.get("name").getAsString();
+                customCommands.add(new CustomCommand(name, responses));
+            }
+        }
     }
 
     @EventPointer
@@ -73,6 +93,12 @@ public class CommandManager {
                     }
                 }
             }
+            for (CustomCommand customCommand : customCommands) {
+                if (customCommand.getName().equalsIgnoreCase(cmd)) {
+                    customCommand.runCommand();
+                    return;
+                }
+            }
         } catch (IndexOutOfBoundsException e) {}
     });
 
@@ -82,5 +108,28 @@ public class CommandManager {
 
     public ClientConnection getClientConnection() {
         return clientConnection;
+    }
+
+    public class CustomCommand {
+        private final String name;
+        private final ArrayList<String> responses;
+        public CustomCommand(String name, ArrayList<String> responses) {
+            this.name = name;
+            this.responses = responses;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public ArrayList<String> getResponses() {
+            return responses;
+        }
+
+        public void runCommand() {
+            Random random = new Random();
+            int select = random.nextInt(responses.size());
+            getClientConnection().getClientPlayer().chat(responses.get(select));
+        }
     }
 }

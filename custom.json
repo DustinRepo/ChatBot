@@ -1,0 +1,15 @@
+[
+  {
+    "name": "test",
+    "responses": [
+      "Test1",
+      "Test2"
+    ]
+  },
+  {
+    "name": "link",
+    "responses": [
+      "https://github.com/DustinRepo/ChatBot"
+    ]
+  }
+]

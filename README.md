@@ -6,6 +6,7 @@ An external chat bot for Minecraft made in Java.
 ## Features
 ```
 Multiple versions: All major versions from 1.12 - 1.18.2 supported
+Custom commands: Use custom.json to create custom commands
 Auto-Reconnect: Automatically reconnect to the server if you get disconnected
 Cracked server support: Lots of options in config.cfg that should allow the bot to get past any cracked server login
 Anti-AFK: Prevent the bot from getting AFK kicked
