@@ -1,0 +1,14 @@
+[
+  "Use {PREFIX}help to get a list of my commands",
+  "I can try to grab the server's plugins! use !plugins",
+  "I can get you a player's skin directly from Minecraft! Use !skin <name>",
+  "Use {PREFIX}coinflip to flip a coin",
+  "Use {PREFIX}worstping or {PREFIX}bestping to see who has the lowest/highest ping",
+  "Use {PREFIX}coffee to get a picture of coffee",
+  "Need to report someone? Use {PREFIX}report <name> <reason>",
+  "Use {PREFIX}isEven to see if a number is even!",
+  "Need to see server TPS? {PREFIX}tps",
+  "Want to use this bot program? It supports all versions from 1.12 - 1.18.2! https://github.com/DustinRepo/ChatBot",
+  "Use {PREFIX}2b2tcount <name> to see how many times someone has mentioned 2b2t!",
+  "Use {PREFIX}quote <name> to get a random quote from a player!"
+]
