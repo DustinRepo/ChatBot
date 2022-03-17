@@ -55,7 +55,7 @@ public class GeneralHelper {
     }
 
     public static void printChat(ChatMessage chatMessage) {
-        if (!chatMessage.getSenderName().isEmpty() && chatMessage.isChat())
+        if (!chatMessage.getSenderName().isEmpty() && !chatMessage.getSenderName().startsWith("<"))
             chatMessage = new ChatMessage("<" + chatMessage.getSenderName() + (chatMessage.getSenderName().contains("§") ? "§f" : "") +">", chatMessage.getBody());
         String m = chatMessage.getMessage();
         if (!m.contains("§") || !ChatBot.getConfig().isColorConsole()) {

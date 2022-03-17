@@ -123,7 +123,7 @@ public class ChatMessage {
             }
         }
         body.append(getExtra(jsonObject));
-        if (isChat && body.toString().startsWith("<") && body.toString().contains("> ") && name.toString().isEmpty()) {//crude way to move player name to actual name field if the text is set up weird
+        if (body.toString().startsWith("<") && body.toString().contains("> ") && name.toString().isEmpty()) {//crude way to move player name to actual name field if the text is set up weird
             String s = body.toString().split("<")[1].split(">")[0];
             name.append(s);
             body = new StringBuilder(body.toString().replace("<" + s + "> ", ""));
