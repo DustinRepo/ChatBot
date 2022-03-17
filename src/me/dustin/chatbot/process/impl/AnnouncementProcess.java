@@ -20,7 +20,7 @@ public class AnnouncementProcess extends ChatBotProcess {
     private final ArrayList<String> announcements = new ArrayList<>();
     public AnnouncementProcess(ClientConnection clientConnection) {
         super(clientConnection);
-        File customCommandsFile = new File(new File("").getAbsolutePath(), "announcements.json");
+        File customCommandsFile = new File(new File("").getAbsolutePath() + File.separator + "custom", "announcements.json");
         if (customCommandsFile.exists()) {
             JsonArray array = GeneralHelper.gson.fromJson(GeneralHelper.readFile(customCommandsFile), JsonArray.class);
             for (int i = 0; i < array.size(); i++) {

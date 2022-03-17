@@ -45,7 +45,7 @@ public class CommandManager {
                 e.printStackTrace();
             }
         });
-        File customCommandsFile = new File(new File("").getAbsolutePath(), "custom.json");
+        File customCommandsFile = new File(new File("").getAbsolutePath() + File.separator + "custom", "custom.json");
         if (customCommandsFile.exists()) {
             JsonArray array = GeneralHelper.gson.fromJson(GeneralHelper.readFile(customCommandsFile), JsonArray.class);
             for (int i = 0; i < array.size(); i++) {
