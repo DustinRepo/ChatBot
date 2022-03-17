@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.chat.ChatMessage;
+import me.dustin.chatbot.chat.Translator;
 import me.dustin.chatbot.command.CommandManager;
+import me.dustin.chatbot.config.Config;
 import me.dustin.chatbot.event.EventLoginSuccess;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.TPSHelper;
@@ -85,6 +87,8 @@ public class ClientConnection {
         this.tpsHelper = new TPSHelper();
         this.playerManager = new PlayerManager();
         this.eventManager = new EventManager();
+
+        updateTranslations();
         getEventManager().register(this);
         getEventManager().register(ChatBot.getGui());
     }
@@ -164,6 +168,10 @@ public class ClientConnection {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateTranslations() {
+        Translator.setTranslation(ChatBot.getConfig().getLocale());
     }
 
     public void tick() {

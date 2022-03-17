@@ -9,11 +9,13 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.util.StringJoiner;
 
 public class ChatMessage {
 
-    public String senderName;
-    public String body;
+    private String senderName;
+    private String body;
+    private boolean isChat;
 
     public ChatMessage(String senderName, String body) {
         this.senderName = senderName;
@@ -34,24 +36,57 @@ public class ChatMessage {
         return body;
     }
 
+    public boolean isChat() {
+        return isChat;
+    }
+
+    public void setChat(boolean chat) {
+        isChat = chat;
+    }
+
     public static ChatMessage of(String jsonData) {
         if (jsonData.isEmpty())
             return new ChatMessage("", "");
         StringBuilder name = new StringBuilder();
         StringBuilder body = new StringBuilder();
+        StringJoiner insertion = new StringJoiner(",");
+        boolean isChat = false;
         JsonObject jsonObject = GeneralHelper.gson.fromJson(jsonData, JsonObject.class);
         JsonArray with = jsonObject.getAsJsonArray("with");
+        String translate = "";
+        if (jsonObject.get("translate") != null) {
+            translate = jsonObject.get("translate").getAsString();
+            if (translate.equalsIgnoreCase("chat.type.text"))
+                isChat = true;
+        }
+
         if (with != null) {
             for (int i = 0; i < with.size(); i++) {
                 try {
                     JsonObject object = with.get(i).getAsJsonObject();
+
+                    if (object.get("with") != null) {
+                        JsonArray with2 = object.getAsJsonArray("with");
+                        for (int ii = 0; ii < with2.size(); ii++) {
+                            JsonObject o = with2.get(ii).getAsJsonObject();
+                            if (o.get("insertion") != null && !insertion.toString().contains(o.get("insertion").getAsString())) {
+                                insertion.add(o.get("insertion").getAsString());
+                            }
+                        }
+                    }
+                    if (object.get("insertion") != null && insertion.toString().isEmpty()) {
+                        String s = object.get("insertion").getAsString();
+                        insertion.add(s);
+                    }
                     if (object.get("color") != null) {
                         TextColors textColors = TextColors.getFromName(object.get("color").getAsString());
                         if (textColors != null)
                             name.append("§").append(textColors.getChar());
                     }
                     String text = object.get("text").getAsString();
-                    name.append(text);
+                    if ((isChat || name.isEmpty()) && !Translator.translate(translate).startsWith("%1$s")) {
+                        name.append(text);
+                    }
                 } catch (Exception e) {
                     try {
                         body.append(" ").append(with.get(i).getAsString());
@@ -60,23 +95,49 @@ public class ChatMessage {
             }
         }
         if (jsonObject.get("translate") != null) {
-            String translate = jsonObject.get("translate").getAsString();
-            if (!translate.equalsIgnoreCase("chat.type.text"))
-                body.append(" ").append(translate);
+            if (jsonObject.get("color") != null) {
+                TextColors textColors = TextColors.getFromName(jsonObject.get("color").getAsString());
+                if (textColors != null)
+                    body.append("§").append(textColors.getChar());
+            }
+            if (!translate.equalsIgnoreCase("chat.type.text")) {
+                System.out.println(insertion);
+                String translated = Translator.translate(translate);
+                if (!insertion.toString().isEmpty()) {
+                    String[] insertions = insertion.toString().split(",");
+                    int c = 0;
+                    for (int i = 0; i < insertions.length; i++) {
+                        if (translated.contains("%" + (i + 1) + "$s")) {
+                            translated = translated.replace("%" + (i + 1) + "$s", insertions[i]);
+                            c++;
+                        } else
+                            break;
+                    }
+                    for (int i = c; i < insertions.length; i++) {
+                        System.out.println("replacing " + i + " with " + insertions[i]);
+                        translated = translated.replaceFirst("%s", insertions[i]);
+                    }
+                }
+                //translated = translated.replace("%s", insertions[insertions.length - 1]);
+                body.append(" ").append(translated);
+            }
         }
         body.append(getExtra(jsonObject));
-        if (body.toString().startsWith("<") && body.toString().contains("> ") && name.toString().isEmpty()) {//crude way to move player name to actual name field if the text is set up weird
+        if (isChat && body.toString().startsWith("<") && body.toString().contains("> ") && name.toString().isEmpty()) {//crude way to move player name to actual name field if the text is set up weird
             String s = body.toString().split("<")[1].split(">")[0];
             name.append(s);
             body = new StringBuilder(body.toString().replace("<" + s + "> ", ""));
         }
+
         if (body.toString().startsWith(" ")) {
             body = new StringBuilder(body.substring(1));
         }
         if (jsonObject.get("text") != null) {
             body.append(jsonObject.get("text").getAsString());
         }
-        return new ChatMessage(name.toString(), body.toString());
+        ChatMessage chatMessage = new ChatMessage(name.toString(), body.toString());
+        chatMessage.setChat(isChat);
+        return chatMessage;
     }
 
     private static String getExtra(JsonObject jsonObject) {
@@ -97,7 +158,21 @@ public class ChatMessage {
                     if (object.get("extra") != null)
                         s.append(getExtra(object));
                 } catch (Exception e) {
-                    s.append(" ").append(extra.get(i).getAsString());
+                    try {
+                        s.append(" ").append(extra.get(i).getAsString());
+                    } catch (Exception e1) {
+                        JsonObject o = extra.get(i).getAsJsonObject();
+                        if (o.get("color") != null) {
+                            TextColors textColors = TextColors.getFromName(o.get("color").getAsString());
+                            if (textColors != null)
+                                s.append("§").append(textColors.getChar());
+                        }
+                        if (o.get("translate") != null) {
+                            String translate = o.get("translate").getAsString();
+                            if (!translate.equalsIgnoreCase("chat.type.text"))
+                                s.append(" ").append(Translator.translate(translate));
+                        }
+                    }
                 }
             }
         }
