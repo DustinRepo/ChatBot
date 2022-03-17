@@ -6,6 +6,7 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.ClassHelper;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.MCAPIHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
@@ -95,7 +96,7 @@ public class CommandManager {
             }
             for (CustomCommand customCommand : customCommands) {
                 if (customCommand.getName().equalsIgnoreCase(cmd)) {
-                    customCommand.runCommand();
+                    customCommand.runCommand(input, sender);
                     return;
                 }
             }
@@ -126,10 +127,16 @@ public class CommandManager {
             return responses;
         }
 
-        public void runCommand() {
+        public void runCommand(String input, UUID sender) {
             Random random = new Random();
             int select = random.nextInt(responses.size());
-            getClientConnection().getClientPlayer().chat(responses.get(select));
+            String response = responses.get(select);
+            if (sender != null) {
+                response = response.replace("{SENDER_UUID}", sender.toString());
+                response = response.replace("{SENDER_UUID_NO_DASH}", sender.toString().replace("-", ""));
+                response = response.replace("{SENDER_NAME}", MCAPIHelper.getNameFromUUID(sender));
+            }
+            getClientConnection().getClientPlayer().chat(response);
         }
     }
 }

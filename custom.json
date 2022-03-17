@@ -1,15 +1,21 @@
 [
   {
-    "name": "test",
+    "name": "choose",
     "responses": [
-      "Test1",
-      "Test2"
+      "It chooses a random response if multiple are available",
+      "It could choose this one, or the other"
     ]
   },
   {
     "name": "link",
     "responses": [
       "https://github.com/DustinRepo/ChatBot"
+    ]
+  },
+  {
+    "name": "name",
+    "responses": [
+      "name; {SENDER_NAME} uuid: {SENDER_UUID} uuid (no dashes): {SENDER_UUID_NO_DASH}"
     ]
   }
 ]
