@@ -50,13 +50,17 @@ public class CommandManager {
             JsonArray array = GeneralHelper.gson.fromJson(GeneralHelper.readFile(customCommandsFile), JsonArray.class);
             for (int i = 0; i < array.size(); i++) {
                 JsonObject obj = array.get(i).getAsJsonObject();
+                ArrayList<String> names = new ArrayList<>();
+                JsonArray namesArray = obj.get("names").getAsJsonArray();
+                for (int ii = 0; ii < namesArray.size(); ii++) {
+                    names.add(namesArray.get(ii).getAsString());
+                }
                 JsonArray responseArray = obj.get("responses").getAsJsonArray();
                 ArrayList<String> responses = new ArrayList<>();
                 for (int ii = 0; ii < responseArray.size(); ii++) {
                     responses.add(responseArray.get(ii).getAsString());
                 }
-                String name = obj.get("name").getAsString();
-                customCommands.add(new CustomCommand(name, responses));
+                customCommands.add(new CustomCommand(names, responses));
             }
         }
     }
@@ -95,7 +99,7 @@ public class CommandManager {
                 }
             }
             for (CustomCommand customCommand : customCommands) {
-                if (customCommand.getName().equalsIgnoreCase(cmd)) {
+                if (customCommand.getNames().contains(cmd.toLowerCase())) {
                     customCommand.runCommand(input, sender);
                     return;
                 }
@@ -112,15 +116,15 @@ public class CommandManager {
     }
 
     public class CustomCommand {
-        private final String name;
+        private final ArrayList<String> names;
         private final ArrayList<String> responses;
-        public CustomCommand(String name, ArrayList<String> responses) {
-            this.name = name;
+        public CustomCommand(ArrayList<String> name, ArrayList<String> responses) {
+            this.names = name;
             this.responses = responses;
         }
 
-        public String getName() {
-            return name;
+        public ArrayList<String> getNames() {
+            return names;
         }
 
         public ArrayList<String> getResponses() {

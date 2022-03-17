@@ -45,7 +45,7 @@ Check if a number is even using the isEven API
 Returns a link to a random picture of coffee
 ###### 2b2tcount -name-
 See how many times a player has mentioned 2b2t
-###### coinflip
+###### coinflip / flip
 Flip a coin
 ###### roulette / russianRoulette
 Play Russian Roulette
@@ -83,7 +83,7 @@ Get a random Kanye quote
 Dox a player
 ###### resolve / ip -name-
 Get a player's IP address
-###### kys
+###### kys / kill
 Make the bot commit suicide. (Uses the /suicide command)
 ###### tps
 Get the current server TPS

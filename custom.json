@@ -1,21 +1,82 @@
 [
   {
-    "name": "choose",
+    "names": [
+      "example"
+    ],
     "responses": [
-      "It chooses a random response if multiple are available",
-      "It could choose this one, or the other"
+      "If you have multiple responses for a command it will choose one at random",
+      "You can also use responses that respond directly to the sender",
+      "Name: {SENDER_NAME}",
+      "UUID: {SENDER_UUID}",
+      "UUID (No dashes): {SENDER_UUID_NO_DASH}"
     ]
   },
   {
-    "name": "link",
+    "names": [
+      "coinflip",
+      "flip"
+    ],
+    "responses": [
+      "Heads",
+      "Tails"
+    ]
+  },
+  {
+    "names": [
+      "kys",
+      "kill"
+    ],
+    "responses": [
+      "/suicide"
+    ]
+  },
+  {
+    "names": [
+      "cum"
+    ],
+    "responses": [
+      "oh fuck {SENDER_NAME} you made me cum",
+      "oh fuck im gonna cum! AAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH",
+      "*nuts in your shoes* uwu did I do that?",
+      "don't stop I'm so close",
+      "I'm about to bust a load so fat I'm gonna drown in it",
+      "shit... now I'm all sticky",
+      "what are you doing, stepbro?"
+    ]
+  },
+  {
+    "names": [
+      "8ball"
+    ],
+    "responses": [
+      "Yes, 100%",
+      "No",
+      "Maybe",
+      "I don't know",
+      "Ask again later",
+      "Stop asking questions"
+    ]
+  },
+  {
+    "names": [
+      "roulette",
+      "russianroulette"
+    ],
+    "responses": [
+      "*BANG* You're fuckin dead",
+      "*click* You survive... This time",
+      "*click* You survive... This time",
+      "*click* You survive... This time",
+      "*click* You survive... This time",
+      "*click* You survive... This time"
+    ]
+  },
+  {
+    "names": [
+      "link"
+    ],
     "responses": [
       "https://github.com/DustinRepo/ChatBot"
-    ]
-  },
-  {
-    "name": "name",
-    "responses": [
-      "name; {SENDER_NAME} uuid: {SENDER_UUID} uuid (no dashes): {SENDER_UUID_NO_DASH}"
     ]
   }
 ]
