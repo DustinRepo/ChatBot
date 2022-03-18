@@ -93,6 +93,6 @@ public abstract class ClientBoundPacketHandler {
             }
             return new DataInputStream(new ByteArrayInputStream(uncompressed));
         } else
-            throw new BadPacketException("DataLength was smaller than compression threshhold! dl:" + dataLength + " threshold:" + getClientConnection().getCompressionThreshold());
+            throw new BadPacketException("DataLength was smaller than compression threshold! dl:" + dataLength + " threshold:" + getClientConnection().getCompressionThreshold());
     }
 }
