@@ -35,7 +35,8 @@ public class ServerBoundClientSettingsPacket extends Packet {
         writeVarInt(packet, 0);//chat mode. 0 = enabled
         packet.writeBoolean(true);//chat colors
         packet.writeByte(enabledSkinParts);
-        writeVarInt(packet, 1);//main hand - 0 = left 1 = right
+        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_8.getProtocolVer())//1.8 and below didn't have main/offhand
+            writeVarInt(packet, 1);//main hand - 0 = left 1 = right
         if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer())
             packet.writeBoolean(false);//text filtering
         if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_18.getProtocolVer())//1.18, I *think* the version this was added

@@ -101,7 +101,6 @@ public class ChatMessage {
                     body.append("§").append(textColors.getChar());
             }
             if (!translate.equalsIgnoreCase("chat.type.text")) {
-                System.out.println(insertion);
                 String translated = Translator.translate(translate);
                 if (!insertion.toString().isEmpty()) {
                     String[] insertions = insertion.toString().split(",");
@@ -114,7 +113,6 @@ public class ChatMessage {
                             break;
                     }
                     for (int i = c; i < insertions.length; i++) {
-                        System.out.println("replacing " + i + " with " + insertions[i]);
                         translated = translated.replaceFirst("%s", insertions[i]);
                     }
                 }

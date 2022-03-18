@@ -211,6 +211,8 @@ public class ClientConnection {
                         DataInputStream second = new DataInputStream(packetDataInputStream);
 
                         int packetId = Packet.readVarInt(second);
+                        if (packetId == -1)
+                            return;
 
                         Packet.writeVarInt(out, packetData.length + Packet.sizeOfVarInt(packetId));//write size of packet id + data
                         Packet.writeVarInt(out, 0);//send 0 so the server knows it's not compressed

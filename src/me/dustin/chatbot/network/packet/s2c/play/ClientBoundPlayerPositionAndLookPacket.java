@@ -28,7 +28,8 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
         yaw = dataInputStream.readFloat();
         pitch = dataInputStream.readFloat();
         flags = dataInputStream.readByte();
-        teleportId = readVarInt(dataInputStream);
+        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_18.getProtocolVer())
+            teleportId = readVarInt(dataInputStream);
         if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_16_5.getProtocolVer())//1.16.5
             dismount = dataInputStream.readBoolean();
     }

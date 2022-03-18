@@ -24,7 +24,8 @@ public enum Protocols {
     V1_13("1.13", 393),
     V1_12_2("1.12.2", 340),
     V1_12_1("1.12.1", 338),
-    V1_12("1.12", 335);
+    V1_12("1.12", 335),
+    V1_8("1.8", 47);
     private final String name;
     private final int protocolVer;
     private static Protocols current;
