@@ -8,7 +8,7 @@
   "Need to report someone? Use {PREFIX}report <name> <reason>",
   "Use {PREFIX}isEven to see if a number is even!",
   "Need to see server TPS? {PREFIX}tps",
-  "Want to use this bot program? It supports all versions from 1.12 - 1.18.2! https://github.com/DustinRepo/ChatBot",
+  "Want to use this bot program? It supports all versions from 1.8 - 1.18.2! https://github.com/DustinRepo/ChatBot",
   "Use {PREFIX}2b2tcount <name> to see how many times someone has mentioned 2b2t!",
   "Use {PREFIX}quote <name> to get a random quote from a player!"
 ]
