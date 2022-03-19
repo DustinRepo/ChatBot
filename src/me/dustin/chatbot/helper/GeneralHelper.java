@@ -73,7 +73,7 @@ public class GeneralHelper {
         String timeStampString = String.format("[%s] ", getCurrentTimeStamp());
         try {
             if (document != null)
-                document.insertString(document.getLength(), timeStampString, ChatMessage.TextColors.GRAY.getStyle());
+                document.insertString(document.getLength(), timeStampString, null);
             System.out.print(ANSI_RESET + timeStampString);
             for (String s : text.split("§")) {
                 if (s.length() == 0)
