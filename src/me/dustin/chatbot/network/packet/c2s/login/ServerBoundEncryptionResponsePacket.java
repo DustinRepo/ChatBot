@@ -2,6 +2,8 @@ package me.dustin.chatbot.network.packet.c2s.login;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 
 import javax.crypto.KeyGenerator;
@@ -37,11 +39,16 @@ public class ServerBoundEncryptionResponsePacket extends Packet {
         DataOutputStream encryptionResponsePacket = new DataOutputStream(encryptionResponseBytes);
 
         encryptionResponsePacket.writeByte(0x01);//packet id
-
-        writeVarInt(encryptionResponsePacket, encryptedSecret.length);
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer())
+            encryptionResponsePacket.writeShort(encryptedSecret.length);
+        else
+            writeVarInt(encryptionResponsePacket, encryptedSecret.length);
         encryptionResponsePacket.write(encryptedSecret);
 
-        writeVarInt(encryptionResponsePacket, encryptedVerify.length);
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer())
+            encryptionResponsePacket.writeShort(encryptedVerify.length);
+        else
+            writeVarInt(encryptionResponsePacket, encryptedVerify.length);
         encryptionResponsePacket.write(encryptedVerify);
 
         writeVarInt(out, encryptionResponseBytes.toByteArray().length);

@@ -1,5 +1,7 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
+import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -30,7 +32,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
         this.serverID = readString(dataInputStream);
 
         //public key
-        publicKeyLength = readVarInt(dataInputStream);
+        publicKeyLength = ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer() ? dataInputStream.readShort() : readVarInt(dataInputStream);
         byte[] publicKey = new byte[publicKeyLength];
         dataInputStream.readFully(publicKey, 0, publicKeyLength);
 
@@ -43,7 +45,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
         }
 
         //verifyToken
-        verifyTokenLength = readVarInt(dataInputStream);
+        verifyTokenLength = ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer() ? dataInputStream.readShort() : readVarInt(dataInputStream);
         this.verifyToken = new byte[verifyTokenLength];
         dataInputStream.readFully(this.verifyToken, 0, verifyTokenLength);
     }

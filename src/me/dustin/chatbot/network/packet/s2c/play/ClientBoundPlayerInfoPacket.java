@@ -1,6 +1,9 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.MCAPIHelper;
+import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -27,6 +30,18 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(DataInputStream dataInputStream) throws IOException {
+        //1.7 versions of this packet are very different
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer()) {
+            String playerName = readString(dataInputStream);
+            boolean online = dataInputStream.readBoolean();
+            int ping = dataInputStream.readShort();
+
+            players = new OtherPlayer[1];
+            players[0] = new OtherPlayer(playerName, MCAPIHelper.getUUIDFromName(playerName));
+            players[0].setPing(ping);
+            return;
+        }
+
         this.action = readVarInt(dataInputStream);
         int playerNumbers = readVarInt(dataInputStream);
         this.players = new OtherPlayer[playerNumbers];

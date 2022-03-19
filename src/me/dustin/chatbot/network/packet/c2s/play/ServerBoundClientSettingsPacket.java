@@ -30,18 +30,27 @@ public class ServerBoundClientSettingsPacket extends Packet {
         DataOutputStream packet = new DataOutputStream(baos);
 
         writeVarInt(packet, PacketIDs.ServerBound.CLIENT_SETTINGS.getPacketId());//packet id
-        writeString(packet, locale);
-        packet.writeByte(8);//render distance
-        writeVarInt(packet, 0);//chat mode. 0 = enabled
-        packet.writeBoolean(true);//chat colors
-        packet.writeByte(enabledSkinParts);
-        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_8.getProtocolVer())//1.8 and below didn't have main/offhand
-            writeVarInt(packet, 1);//main hand - 0 = left 1 = right
-        if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer())
-            packet.writeBoolean(false);//text filtering
-        if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_18.getProtocolVer())//1.18, I *think* the version this was added
-            packet.writeBoolean(allowServerListings);
 
+        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer()) {//packet is very different in 1.7.10 and below
+            writeString(packet, locale);
+            packet.writeByte(8);//render distance
+            packet.writeByte(0);//chat mode. 0 = enabled
+            packet.writeBoolean(true);//color chat
+            packet.writeByte(3);//difficulty
+            packet.writeBoolean(true);//show cape
+        } else {
+            writeString(packet, locale);
+            packet.writeByte(8);//render distance
+            writeVarInt(packet, 0);//chat mode. 0 = enabled
+            packet.writeBoolean(true);//chat colors
+            packet.writeByte(enabledSkinParts);
+            if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_8.getProtocolVer())//1.8 and below didn't have main/offhand
+                writeVarInt(packet, 1);//main hand - 0 = left 1 = right
+            if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer())
+                packet.writeBoolean(false);//text filtering
+            if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_18.getProtocolVer())//1.18, I *think* the version this was added
+                packet.writeBoolean(allowServerListings);
+        }
         writeVarInt(out, baos.toByteArray().length);
         out.write(baos.toByteArray());
         return out;
