@@ -3,8 +3,8 @@ package me.dustin.chatbot.network;
 import me.dustin.chatbot.ChatBot;
 
 public enum Protocols {
-    V1_18_2(758, "1.18.2", "1.18.1"),
-    V1_18(757, "1.18"),
+    V1_18_2(758, "1.18.2"),
+    V1_18(757, "1.18.1", "1.18"),
     V1_17_1(756, "1.17.1"),
     V1_17(755, "1.17"),
     V1_16_5(754, "1.16.5", "1.16.4"),

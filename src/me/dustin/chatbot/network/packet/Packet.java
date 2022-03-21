@@ -19,8 +19,6 @@ public class Packet {
         return null;
     }
 
-    public void createPacket(DataInputStream dataInputStream) throws IOException {}
-
     public String readString(DataInputStream dataInputStream) throws IOException {
         int strSize = readVarInt(dataInputStream);
         byte[] strBytes = new byte[strSize];
@@ -49,12 +47,14 @@ public class Packet {
         this.clientConnection = clientConnection;
     }
 
-    public static abstract class ClientBoundPacket extends Packet{
+    public static abstract class ClientBoundPacket extends Packet {
         protected final ClientBoundPacketHandler clientBoundPacketHandler;
 
         public ClientBoundPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
             this.clientBoundPacketHandler = clientBoundPacketHandler;
         }
+
+        public abstract void createPacket(DataInputStream dataInputStream) throws IOException;
 
         public abstract void apply();
     }

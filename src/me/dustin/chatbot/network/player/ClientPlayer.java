@@ -13,6 +13,7 @@ public class ClientPlayer {
     private final String name;
     private final ClientConnection clientConnection;
 
+    private int entityId;
     private double x,y,z;
     private float yaw, pitch;
 
@@ -105,5 +106,13 @@ public class ClientPlayer {
 
     public void movePitch(float pitch) {
         this.pitch += pitch;
+    }
+
+    public int getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(int entityId) {
+        this.entityId = entityId;
     }
 }

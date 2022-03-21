@@ -29,6 +29,7 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
         getPacketMap().put(PacketIDs.ClientBound.TAB_COMPLETE.getPacketId(), ClientBoundTabCompletePacket.class);
         getPacketMap().put(PacketIDs.ClientBound.UPDATE_HEALTH.getPacketId(), ClientBoundUpdateHealthPacket.class);
         getPacketMap().put(PacketIDs.ClientBound.WORLD_TIME.getPacketId(), ClientBoundWorldTimePacket.class);
+        getPacketMap().put(PacketIDs.ClientBound.JOIN_GAME.getPacketId(), ClientBoundJoinGamePacket.class);
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {
@@ -46,6 +47,11 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
         new EventReceiveChatMessage(clientBoundChatMessagePacket).run(getClientConnection());
         GeneralHelper.printChat(clientBoundChatMessagePacket.getMessage());
+    }
+
+    public void handleJoinGamePacket(ClientBoundJoinGamePacket clientBoundJoinGamePacket) {
+        getClientConnection().getClientPlayer().setEntityId(clientBoundJoinGamePacket.getEntityId());
+        getClientConnection().getEventManager().run(clientBoundJoinGamePacket);
     }
 
     public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {

@@ -17,6 +17,7 @@ import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
 import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.s2c.play.ClientBoundJoinGamePacket;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
 import me.dustin.chatbot.process.ProcessManager;
@@ -58,6 +59,7 @@ public class ClientConnection {
     private int compressionThreshold;
     private boolean isEncrypted;
     private boolean isConnected;
+    private boolean isInGame;
 
     private final ClientPlayer clientPlayer;
 
@@ -94,18 +96,13 @@ public class ClientConnection {
     }
 
     @EventPointer
-    private final EventListener<EventLoginSuccess> eventLoginSuccessEventListener = new EventListener<>(event -> {
+    private final EventListener<ClientBoundJoinGamePacket> eventClientBoundJoinGamePacketEventListener = new EventListener<>(event ->  {
+        if (isInGame)
+            return;
+        isInGame = true;
         loadProcesses();
-        if (!ChatBot.getConfig().isSkinBlink())
-            new Thread(() -> {
-                try {
-                    //wait 5 seconds so vanilla servers don't throw a shit-fit
-                    Thread.sleep(5000);
-                    sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
+        sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
+        GeneralHelper.print("Received Join Game. Sending packet and loading processes.", ChatMessage.TextColors.GREEN);
     });
 
     public void loadProcesses() {
@@ -195,7 +192,6 @@ public class ClientConnection {
                     int size = Packet.readVarInt(byteArrayInputStream);
                     byte[] packetData = new byte[size];
                     first.readFully(packetData, 0, size);
-
                     //TODO: test this to see if it actually works. it seems unnecessary currently, doesn't seem most packets go over the threshold
                     /*if (size > this.getCompressionThreshold()) {
                         GeneralHelper.print("Compressing packet", ChatMessage.TextColors.PURPLE);
@@ -304,6 +300,10 @@ public class ClientConnection {
 
     public boolean isConnected() {
         return isConnected;
+    }
+
+    public boolean isInGame() {
+        return isInGame;
     }
 
     public void setConnected(boolean connected) {
