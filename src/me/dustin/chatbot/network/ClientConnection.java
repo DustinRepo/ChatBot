@@ -124,6 +124,8 @@ public class ClientConnection {
             getProcessManager().addProcess(new Chat2b2tCountProcess(this));
         if (ChatBot.getConfig().isQuotes())
             getProcessManager().addProcess(new QuoteProcess(this));
+        if (ChatBot.getConfig().isNumberCount())
+            getProcessManager().addProcess(new NumberCountProcess(this));
     }
 
     public void connect() {

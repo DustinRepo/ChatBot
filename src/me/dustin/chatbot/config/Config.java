@@ -37,6 +37,7 @@ public class Config {
     private boolean twoB2tCheck;
     private boolean twoB2tCount;
     private boolean quotes;
+    private boolean numberCount;
 
     private int protocolVersion;
     private int reconnectDelay;
@@ -82,6 +83,7 @@ public class Config {
         twoB2tCheck = parser.readBoolean("2b2tCheck");
         twoB2tCount = parser.readBoolean("2b2tCount");
         quotes = parser.readBoolean("quotes");
+        numberCount = parser.readBoolean("numberCount");
 
         reconnectDelay = parser.readInt("reconnectDelay");
         messageDelay = parser.readInt("messageDelay");
@@ -192,6 +194,10 @@ public class Config {
 
     public boolean isQuotes() {
         return quotes;
+    }
+
+    public boolean isNumberCount() {
+        return numberCount;
     }
 
     public boolean isPasswordCreateUseTwice() {
