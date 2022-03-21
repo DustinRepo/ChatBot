@@ -43,6 +43,12 @@ Print a random bible verse in chat
 Check if a number is even using the isEven API
 ###### coffee
 Returns a link to a random picture of coffee
+###### plugins
+Tries to get the server plugins and returns them
+###### roast
+Have the bot roast you
+###### amogus / amongus
+Sussy baka uwu
 ###### 2b2tcount -name- / !2b2t -name-
 See how many times a player has mentioned 2b2t
 ###### coinflip / flip
@@ -53,8 +59,6 @@ Play Russian Roulette
 See how many times a player has said a phrase
 ###### report -name- -reason-
 Report a player for bad behavior
-###### plugins
-Tries to get the server plugins and returns them
 ###### quote -name-
 Gets a quote from that player
 ###### namemc -name-
