@@ -59,7 +59,7 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
     });
 
     public boolean handleCommand(String str) {
-        if (str.startsWith("!2b2tcount ")) {
+        if (str.startsWith("!2b2t ") || str.startsWith("!2b2tcount ")) {
             if (str.split(" ").length == 1) {
                 sendChat("Error! You have to specify a player name!");
                 return true;
