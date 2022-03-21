@@ -37,11 +37,16 @@ public class ChatBot {
 
         if (!noGui) {
             gui = new ChatBotGui();
-            if (!System.getProperty("os.name").toLowerCase().contains("win"))
-                try {
+            for (UIManager.LookAndFeelInfo installedLookAndFeel : UIManager.getInstalledLookAndFeels()) {
+                System.out.println(installedLookAndFeel.getClassName());
+            }
+            try {
+                if (System.getProperty("os.name").toLowerCase().contains("win"))
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+                else
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-                    gui.updateComponents();
-                } catch (Exception e) {}
+                gui.updateComponents();
+            } catch (Exception e) {}
         }
 
         if (ip == null) {

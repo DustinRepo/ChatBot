@@ -12,6 +12,8 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -102,6 +104,15 @@ public class ChatBotGui {
     }
 
     public void updateComponents() {
+        if (System.getProperty("os.name").toLowerCase().contains("win") && ChatBot.getConfig().isColorConsole()) {
+            UIDefaults defs = UIManager.getDefaults();
+            defs.put("TextPane.background", new ColorUIResource(new Color(60, 60, 60)));
+            defs.put("TextPane.inactiveBackground", new ColorUIResource(new Color(60, 60, 60)));
+            defs.put("List.background", new ColorUIResource(new Color(60, 60, 60)));
+            defs.put("List.foreground", new ColorUIResource(Color.WHITE));
+            defs.put("TextField.background", new ColorUIResource(new Color(60, 60, 60)));
+            defs.put("TextField.foreground", new ColorUIResource(Color.WHITE));
+        }
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
