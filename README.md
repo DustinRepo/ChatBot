@@ -49,6 +49,8 @@ See how many times a player has mentioned 2b2t
 Flip a coin
 ###### roulette / russianRoulette
 Play Russian Roulette
+###### wordcount -name- -phrase- / count -name- -phrase-
+See how many times a player has said a phrase
 ###### report -name- -reason-
 Report a player for bad behavior
 ###### plugins

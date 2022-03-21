@@ -10,5 +10,6 @@
   "Need to see server TPS? {PREFIX}tps",
   "Want to use this bot program? It supports all versions from 1.7.2 - 1.18.2! https://github.com/DustinRepo/ChatBot",
   "Use {PREFIX}2b2tcount <name> to see how many times someone has mentioned 2b2t!",
+  "Want to see how many times a player has mentioned any word/phrase? {PREFIX}count <name> <phrase>",
   "Use {PREFIX}quote <name> to get a random quote from a player!"
 ]

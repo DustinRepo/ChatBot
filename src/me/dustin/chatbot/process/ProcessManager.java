@@ -31,6 +31,18 @@ public class ProcessManager {
         }
     }
 
+    public <T extends ChatBotProcess> T get(Class<T> clazz) {
+        return clazz.cast(getProcess(clazz));
+    }
+
+    private ChatBotProcess getProcess(Class<? extends ChatBotProcess> clazz) {
+        for (ChatBotProcess chatBotProcess : getProcesses()) {
+            if (chatBotProcess.getClass() == clazz)
+                return chatBotProcess;
+        }
+        return null;
+    }
+
     public void tick() {
         processes.forEach(ChatBotProcess::tick);
     }
@@ -39,7 +51,7 @@ public class ProcessManager {
         return processes;
     }
 
-    public ClientConnection getClientConnection() {
+    protected ClientConnection getClientConnection() {
         return clientConnection;
     }
 }
