@@ -31,6 +31,8 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
         else if (!this.message.getSenderName().isEmpty()) {
             this.sender = MCAPIHelper.getUUIDFromName(this.message.getSenderName());
         }
+        if (sender != null && sender.toString().equalsIgnoreCase("00000000-0000-0000-0000-000000000000"))
+            sender = null;
     }
 
     @Override
