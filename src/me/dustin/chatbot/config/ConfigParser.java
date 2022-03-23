@@ -1,5 +1,10 @@
 package me.dustin.chatbot.config;
 
+import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.chat.ChatMessage;
+import me.dustin.chatbot.helper.GeneralHelper;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,18 +27,26 @@ public class ConfigParser {
     }
 
     public String readString(String name) {
+        if (configMap.get(name) == null)
+            error(name);
         return configMap.get(name);
     }
 
     public int readInt(String name) {
+        if (configMap.get(name) == null)
+            error(name);
         return Integer.parseInt(configMap.get(name));
     }
 
     public boolean readBoolean(String name) {
+        if (configMap.get(name) == null)
+            error(name);
         return Boolean.parseBoolean(configMap.get(name));
     }
 
     public ArrayList<String> readStringArray(String name) {
+        if (configMap.get(name) == null)
+            error(name);
         ArrayList<String> strings = new ArrayList<>();
         String s = configMap.get(name);
         Pattern p = Pattern.compile("\"([^\"]*)\"");
@@ -46,4 +59,9 @@ public class ConfigParser {
         return strings;
     }
 
+    private void error(String name) {
+        if (ChatBot.getGui() != null)
+            JOptionPane.showMessageDialog(ChatBot.getGui().getFrame(), "Error! Could not find option: " + name + " in config!");
+        GeneralHelper.print("Error! Could not find option: " + name + " in config!", ChatMessage.TextColors.RED);
+    }
 }

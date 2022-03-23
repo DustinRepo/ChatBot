@@ -55,7 +55,7 @@ public class Config {
         loadConfig();
     }
 
-    public void loadConfig() throws IOException {
+    public void loadConfig() {
         ConfigParser parser = new ConfigParser(GeneralHelper.readFile(configFile));
         loginKeywords = parser.readStringArray("loginKeywords");
         passwordKeywords = parser.readStringArray("passwordKeywords");

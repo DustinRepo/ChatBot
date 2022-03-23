@@ -22,7 +22,6 @@ public class ChatBot {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();
-        config = new Config(new File(jarPath, "config.cfg"));
         String ip = null;
 
         boolean noGui = false;
@@ -45,6 +44,8 @@ public class ChatBot {
                 gui.updateComponents();
             } catch (Exception e) {}
         }
+
+        config = new Config(new File(jarPath, "config.cfg"));
 
         if (ip == null) {
             if (noGui) {

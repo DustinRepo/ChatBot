@@ -38,18 +38,17 @@ public class GeneralHelper {
             try {
                 StyledDocument document = ChatBot.getGui().getOutput().getStyledDocument();
                 document.insertString(document.getLength(), timeStampString, ChatMessage.TextColors.GRAY.getStyle());
-                document.insertString(document.getLength(), s + "\n", ChatBot.getConfig().isColorConsole() ? color.getStyle() : null);
+                document.insertString(document.getLength(), s + "\n", ChatBot.getConfig() != null && ChatBot.getConfig().isColorConsole() ? color.getStyle() : null);
 
                 ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        if (ChatBot.getConfig().isColorConsole()) {
+        if (ChatBot.getConfig() != null && ChatBot.getConfig().isColorConsole())
             System.out.println(timeStampString + color.getAnsi() + s + ANSI_RESET);
-        } else {
+        else
             System.out.println(timeStampString + strip(s));
-        }
         if (logger != null)
             logger.info(s);
     }
