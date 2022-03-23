@@ -24,6 +24,7 @@ public class Config {
     private String loginCommand;
     private String passwordCreateCommand;
 
+    private boolean commands;
     private boolean log;
     private boolean announcements;
     private boolean greenText;
@@ -70,6 +71,7 @@ public class Config {
         clientVersion = parser.readString("clientVersion");
         protocolVersion = Protocols.get(clientVersion).getProtocolVer();
 
+        commands = parser.readBoolean("commands");
         log = parser.readBoolean("log");
         colorConsole = parser.readBoolean("consoleColor");
         crackedLogin = parser.readBoolean("crackedLogin");
@@ -146,6 +148,10 @@ public class Config {
 
     public String getClientVersion() {
         return clientVersion;
+    }
+
+    public boolean isCommands() {
+        return commands;
     }
 
     public boolean isLog() {

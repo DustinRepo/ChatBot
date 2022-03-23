@@ -34,6 +34,8 @@ public class CommandManager {
         getClientConnection().getEventManager().register(this);
         commands.clear();
         customCommands.clear();
+        if (!ChatBot.getConfig().isCommands())
+            return;
         List<Class<?>> classes = ClassHelper.INSTANCE.getClasses("me.dustin.chatbot.command.impl", Command.class);
         classes.forEach(clazz -> {
             try {
