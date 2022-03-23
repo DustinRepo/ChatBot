@@ -102,7 +102,7 @@ public class ClientConnection {
         isInGame = true;
         loadProcesses();
         sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
-        GeneralHelper.print("Received Join Game. Sending ClientSettings packet and loading processes.", ChatMessage.TextColors.GREEN);
+        GeneralHelper.print("Received Join Game. Sending ClientSettings packet and loading processes.", ChatMessage.TextColors.GOLD);
     });
 
     public void loadProcesses() {
