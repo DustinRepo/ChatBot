@@ -37,9 +37,6 @@ public class ChatBot {
 
         if (!noGui) {
             gui = new ChatBotGui();
-            for (UIManager.LookAndFeelInfo installedLookAndFeel : UIManager.getInstalledLookAndFeels()) {
-                System.out.println(installedLookAndFeel.getClassName());
-            }
             try {
                 if (System.getProperty("os.name").toLowerCase().contains("win"))
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
