@@ -30,7 +30,7 @@ public class Chat2b2tProcess extends ChatBotProcess {
         if (event.getChatMessagePacket().getSender() == null || event.isCancelled())
             return;
         String body = GeneralHelper.strip(event.getChatMessagePacket().getMessage().getBody().toLowerCase());
-       if (stopWatch.hasPassed(ChatBot.getConfig().getMessageDelay()) && (body.contains("2b2t") || body.contains("2b") || body.contains("2builders2tools") || body.contains("2 builders 2 tools") || body.contains("oldest anarchy server in minecraft")) && !GeneralHelper.matchUUIDs(event.getChatMessagePacket().getSender().toString(), getClientConnection().getSession().getUuid())) {
+       if (chatCount > 0 && stopWatch.hasPassed(ChatBot.getConfig().getMessageDelay()) && (body.contains("2b2t") || body.contains("2b") || body.contains("2builders2tools") || body.contains("2 builders 2 tools") || body.contains("oldest anarchy server in minecraft")) && !GeneralHelper.matchUUIDs(event.getChatMessagePacket().getSender().toString(), getClientConnection().getSession().getUuid())) {
            getClientConnection().getClientPlayer().chat("Congrats. We only made it " + chatCount + " messages before someone mentioned 2b2t.");
            chatCount = 0;
            stopWatch.reset();
