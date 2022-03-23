@@ -26,18 +26,6 @@ public class PacketCrypt {
         return null;
     }
 
-    public byte[] decrypt(byte[] bytes) {
-        try {
-            String algorithm = secretKey.getAlgorithm();
-            Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.DECRYPT_MODE, publicKey);
-            return cipher.doFinal(bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public void generateCiphers() {
         try {
             String alg = "AES/CFB8/NoPadding";
