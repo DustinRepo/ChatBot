@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.security.*;
 
 public class PacketCrypt {
-
     private PublicKey publicKey;
     private SecretKey secretKey;
 
@@ -47,18 +46,6 @@ public class PacketCrypt {
         return messageDigest.digest();
     }
 
-    public Cipher getCipher(int opMode) {
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
-            cipher.init(opMode, secretKey, new IvParameterSpec(secretKey.getEncoded()));
-            return cipher;
-        }
-        catch (Exception cipher) {
-            cipher.printStackTrace();
-        }
-        return null;
-    }
-
     public InputStream decryptInputStream(InputStream inputStream) {
         return new CipherInputStream(inputStream, decryptCipher);
     }
@@ -81,13 +68,5 @@ public class PacketCrypt {
 
     public void setSecretKey(SecretKey secretKey) {
         this.secretKey = secretKey;
-    }
-
-    public Cipher getEncryptCipher() {
-        return encryptCipher;
-    }
-
-    public Cipher getDecryptCipher() {
-        return decryptCipher;
     }
 }

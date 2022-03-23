@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 public class ServerBoundEncryptionResponsePacket extends Packet {
     private final byte[] encryptedSecret;
     private final byte[] encryptedVerify;
+
     public ServerBoundEncryptionResponsePacket(byte[] encryptedSecret, byte[] encryptedVerify) {
         this.encryptedSecret = encryptedSecret;
         this.encryptedVerify = encryptedVerify;
