@@ -2,6 +2,7 @@ package me.dustin.chatbot.network;
 
 import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.account.MinecraftAccount;
 import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.chat.Translator;
@@ -62,8 +63,9 @@ public class ClientConnection {
     private boolean isInGame;
 
     private final ClientPlayer clientPlayer;
+    private final MinecraftAccount minecraftAccount;
 
-    public ClientConnection(String ip, int port, Session session) throws IOException {
+    public ClientConnection(String ip, int port, Session session, MinecraftAccount minecraftAccount) throws IOException {
         this.ip = ip;
         this.port = port;
         String proxyString = ChatBot.getConfig().getProxyString();
@@ -81,6 +83,7 @@ public class ClientConnection {
         this.in = new DataInputStream(socket.getInputStream());
         this.out = new DataOutputStream(socket.getOutputStream());
         this.session = session;
+        this.minecraftAccount = minecraftAccount;
         this.clientPlayer = new ClientPlayer(session.getUsername(), GeneralHelper.uuidFromStringNoDashes(session.getUuid()), this);
         this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler(this);
         this.commandManager = new CommandManager(this);
@@ -134,7 +137,7 @@ public class ClientConnection {
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
     }
 
-    public void contactAuthServers(String serverHash) {
+    public boolean contactAuthServers(String serverHash) {
         JsonObject request = new JsonObject();
         request.addProperty("accessToken", getSession().getAccessToken());
         request.addProperty("selectedProfile", getSession().getUuid());
@@ -142,7 +145,13 @@ public class ClientConnection {
         Map<String, String> header = new HashMap<>();
         header.put("Content-Type", "application/json");
 
-        GeneralHelper.httpRequest("https://sessionserver.mojang.com/session/minecraft/join", request.toString(), header, "GET");
+        GeneralHelper.HttpResponse resp = GeneralHelper.httpRequest("https://sessionserver.mojang.com/session/minecraft/join", request.toString(), header, "GET");
+        if (resp.responseCode() != 204) {//Mojang decided our request to the auth servers wasn't good
+            this.minecraftAccount.setLoginAgain(true);
+            close();
+            return false;
+        }
+        return true;
     }
 
     public void activateEncryption() {

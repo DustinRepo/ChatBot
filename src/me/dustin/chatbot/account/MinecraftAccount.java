@@ -7,7 +7,7 @@ import me.dustin.chatbot.helper.GeneralHelper;
 
 public class MinecraftAccount {
     protected String email, password;
-
+    private boolean loginAgain;
     public static class MicrosoftAccount extends MinecraftAccount {
 
         public MicrosoftAccount(String email, String password) {
@@ -61,6 +61,14 @@ public class MinecraftAccount {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isLoginAgain() {
+        return loginAgain;
+    }
+
+    public void setLoginAgain(boolean loginAgain) {
+        this.loginAgain = loginAgain;
     }
 
     public Session login() {

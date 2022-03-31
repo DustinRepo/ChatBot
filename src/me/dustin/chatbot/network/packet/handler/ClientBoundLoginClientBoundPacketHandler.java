@@ -37,17 +37,18 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
 
             String serverHash = new BigInteger(getClientConnection().getPacketCrypt().hash(encryptionStartPacket.getServerID().getBytes("ISO_8859_1"), getClientConnection().getPacketCrypt().getSecretKey().getEncoded(), getClientConnection().getPacketCrypt().getPublicKey().getEncoded())).toString(16);
             GeneralHelper.print("Contacting Auth Servers...", ChatMessage.TextColors.GREEN);
-            getClientConnection().contactAuthServers(serverHash);
+            if (getClientConnection().contactAuthServers(serverHash)) {
+                byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
+                byte[] encryptedVerify = getClientConnection().getPacketCrypt().encrypt(encryptionStartPacket.getVerifyToken());
 
-            byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
-            byte[] encryptedVerify = getClientConnection().getPacketCrypt().encrypt(encryptionStartPacket.getVerifyToken());
+                ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
 
-            ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
-
-            getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
-            GeneralHelper.print("Encrypting connection...", ChatMessage.TextColors.GREEN);
-            getClientConnection().activateEncryption();
-
+                getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
+                GeneralHelper.print("Encrypting connection...", ChatMessage.TextColors.GREEN);
+                getClientConnection().activateEncryption();
+            } else {
+                GeneralHelper.print("Error! Could not verify with auth servers", ChatMessage.TextColors.DARK_RED);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

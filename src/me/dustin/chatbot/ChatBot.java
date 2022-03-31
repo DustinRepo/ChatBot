@@ -88,21 +88,24 @@ public class ChatBot {
         }
         GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, ChatMessage.TextColors.AQUA);
 
-        connectionLoop(ip, port, session);
+        connectionLoop(ip, port, session, minecraftAccount);
 
         if (clientConnection != null)
             clientConnection.getProcessManager().stopAll();
         GeneralHelper.print("Connection closed.", ChatMessage.TextColors.RED);
     }
 
-    private static void connectionLoop(String ip, int port, Session session) throws InterruptedException {
+    private static void connectionLoop(String ip, int port, Session session, MinecraftAccount minecraftAccount) throws InterruptedException {
         try {
             if (ChatBot.getConfig().isLog())
                 GeneralHelper.initLogger();
             if (clientConnection != null)
                 clientConnection.getProcessManager().stopAll();
-
-            clientConnection = new ClientConnection(ip, port, session);
+            if (minecraftAccount.isLoginAgain()) {
+                session = minecraftAccount.login();
+                minecraftAccount.setLoginAgain(false);
+            }
+            clientConnection = new ClientConnection(ip, port, session, minecraftAccount);
             if (getGui() != null)
                 getGui().setClientConnection(clientConnection);
             clientConnection.connect();
@@ -120,7 +123,7 @@ public class ChatBot {
             GeneralHelper.print("Client disconnected, reconnecting in " + getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColors.DARK_PURPLE);
             stopWatch.reset();
             Thread.sleep(getConfig().getReconnectDelay() * 1000L);
-            connectionLoop(ip, port, session);
+            connectionLoop(ip, port, session, minecraftAccount);
         }
     }
 
