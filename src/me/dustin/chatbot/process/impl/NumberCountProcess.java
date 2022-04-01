@@ -28,20 +28,23 @@ public class NumberCountProcess extends ChatBotProcess {
         String senderName = MCAPIHelper.getNameFromUUID(event.getChatMessagePacket().getSender());
         String[] split = event.getChatMessagePacket().getMessage().getBody().split(" ");
         int num = 0;
+        int count = 0;
         StringJoiner sj = new StringJoiner(" + ");
         for (String s : split) {
             try {
                 int n = Integer.parseInt(s);
                 sj.add(s);
                 num += n;
+                count++;
             } catch (NumberFormatException e) {
             }
         }
-        if (num == 420) {
-            sendChat("All of the numers in " + senderName + "'s message add to 420! " + sj.toString() + " = 420");
-        } else if (num == 69) {
-            sendChat("All of the numers in " + senderName + "'s message add to 69! " + sj.toString() + " = 69");
-        }
+        if (count > 1)
+            if (num == 420) {
+                sendChat("All of the numers in " + senderName + "'s message add to 420! " + sj.toString() + " = 420");
+            } else if (num == 69) {
+                sendChat("All of the numers in " + senderName + "'s message add to 69! " + sj.toString() + " = 69");
+            }
     });
 
     @Override
