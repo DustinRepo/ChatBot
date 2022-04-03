@@ -19,6 +19,8 @@ public class ClientPlayer {
 
     private final StopWatch messageStopwatch = new StopWatch();
 
+    private String lastMessage = "";
+
     public ClientPlayer(String name, UUID uuid, ClientConnection clientConnection) {
         this.name = name;
         this.uuid = uuid;
@@ -29,11 +31,12 @@ public class ClientPlayer {
     }
 
     public void chat(String message) {
-        if (!messageStopwatch.hasPassed(ChatBot.getConfig().getMessageDelay())) {
+        if ((!ChatBot.getConfig().isRepeatMessages() && lastMessage.equalsIgnoreCase(message)) || !messageStopwatch.hasPassed(ChatBot.getConfig().getMessageDelay())) {
             return;
         }
         getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message));
         messageStopwatch.reset();
+        lastMessage = message;
     }
 
     public ClientConnection getClientConnection() {
