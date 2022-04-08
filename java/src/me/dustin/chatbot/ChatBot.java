@@ -33,7 +33,6 @@ public class ChatBot {
                 ip = arg.split("=")[1];
             }
         }
-
         if (!noGui) {
             gui = new ChatBotGui();
             try {

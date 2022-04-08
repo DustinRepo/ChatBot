@@ -14,31 +14,43 @@ import me.dustin.events.core.annotate.EventPointer;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class ChatBotGui {
-    private JFrame frame;
-    private JPanel panel;
-    private JButton sendButton;
-    private JTextPane output;
-    private JTextField input;
-    private JList<String> playerList;
-    private DefaultListModel<String> model;
+    private final JFrame frame;
+    private final  CustomTextPane output;
+    private final  JTextField input;
+    private final DefaultListModel<String> model;
 
     private ClientConnection clientConnection;
     private final StopWatch stopWatch = new StopWatch();
 
     public ChatBotGui() {
+        JButton sendButton = new JButton();
+        this.output = new CustomTextPane(true);
+        this.input = new JTextField();
+        JList<String> playerList = new JList<>();
+        JScrollPane outputScrollPane = new JScrollPane(output);
+        JScrollPane playerListScrollPane = new JScrollPane(playerList);
+        outputScrollPane.setBounds(1, 1, 600, 550);
+        playerListScrollPane.setBounds(601, 1, 198, 550);
+        input.setBounds(1, 551, 600, 50);
+        sendButton.setBounds(601, 551, 198, 50);
+        sendButton.setText("Send");
+        output.setEditable(false);
         this.frame = new JFrame("ChatBot");
-        this.frame.setSize(800, 600);
+        this.frame.setSize(800, 630);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setVisible(true);
-        this.frame.setResizable(true);
+        this.frame.setResizable(false);
         this.frame.setLocationRelativeTo(null);
-        this.frame.add(this.panel);
+        this.frame.getContentPane().setLayout(null);
+        this.frame.getContentPane().add(outputScrollPane);
+        this.frame.getContentPane().add(playerListScrollPane);
+        this.frame.getContentPane().add(this.input);
+        this.frame.getContentPane().add(sendButton);
+
         this.output.setText("");
 
         model = new DefaultListModel<>();

@@ -32,6 +32,9 @@ Customizable prefix: Customize the prefix in the config.cfg file
 5. Input the ip when prompted
 ```
 
+###### How to build from source
+Just open terminal and run `./gradlew build` and wait for it to finish. The jar will be in `ChatBot/build/libs/ChatBot.jar`
+
 ## Commands
 Below are a list of commands currently in ChatBot
 
