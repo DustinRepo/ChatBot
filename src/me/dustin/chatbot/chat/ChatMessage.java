@@ -13,8 +13,8 @@ import java.util.StringJoiner;
 
 public class ChatMessage {
 
-    private String senderName;
-    private String body;
+    private final String senderName;
+    private final String body;
     private boolean isChat;
 
     public ChatMessage(String senderName, String body) {

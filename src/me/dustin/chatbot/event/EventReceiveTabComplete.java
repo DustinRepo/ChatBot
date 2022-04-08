@@ -5,7 +5,7 @@ import me.dustin.events.core.Event;
 
 public class EventReceiveTabComplete extends Event {
 
-    private ClientBoundTabCompletePacket packet;
+    private final ClientBoundTabCompletePacket packet;
 
     public EventReceiveTabComplete(ClientBoundTabCompletePacket packet) {
         this.packet = packet;

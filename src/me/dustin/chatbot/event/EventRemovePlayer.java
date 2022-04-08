@@ -5,7 +5,7 @@ import me.dustin.events.core.Event;
 
 public class EventRemovePlayer extends Event {
 
-    private OtherPlayer player;
+    private final OtherPlayer player;
 
     public EventRemovePlayer(OtherPlayer player) {
         this.player = player;

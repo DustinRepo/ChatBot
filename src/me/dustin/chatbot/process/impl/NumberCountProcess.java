@@ -27,6 +27,9 @@ public class NumberCountProcess extends ChatBotProcess {
             return;
         String senderName = MCAPIHelper.getNameFromUUID(event.getChatMessagePacket().getSender());
         String[] split = event.getChatMessagePacket().getMessage().getBody().split(" ");
+
+        if (senderName.isEmpty())
+            return;
         int num = 0;
         int count = 0;
         StringJoiner sj = new StringJoiner(" + ");

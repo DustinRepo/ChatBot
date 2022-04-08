@@ -49,12 +49,12 @@ public class MCAPIHelper {
 
     public static String getNameFromUUID(UUID uuid) {
         if (uuid == null)
-            return "UUID null";
+            return "";
         if (uuidMap.containsKey(uuid))
             return uuidMap.get(uuid);
         String result = GeneralHelper.httpRequest(String.format(UUID_API_URL, uuid.toString().replace("-", "")), null, null, "GET").data();
         if (result == null)
-            return "Player Not found";
+            return "";
         JsonArray nameArray = GeneralHelper.gson.fromJson(result, JsonArray.class);
         try {
             JsonObject object = nameArray.get(nameArray.size() - 1).getAsJsonObject();
@@ -63,7 +63,7 @@ public class MCAPIHelper {
             uuidMap.putIfAbsent(uuid, name);
             return name;
         } catch (Exception e) {
-            return "Error";
+            return "";
         }
     }
 

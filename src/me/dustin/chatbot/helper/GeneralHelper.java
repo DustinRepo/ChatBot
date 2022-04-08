@@ -54,8 +54,6 @@ public class GeneralHelper {
     }
 
     public static void printChat(ChatMessage chatMessage) {
-        if (!chatMessage.getSenderName().isEmpty() && !chatMessage.getSenderName().startsWith("<"))
-            chatMessage = new ChatMessage("<" + chatMessage.getSenderName() + (chatMessage.getSenderName().contains("§") ? "§f" : "") +">", chatMessage.getBody());
         String m = chatMessage.getMessage();
         if (!m.contains("§") || !ChatBot.getConfig().isColorConsole()) {
             print(m, ChatMessage.TextColors.WHITE);
@@ -282,10 +280,7 @@ public class GeneralHelper {
 
         @Override
         public String format(LogRecord record) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(getCurrentTimeStamp(record.getMillis())).append(':');;
-            sb.append(record.getMessage()).append('\n');
-            return sb.toString();
+            return getCurrentTimeStamp(record.getMillis()) + ':' + record.getMessage() + '\n';
         }
     }
 }
