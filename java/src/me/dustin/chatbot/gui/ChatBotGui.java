@@ -95,10 +95,8 @@ public class ChatBotGui {
     });
 
     public void tick() {
-        if (ChatBot.getClientConnection() == null || !ChatBot.getClientConnection().isConnected())
-            frame.setTitle("ChatBot - Disconnected");
-        else
-            frame.setTitle("ChatBot - Connected to: " + ChatBot.getClientConnection().getIp() + ":" + ChatBot.getClientConnection().getPort() + " for: " + GeneralHelper.getDurationString(ChatBot.connectionTime()));
+        if (ChatBot.getClientConnection() != null && ChatBot.getClientConnection().isConnected())
+            frame.setTitle("ChatBot - " + ChatBot.getClientConnection().getIp() + ":" + ChatBot.getClientConnection().getPort());
     }
 
     public JFrame getFrame() {
