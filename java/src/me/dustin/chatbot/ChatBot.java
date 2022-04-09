@@ -35,7 +35,6 @@ public class ChatBot {
     public static void main(String[] args) throws IOException, InterruptedException {
         String jarPath = new File("").getAbsolutePath();
         String ip = null;
-
         boolean noGui = false;
         if (args.length > 0)
         for (String arg : args) {

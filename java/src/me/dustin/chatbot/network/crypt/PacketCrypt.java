@@ -29,16 +29,6 @@ public class PacketCrypt {
         return null;
     }
 
-    private byte[] toByteArray(ByteBuf buf) {
-        int i = buf.readableBytes();
-        if (this.conversionBytes.length < i) {
-            this.conversionBytes = new byte[i];
-        }
-
-        buf.readBytes(this.conversionBytes, 0, i);
-        return this.conversionBytes;
-    }
-
     public ByteBuf decryptPacket(ChannelHandlerContext context, ByteBuf buf) throws ShortBufferException {
         int i = buf.readableBytes();
         byte[] bs = this.toByteArray(buf);
@@ -54,7 +44,6 @@ public class PacketCrypt {
         if (this.encryptionBytes.length < j) {
             this.encryptionBytes = new byte[j];
         }
-
         result.writeBytes(this.encryptionBytes, 0, this.encryptCipher.update(bs, 0, i, this.encryptionBytes));
     }
 
@@ -77,6 +66,16 @@ public class PacketCrypt {
             messageDigest.update(bs);
         }
         return messageDigest.digest();
+    }
+
+    private byte[] toByteArray(ByteBuf buf) {
+        int i = buf.readableBytes();
+        if (this.conversionBytes.length < i) {
+            this.conversionBytes = new byte[i];
+        }
+
+        buf.readBytes(this.conversionBytes, 0, i);
+        return this.conversionBytes;
     }
 
     public PublicKey getPublicKey() {

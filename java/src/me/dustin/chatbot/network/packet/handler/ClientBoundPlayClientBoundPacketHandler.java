@@ -1,15 +1,11 @@
 package me.dustin.chatbot.network.packet.handler;
 
-import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventReceiveTabComplete;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.network.Protocols;
-import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.c2s.play.*;
 import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.ClientPlayer;
