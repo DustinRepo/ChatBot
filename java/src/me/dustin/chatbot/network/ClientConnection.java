@@ -147,14 +147,15 @@ public class ClientConnection {
     }
 
     public void close() {
+        if (!isConnected)
+            return;
         getProcessManager().stopAll();
         if (channel != null)
-            channel.close();
+            channel.close().awaitUninterruptibly();
         if (ChatBot.getGui() != null) {
             ChatBot.getGui().getPlayerList().clear();
         }
         isConnected = false;
-
         if (ChatBot.getConfig().isReconnect()) {
             GeneralHelper.print("Client disconnected, reconnecting in " + ChatBot.getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColors.DARK_PURPLE);
             try {
@@ -309,6 +310,10 @@ public class ClientConnection {
 
     public void setChannel(Channel channel) {
         this.channel = channel;
+    }
+
+    public boolean isChannelOpen() {
+        return channel != null && channel.isOpen();
     }
 
     public enum NetworkState {

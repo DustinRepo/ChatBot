@@ -16,7 +16,6 @@ public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHa
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {
         GeneralHelper.print("Disconnected", ChatMessage.TextColors.DARK_RED);
         GeneralHelper.printChat(ChatMessage.of(clientBoundDisconnectPacket.getReason()));
-        getClientConnection().close();
     }
 
     public void handleKeepAlivePacket(ClientBoundKeepAlivePacket keepAlivePacket) {
