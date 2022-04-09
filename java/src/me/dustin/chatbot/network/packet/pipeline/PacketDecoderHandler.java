@@ -21,7 +21,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
     private final Map<Integer, Class<? extends Packet.ClientBoundPacket>> playMap = new HashMap<>();
 
     public PacketDecoderHandler() {
-        loginMap.put(0x00, ClientBoundDisconnectPacket.class);
+        loginMap.put(0x00, ClientBoundDisconnectLoginPacket.class);
         loginMap.put(0x01, ClientBoundEncryptionStartPacket.class);
         loginMap.put(0x02, ClientBoundLoginSuccessPacket.class);
         loginMap.put(0x03, ClientBoundSetCompressionPacket.class);
@@ -53,9 +53,8 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
                 Packet.ClientBoundPacket packet = c.getDeclaredConstructor(ClientBoundPacketHandler.class).newInstance(ChatBot.getClientConnection().getClientBoundPacketHandler());
                 packet.createPacket(packetByteBuf);
                 out.add(packet);
-            } else {
-                in.clear();
             }
+            in.clear();
         }
     }
 }

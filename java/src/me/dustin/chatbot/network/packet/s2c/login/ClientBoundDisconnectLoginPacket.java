@@ -7,10 +7,10 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.IOException;
 
-public class ClientBoundDisconnectPacket extends Packet.ClientBoundPacket {
+public class ClientBoundDisconnectLoginPacket extends Packet.ClientBoundPacket {
     private String reason;
 
-    public ClientBoundDisconnectPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
+    public ClientBoundDisconnectLoginPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         super(0x00, clientBoundPacketHandler);
     }
 
