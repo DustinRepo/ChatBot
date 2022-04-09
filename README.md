@@ -33,7 +33,7 @@ Customizable prefix: Customize the prefix in the config.cfg file
 ```
 
 ###### How to build from source
-Just open terminal and run `./gradlew build` and wait for it to finish. The jar will be in `ChatBot/build/libs/ChatBot.jar`
+Just open terminal and run `./gradlew shadowJar` and wait for it to finish. The jar will be in `ChatBot/build/libs/ChatBot.jar`
 
 ## Commands
 Below are a list of commands currently in ChatBot
@@ -50,6 +50,8 @@ Returns a link to a random picture of coffee
 Tries to get the server plugins and returns them
 ###### roast
 Have the bot roast you
+###### cock / pp
+The bot tells you your penis size
 ###### amogus / amongus
 Sussy baka uwu
 ###### 2b2tcount -name- / !2b2t -name-

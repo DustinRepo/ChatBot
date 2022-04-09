@@ -17,21 +17,6 @@ import me.dustin.chatbot.network.player.OtherPlayer;
 
 public class ClientBoundPlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
-    public ClientBoundPlayClientBoundPacketHandler(ClientConnection clientConnection) {
-        super(clientConnection);
-        getPacketMap().put(PacketIDs.ClientBound.CHAT_MESSAGE.getPacketId(), ClientBoundChatMessagePacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.COMBAT_EVENT.getPacketId(), ClientBoundCombatEventPacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.DISCONNECT.getPacketId(), ClientBoundDisconnectPlayPacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.KEEP_ALIVE.getPacketId(), ClientBoundKeepAlivePacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.PLAYER_INFO.getPacketId(), ClientBoundPlayerInfoPacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.PLAYER_POS_LOOK.getPacketId(), ClientBoundPlayerPositionAndLookPacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.RESOURCE_PACK_SEND.getPacketId(), ClientBoundResourcePackSendPacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.TAB_COMPLETE.getPacketId(), ClientBoundTabCompletePacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.UPDATE_HEALTH.getPacketId(), ClientBoundUpdateHealthPacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.WORLD_TIME.getPacketId(), ClientBoundWorldTimePacket.class);
-        getPacketMap().put(PacketIDs.ClientBound.JOIN_GAME.getPacketId(), ClientBoundJoinGamePacket.class);
-    }
-
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {
         GeneralHelper.print("Disconnected", ChatMessage.TextColors.DARK_RED);
         GeneralHelper.printChat(ChatMessage.of(clientBoundDisconnectPacket.getReason()));

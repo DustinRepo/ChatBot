@@ -1,11 +1,10 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 
 public class ClientBoundPluginRequestPacket extends Packet.ClientBoundPacket {
@@ -14,13 +13,12 @@ public class ClientBoundPluginRequestPacket extends Packet.ClientBoundPacket {
     private String identifier;
 
     public ClientBoundPluginRequestPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
+        super(0x04, clientBoundPacketHandler);
     }
 
-    @Override
-    public void createPacket(DataInputStream dataInputStream) throws IOException {
-        this.messageId = readVarInt(dataInputStream);
-        this.identifier = readString(dataInputStream);
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+        this.messageId = packetByteBuf.readVarInt();
+        this.identifier = packetByteBuf.readString();
     }
 
     @Override

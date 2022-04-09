@@ -1,12 +1,13 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPacket {
@@ -17,21 +18,21 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
     private boolean dismount;
 
     public ClientBoundPlayerPositionAndLookPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
+        super(PacketIDs.ClientBound.PLAYER_POS_LOOK.getPacketId(), clientBoundPacketHandler);
     }
 
     @Override
-    public void createPacket(DataInputStream dataInputStream) throws IOException {
-        x = dataInputStream.readDouble();
-        y = dataInputStream.readDouble();
-        z = dataInputStream.readDouble();
-        yaw = dataInputStream.readFloat();
-        pitch = dataInputStream.readFloat();
-        flags = dataInputStream.readByte();
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+        x = packetByteBuf.readDouble();
+        y = packetByteBuf.readDouble();
+        z = packetByteBuf.readDouble();
+        yaw = packetByteBuf.readFloat();
+        pitch = packetByteBuf.readFloat();
+        flags = packetByteBuf.readByte();
         if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_18.getProtocolVer())
-            teleportId = readVarInt(dataInputStream);
+            teleportId = packetByteBuf.readVarInt();
         if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_16_5.getProtocolVer())//1.16.5
-            dismount = dataInputStream.readBoolean();
+            dismount = packetByteBuf.readBoolean();
     }
 
     @Override

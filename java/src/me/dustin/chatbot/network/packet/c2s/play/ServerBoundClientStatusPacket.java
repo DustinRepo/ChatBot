@@ -6,6 +6,7 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -15,20 +16,12 @@ public class ServerBoundClientStatusPacket extends Packet {
     public static final int RESPAWN = 0, REQUEST_STATS = 1;
     private final int action;
     public ServerBoundClientStatusPacket(int action) {
+        super(PacketIDs.ServerBound.CLIENT_STATUS.getPacketId());
         this.action = action;
     }
 
     @Override
-    public ByteArrayDataOutput createPacket() throws IOException {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream clientStatusPacket = new DataOutputStream(baos);
-
-        writeVarInt(clientStatusPacket, PacketIDs.ServerBound.CLIENT_STATUS.getPacketId());
-        writeVarInt(clientStatusPacket, action);
-
-        writeVarInt(out, baos.toByteArray().length);
-        out.write(baos.toByteArray());
-        return out;
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+        packetByteBuf.writeVarInt(action);
     }
 }

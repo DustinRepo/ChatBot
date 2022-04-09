@@ -125,13 +125,14 @@ public class GeneralHelper {
     public static String readFile(File file) {
         StringBuilder sb = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-            String inString;
-            while ((inString = in.readLine()) != null) {
-                sb.append(inString);
-                sb.append("\n");
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line).append("\n");
             }
-            in.close();
+            bufferedReader.close();
+            fileReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -140,13 +141,13 @@ public class GeneralHelper {
 
     public static void writeFile(File file, java.util.List<String> content) {
         try {
-            PrintWriter printWriter = new PrintWriter(file);
+            FileWriter fileWriter = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             StringBuilder stringBuilder = new StringBuilder();
-            content.forEach(string -> {
-                stringBuilder.append(string + "\r\n");
-            });
-            printWriter.print(stringBuilder);
-            printWriter.close();
+            content.forEach(string -> stringBuilder.append(string).append("\r\n"));
+            bufferedWriter.write(stringBuilder.toString());
+            bufferedWriter.close();
+            fileWriter.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

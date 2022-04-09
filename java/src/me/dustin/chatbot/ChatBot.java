@@ -1,5 +1,13 @@
 package me.dustin.chatbot;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.proxy.Socks4ProxyHandler;
+import io.netty.handler.proxy.Socks5ProxyHandler;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import me.dustin.chatbot.account.MinecraftAccount;
 import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.chat.ChatMessage;
@@ -8,10 +16,14 @@ import me.dustin.chatbot.gui.ChatBotGui;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.pipeline.*;
+import me.dustin.chatbot.process.impl.QuoteProcess;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 public class ChatBot {
 
@@ -36,10 +48,10 @@ public class ChatBot {
         if (!noGui) {
             gui = new ChatBotGui();
             try {
-                if (System.getProperty("os.name").toLowerCase().contains("win"))
-                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-                else
+                if (System.getProperty("os.name").toLowerCase().contains("linux"))
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+                else
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 gui.updateComponents();
             } catch (Exception e) {}
         }
@@ -87,42 +99,57 @@ public class ChatBot {
         }
         GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, ChatMessage.TextColors.AQUA);
 
-        connectionLoop(ip, port, session, minecraftAccount);
-
-        if (clientConnection != null)
-            clientConnection.getProcessManager().stopAll();
-        GeneralHelper.print("Connection closed.", ChatMessage.TextColors.RED);
+        createConnection(ip, port, session, minecraftAccount);
     }
 
-    private static void connectionLoop(String ip, int port, Session session, MinecraftAccount minecraftAccount) throws InterruptedException {
+    public static void createConnection(String ip, int port, Session session, MinecraftAccount minecraftAccount) throws InterruptedException {
         try {
             if (ChatBot.getConfig().isLog())
                 GeneralHelper.initLogger();
-            if (clientConnection != null)
-                clientConnection.getProcessManager().stopAll();
             if (minecraftAccount.isLoginAgain()) {
                 session = minecraftAccount.login();
                 minecraftAccount.setLoginAgain(false);
             }
+            boolean bl = false;
+            if (clientConnection == null && getConfig().isQuotes())
+                bl = true;
             clientConnection = new ClientConnection(ip, port, session, minecraftAccount);
-            if (getGui() != null)
-                getGui().setClientConnection(clientConnection);
-            clientConnection.connect();
-            stopWatch.reset();
-            while (clientConnection.isConnected()) {
-                clientConnection.tick();
-                if (getGui() != null) {
-                    getGui().tick();
+            if (bl)
+                QuoteProcess.readFile();
+            Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build()));
+            bootstrap = bootstrap.handler(new ChannelInitializer<>() {
+                protected void initChannel(Channel channel) {
+                    channel.config().setOption(ChannelOption.TCP_NODELAY, true);
+                    String proxyString = getConfig().getProxyString();
+                    if (!proxyString.isEmpty()) {
+                        String proxyIP = proxyString.split(":")[0];
+                        int proxyPort = Integer.parseInt(proxyString.split(":")[1]);
+                        if (getConfig().getProxySOCKS() == 5)
+                            channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxyIP, proxyPort), getConfig().getProxyUsername(), getConfig().getProxyPassword()));
+                        else
+                            channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxyIP, proxyPort)));
+                    }
+
+                    channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
+                    channel.pipeline().addLast("splitter", new PacketSplitterHandler());
+                    channel.pipeline().addLast("decoder", new PacketDecoderHandler());
+                    channel.pipeline().addLast("size_prepender", new PacketSizePrepender());
+                    channel.pipeline().addLast("encoder", new PacketEncoder());
+                    channel.pipeline().addLast("packet_handler", new ClientBoundPacketHandler());
+                    channel.pipeline().addLast(new NetworkExceptionHandler());
                 }
+            });
+            bootstrap = bootstrap.channel(NioSocketChannel.class);
+            try {
+                bootstrap.connect(ip, port).syncUninterruptibly();
+                clientConnection.connect();
+                stopWatch.reset();
+            } catch (Exception e) {
+                GeneralHelper.print(e.getMessage(), ChatMessage.TextColors.DARK_RED);
+                clientConnection.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        if (getConfig().isReconnect()) {
-            GeneralHelper.print("Client disconnected, reconnecting in " + getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColors.DARK_PURPLE);
-            stopWatch.reset();
-            Thread.sleep(getConfig().getReconnectDelay() * 1000L);
-            connectionLoop(ip, port, session, minecraftAccount);
         }
     }
 

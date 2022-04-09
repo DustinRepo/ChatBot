@@ -23,9 +23,6 @@ public class ChatBotGui {
     private final  JTextField input;
     private final DefaultListModel<String> model;
 
-    private ClientConnection clientConnection;
-    private final StopWatch stopWatch = new StopWatch();
-
     public ChatBotGui() {
         JButton sendButton = new JButton();
         this.output = new CustomTextPane(true);
@@ -34,13 +31,13 @@ public class ChatBotGui {
         JScrollPane outputScrollPane = new JScrollPane(output);
         JScrollPane playerListScrollPane = new JScrollPane(playerList);
         outputScrollPane.setBounds(1, 1, 600, 550);
-        playerListScrollPane.setBounds(601, 1, 198, 550);
-        input.setBounds(1, 551, 600, 50);
-        sendButton.setBounds(601, 551, 198, 50);
+        playerListScrollPane.setBounds(601, 1, 195, 550);
+        input.setBounds(1, 555, 600, 35);
+        sendButton.setBounds(601, 555, 195, 35);
         sendButton.setText("Send");
         output.setEditable(false);
         this.frame = new JFrame("ChatBot");
-        this.frame.setSize(800, 630);
+        this.frame.setSize(800, 625);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setVisible(true);
         this.frame.setResizable(false);
@@ -60,35 +57,29 @@ public class ChatBotGui {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//they pressed enter
-                    if (clientConnection != null)
-                        clientConnection.sendPacket(new ServerBoundChatPacket(input.getText()));
+                    if (ChatBot.getClientConnection() != null)
+                        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(input.getText()));
                     input.setText("");
                 }
             }
         });
         sendButton.addActionListener(actionEvent -> {
-            if (clientConnection != null)
-                this.clientConnection.sendPacket(new ServerBoundChatPacket(input.getText()));
+            if (ChatBot.getClientConnection() != null)
+                ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(input.getText()));
             this.input.setText("");
         });
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                if (clientConnection != null)
-                    clientConnection.getProcessManager().stopAll();
+                if (ChatBot.getClientConnection() != null)
+                    ChatBot.getClientConnection().getProcessManager().stopAll();
                 System.exit(0);
             }
         });
-        new Timer(1000, e -> {
-            if (clientConnection != null && clientConnection.getNetworkState() == ClientConnection.NetworkState.PLAY) {
-                if (stopWatch.hasPassed(ChatBot.getConfig().getKeepAliveCheckTime() * 1000L)) {
-                    GeneralHelper.print("Thread stopped responding, closing connection...", ChatMessage.TextColors.DARK_RED);
-                    clientConnection.close();
-                    clientConnection = null;
-                    stopWatch.reset();
-                }
-            } else {
-                stopWatch.reset();
+        new Timer(50, e -> {
+            if (ChatBot.getClientConnection() != null && ChatBot.getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
+                ChatBot.getClientConnection().tick();
+                tick();
             }
         }).start();
     }
@@ -104,11 +95,10 @@ public class ChatBotGui {
     });
 
     public void tick() {
-        stopWatch.reset();
-        if (clientConnection == null || !clientConnection.isConnected())
+        if (ChatBot.getClientConnection() == null || !ChatBot.getClientConnection().isConnected())
             frame.setTitle("ChatBot - Disconnected");
         else
-            frame.setTitle("ChatBot - Connected to: " + clientConnection.getIp() + ":" + clientConnection.getPort() + " for: " + GeneralHelper.getDurationString(ChatBot.connectionTime()));
+            frame.setTitle("ChatBot - Connected to: " + ChatBot.getClientConnection().getIp() + ":" + ChatBot.getClientConnection().getPort() + " for: " + GeneralHelper.getDurationString(ChatBot.connectionTime()));
     }
 
     public JFrame getFrame() {
@@ -116,7 +106,7 @@ public class ChatBotGui {
     }
 
     public void updateComponents() {
-        if (System.getProperty("os.name").toLowerCase().contains("win") && ChatBot.getConfig().isColorConsole()) {
+        if (!System.getProperty("os.name").toLowerCase().contains("linux") && ChatBot.getConfig().isColorConsole()) {
             UIDefaults defs = UIManager.getDefaults();
             defs.put("TextPane.background", new ColorUIResource(new Color(60, 60, 60)));
             defs.put("TextPane.inactiveBackground", new ColorUIResource(new Color(60, 60, 60)));
@@ -136,7 +126,4 @@ public class ChatBotGui {
         return model;
     }
 
-    public void setClientConnection(ClientConnection clientConnection) {
-        this.clientConnection = clientConnection;
-    }
 }

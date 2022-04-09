@@ -42,6 +42,7 @@ public class Config {
     private boolean repeatMessages;
 
     private int protocolVersion;
+    private int proxySOCKS;
     private int reconnectDelay;
     private int messageDelay;
     private int announcementDelay;
@@ -95,6 +96,7 @@ public class Config {
         keepAliveCheckTime = parser.readInt("keepAliveCheckTime");
         antiAFKDelay = parser.readInt("antiAFKDelay");
         skinBlinkDelay = parser.readInt("skinBlinkDelay");
+        proxySOCKS = parser.readInt("socks");
 
         String jarPath = new File("").getAbsolutePath();
         loginFile = new File(jarPath, parser.readString("loginFile"));
@@ -242,6 +244,10 @@ public class Config {
 
     public int getSkinBlinkDelay() {
         return skinBlinkDelay;
+    }
+
+    public int getProxySOCKS() {
+        return proxySOCKS;
     }
 
     public File getLoginFile() {

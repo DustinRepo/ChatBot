@@ -1,5 +1,9 @@
 package me.dustin.chatbot.network.packet.handler;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.BadPacketException;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
@@ -13,86 +17,34 @@ import java.util.Map;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-public abstract class ClientBoundPacketHandler {
+public class ClientBoundPacketHandler extends SimpleChannelInboundHandler<Packet.ClientBoundPacket> {
 
-    private final ClientConnection clientConnection;
+    protected ChannelHandlerContext channelHandlerContext;
+    protected Channel channel;
 
-    private final Map<Integer, Class<? extends Packet.ClientBoundPacket>> packetMap = new HashMap<>();
-
-    public ClientBoundPacketHandler(ClientConnection clientConnection) {
-        this.clientConnection = clientConnection;
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        this.getClientConnection().setChannel(ctx.channel());
+        this.channelHandlerContext = ctx;
+        this.channel = ctx.channel();
+        super.channelActive(ctx);
     }
 
-    public void listen() {
-        try {
-            DataInputStream packetData = getPacketData();
-            if (packetData == null)
-                return;
-            if (packetData.available() > 2097050)
-                throw new BadPacketException(String.format("Packet size is more than %d!", 2097050));
-            if (packetData.available() > 0) {
-                int packetId = Packet.readVarInt(packetData);
-                Class<? extends Packet.ClientBoundPacket> c = packetMap.get(packetId);
-                if (c != null) {
-                    Packet.ClientBoundPacket packet = c.getDeclaredConstructor(ClientBoundPacketHandler.class).newInstance(this);
-                    packet.setClientConnection(getClientConnection());
-                    packet.createPacket(packetData);
-                    packet.apply();
-                }
-            }
-        } catch (Exception e) {
-            getClientConnection().close();
-            e.printStackTrace();
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        ChatBot.getClientConnection().close();
+        super.channelInactive(ctx);
+    }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, Packet.ClientBoundPacket packet) {
+        if (channel.isOpen() && packet != null) {
+            packet.apply();
         }
-    }
-
-    protected Map<Integer, Class<? extends Packet.ClientBoundPacket>> getPacketMap() {
-        return packetMap;
     }
 
     protected ClientConnection getClientConnection() {
-        return clientConnection;
+        return ChatBot.getClientConnection();
     }
 
-    public DataInputStream getPacketData() throws IOException, BadPacketException {
-        DataInputStream dataInputStream = getClientConnection().getIn();
-        if (getClientConnection().getCompressionThreshold() > 0) {
-            int length = Packet.readVarInt(dataInputStream);
-            int[] dataLengths = Packet.readVarIntt(dataInputStream);
-            int dataLength = dataLengths[0];
-            int packetLegth = length-dataLengths[1];
-            if (dataLength != 0) {
-                return readCompressed(dataInputStream, packetLegth, dataLength);
-            } else {
-                byte[] readableBytes = new byte[packetLegth];
-                dataInputStream.readFully(readableBytes);
-                return new DataInputStream(new ByteArrayInputStream(readableBytes));
-            }
-        } else {
-            Packet.readVarInt(dataInputStream);//read size even tho we don't use it since we don't expect it later
-            return dataInputStream;
-        }
-    }
-
-    private DataInputStream readCompressed(DataInputStream dataInputStream, int packetLength, int dataLength) throws BadPacketException, IOException {
-        if (dataLength >= getClientConnection().getCompressionThreshold()) {
-            byte[] data = new byte[packetLength];
-            dataInputStream.readFully(data, 0, packetLength);
-
-            Inflater inflater = new Inflater();
-            inflater.setInput(data);
-
-            byte[] uncompressed = new byte[dataLength];
-            try {
-                inflater.inflate(uncompressed);
-            } catch (DataFormatException dataFormatException) {
-                dataFormatException.printStackTrace();
-                throw new BadPacketException("Badly compressed packet");
-            } finally {
-                inflater.end();
-            }
-            return new DataInputStream(new ByteArrayInputStream(uncompressed));
-        } else
-            throw new BadPacketException("DataLength was smaller than compression threshold! dl:" + dataLength + " threshold:" + getClientConnection().getCompressionThreshold());
-    }
 }

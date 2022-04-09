@@ -6,6 +6,7 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -18,22 +19,14 @@ public class ServerBoundPlayerSwingPacket extends Packet {
     private final int hand;
 
     public ServerBoundPlayerSwingPacket(int hand) {
+        super(PacketIDs.ServerBound.PLAYER_SWING.getPacketId());
         this.hand = hand;
     }
 
     @Override
-    public ByteArrayDataOutput createPacket() throws IOException {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dataOutputStream = new DataOutputStream(baos);
-
-        dataOutputStream.write(PacketIDs.ServerBound.PLAYER_SWING.getPacketId());//packet id
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_8.getProtocolVer())
-            writeVarInt(dataOutputStream, hand);
-
-        writeVarInt(out, baos.toByteArray().length);
-        out.write(baos.toByteArray());
-        return out;
+            packetByteBuf.writeVarInt(hand);
     }
 
 }

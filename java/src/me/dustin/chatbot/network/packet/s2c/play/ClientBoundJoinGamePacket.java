@@ -1,13 +1,12 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.network.Protocols;
+import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.OtherPlayer;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
@@ -29,13 +28,13 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
     private boolean isFlat;
 
     public ClientBoundJoinGamePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
+        super(PacketIDs.ClientBound.JOIN_GAME.getPacketId(), clientBoundPacketHandler);
     }
 
     @Override
-    public void createPacket(DataInputStream dataInputStream) throws IOException {
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
 
-        this.entityId = dataInputStream.readInt();
+        this.entityId = packetByteBuf.readInt();
         //this works on ~1.16 and above, but it's really not needed and has been massively changed throughout the versions
         //I really only need this packet for confirmation that the player has joined
 

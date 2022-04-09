@@ -1,12 +1,13 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 public class ClientBoundCombatEventPacket extends Packet.ClientBoundPacket {
@@ -17,20 +18,20 @@ public class ClientBoundCombatEventPacket extends Packet.ClientBoundPacket {
     private int killerId;
     private String message = "";
     public ClientBoundCombatEventPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
+        super(PacketIDs.ClientBound.COMBAT_EVENT.getPacketId(), clientBoundPacketHandler);
     }
 
     @Override
-    public void createPacket(DataInputStream dataInputStream) throws IOException {
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_16_5.getProtocolVer()) {//1.16.5
-            this.type = readVarInt(dataInputStream);
+            this.type = packetByteBuf.readVarInt();
             if (type != ENTITY_DIED)
                 return;
         }
-        this.playerId = readVarInt(dataInputStream);
-        this.killerId = dataInputStream.readInt();
+        this.playerId = packetByteBuf.readVarInt();
+        this.killerId = packetByteBuf.readInt();
         if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer() || type == ENTITY_DIED)//1.17 or the player actually died
-            this.message = readString(dataInputStream);
+            this.message = packetByteBuf.readString();
     }
 
     @Override

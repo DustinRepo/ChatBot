@@ -1,17 +1,15 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.MCAPIHelper;
+import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.OtherPlayer;
-import me.dustin.chatbot.network.player.PlayerManager;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -25,16 +23,16 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
     private OtherPlayer[] players;
 
     public ClientBoundPlayerInfoPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
+        super(PacketIDs.ClientBound.PLAYER_INFO.getPacketId(), clientBoundPacketHandler);
     }
 
     @Override
-    public void createPacket(DataInputStream dataInputStream) throws IOException {
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         //1.7 versions of this packet are very different
         if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer()) {
-            String playerName = readString(dataInputStream);
-            boolean online = dataInputStream.readBoolean();
-            int ping = dataInputStream.readShort();
+            String playerName = packetByteBuf.readString();
+            boolean online = packetByteBuf.readBoolean();
+            int ping = packetByteBuf.readShort();
 
             players = new OtherPlayer[1];
             players[0] = new OtherPlayer(playerName, MCAPIHelper.getUUIDFromName(playerName));
@@ -42,48 +40,48 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
             return;
         }
 
-        this.action = readVarInt(dataInputStream);
-        int playerNumbers = readVarInt(dataInputStream);
+        this.action = packetByteBuf.readVarInt();
+        int playerNumbers = packetByteBuf.readVarInt();
         this.players = new OtherPlayer[playerNumbers];
 
         for (int i = 0; i < playerNumbers; i++) {
-            UUID uuid = readUUID(dataInputStream);
+            UUID uuid = packetByteBuf.readUuid();
             OtherPlayer player = getClientConnection().getPlayerManager().get(uuid);
             if (player == null)
                 player = new OtherPlayer("", uuid);
             switch (this.action) {
                 case ADD_PLAYER -> {
-                    player.setName(readString(dataInputStream));
-                    int propertyListSize = readVarInt(dataInputStream);
+                    player.setName(packetByteBuf.readString());
+                    int propertyListSize = packetByteBuf.readVarInt();
                     ArrayList<OtherPlayer.PlayerProperty> properties = new ArrayList<>();
                     for (int ii = 0; ii < propertyListSize; ii++) {
-                        String pName = readString(dataInputStream);
-                        String pValue = readString(dataInputStream);
-                        boolean isSigned = dataInputStream.readBoolean();
+                        String pName = packetByteBuf.readString();
+                        String pValue = packetByteBuf.readString();
+                        boolean isSigned = packetByteBuf.readBoolean();
                         String signature = "";
                         if (isSigned) {
-                            signature = readString(dataInputStream);
+                            signature = packetByteBuf.readString();
                         }
                         properties.add(new OtherPlayer.PlayerProperty(pName, pValue, isSigned, signature));
                     }
                     player.getProperties().addAll(properties);
-                    player.setGameMode(OtherPlayer.GameMode.get(readVarInt(dataInputStream)));
-                    player.setPing(readVarInt(dataInputStream));
-                    boolean hasDisplayName = dataInputStream.readBoolean();
+                    player.setGameMode(OtherPlayer.GameMode.get(packetByteBuf.readVarInt()));
+                    player.setPing(packetByteBuf.readVarInt());
+                    boolean hasDisplayName = packetByteBuf.readBoolean();
                     if (hasDisplayName) {
-                        player.setDisplayName(readString(dataInputStream));
+                        player.setDisplayName(packetByteBuf.readString());
                     }
                 }
                 case UPDATE_GAMEMODE -> {
-                    player.setGameMode(OtherPlayer.GameMode.get(readVarInt(dataInputStream)));
+                    player.setGameMode(OtherPlayer.GameMode.get(packetByteBuf.readVarInt()));
                 }
                 case UPDATE_PING -> {
-                    player.setPing(readVarInt(dataInputStream));
+                    player.setPing(packetByteBuf.readVarInt());
                 }
                 case UPDATE_DISPLAY_NAME -> {
-                    boolean hasDisplayName = dataInputStream.readBoolean();
+                    boolean hasDisplayName = packetByteBuf.readBoolean();
                     if (hasDisplayName)
-                        player.setDisplayName(readString(dataInputStream));
+                        player.setDisplayName(packetByteBuf.readString());
                     else
                         player.setDisplayName(player.getName());
                 }

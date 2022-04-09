@@ -1,12 +1,13 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 public class ClientBoundResourcePackSendPacket extends Packet.ClientBoundPacket {
@@ -18,18 +19,18 @@ public class ClientBoundResourcePackSendPacket extends Packet.ClientBoundPacket 
     private String prompt;
 
     public ClientBoundResourcePackSendPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
+        super(PacketIDs.ClientBound.RESOURCE_PACK_SEND.getPacketId(), clientBoundPacketHandler);
     }
 
     @Override
-    public void createPacket(DataInputStream dataInputStream) throws IOException {
-        this.url = readString(dataInputStream);
-        this.hash = readString(dataInputStream);
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+        this.url = packetByteBuf.readString();
+        this.hash = packetByteBuf.readString();
         if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_12_2.getProtocolVer()) {
-            this.forced = dataInputStream.readBoolean();
-            this.hasPrompt = dataInputStream.readBoolean();
+            this.forced = packetByteBuf.readBoolean();
+            this.hasPrompt = packetByteBuf.readBoolean();
             if (hasPrompt) {
-                this.prompt = readString(dataInputStream);
+                this.prompt = packetByteBuf.readString();
             }
         }
     }

@@ -1,9 +1,10 @@
 package me.dustin.chatbot.network.crypt;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.*;
 
 public class PacketCrypt {
@@ -12,6 +13,9 @@ public class PacketCrypt {
 
     private Cipher encryptCipher;
     private Cipher decryptCipher;
+
+    private byte[] conversionBytes = new byte[0];
+    private byte[] encryptionBytes = new byte[0];
 
     public byte[] encrypt(byte[] bytes) {
         try {
@@ -23,6 +27,35 @@ public class PacketCrypt {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private byte[] toByteArray(ByteBuf buf) {
+        int i = buf.readableBytes();
+        if (this.conversionBytes.length < i) {
+            this.conversionBytes = new byte[i];
+        }
+
+        buf.readBytes(this.conversionBytes, 0, i);
+        return this.conversionBytes;
+    }
+
+    public ByteBuf decryptPacket(ChannelHandlerContext context, ByteBuf buf) throws ShortBufferException {
+        int i = buf.readableBytes();
+        byte[] bs = this.toByteArray(buf);
+        ByteBuf byteBuf = context.alloc().heapBuffer(this.decryptCipher.getOutputSize(i));
+        byteBuf.writerIndex(this.decryptCipher.update(bs, 0, i, byteBuf.array(), byteBuf.arrayOffset()));
+        return byteBuf;
+    }
+
+    public void encryptPacket(ByteBuf buf, ByteBuf result) throws ShortBufferException {
+        int i = buf.readableBytes();
+        byte[] bs = this.toByteArray(buf);
+        int j = this.encryptCipher.getOutputSize(i);
+        if (this.encryptionBytes.length < j) {
+            this.encryptionBytes = new byte[j];
+        }
+
+        result.writeBytes(this.encryptionBytes, 0, this.encryptCipher.update(bs, 0, i, this.encryptionBytes));
     }
 
     public void generateCiphers() {
@@ -44,14 +77,6 @@ public class PacketCrypt {
             messageDigest.update(bs);
         }
         return messageDigest.digest();
-    }
-
-    public InputStream decryptInputStream(InputStream inputStream) {
-        return new CipherInputStream(inputStream, decryptCipher);
-    }
-
-    public OutputStream encryptOutputStream(OutputStream outputStream) {
-        return new CipherOutputStream(outputStream, encryptCipher);
     }
 
     public PublicKey getPublicKey() {

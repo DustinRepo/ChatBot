@@ -1,23 +1,29 @@
 package me.dustin.chatbot.network;
 
+import com.google.common.collect.Queues;
 import com.google.gson.JsonObject;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.account.MinecraftAccount;
 import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.chat.Translator;
 import me.dustin.chatbot.command.CommandManager;
-import me.dustin.chatbot.config.Config;
-import me.dustin.chatbot.event.EventLoginSuccess;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.TPSHelper;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.c2s.login.ServerBoundHandshakePacket;
+import me.dustin.chatbot.network.packet.c2s.handshake.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundLoginStartPacket;
 import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
 import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.pipeline.PacketDecryptor;
+import me.dustin.chatbot.network.packet.pipeline.PacketDeflater;
+import me.dustin.chatbot.network.packet.pipeline.PacketEncryptor;
+import me.dustin.chatbot.network.packet.pipeline.PacketInflater;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundJoinGamePacket;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
@@ -27,25 +33,17 @@ import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Queue;
 
 public class ClientConnection {
 
-    private final Socket socket;
+    private Channel channel;
+
     private final String ip;
     private final int port;
-    private DataInputStream in;
-    private DataOutputStream out;
 
     private final Session session;
     private final PlayerManager playerManager;
@@ -58,44 +56,32 @@ public class ClientConnection {
     private ClientBoundPacketHandler clientBoundPacketHandler;
     private NetworkState networkState = NetworkState.LOGIN;
     private int compressionThreshold;
-    private boolean isEncrypted;
     private boolean isConnected;
+    private boolean isEncrypted;
     private boolean isInGame;
 
     private final ClientPlayer clientPlayer;
     private final MinecraftAccount minecraftAccount;
 
+    private final Queue<Packet> queuedPackets = Queues.newConcurrentLinkedQueue();
+
     public ClientConnection(String ip, int port, Session session, MinecraftAccount minecraftAccount) throws IOException {
         this.ip = ip;
         this.port = port;
-        String proxyString = ChatBot.getConfig().getProxyString();
-        if (!proxyString.isEmpty()) {
-            String proxyIP = proxyString.split(":")[0];
-            int proxyPort = Integer.parseInt(proxyString.split(":")[1]);
-            Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(proxyIP, proxyPort));
-            if (!ChatBot.getConfig().getProxyUsername().isEmpty()) {
-                Authenticator.setDefault(GeneralHelper.getAuth(ChatBot.getConfig().getProxyUsername(), ChatBot.getConfig().getProxyPassword()));
-            }
-            this.socket = new Socket(proxy);
-            this.socket.connect(new InetSocketAddress(ip, port), 10000);
-        }else
-            this.socket = new Socket(ip, port);
-        this.in = new DataInputStream(socket.getInputStream());
-        this.out = new DataOutputStream(socket.getOutputStream());
         this.session = session;
         this.minecraftAccount = minecraftAccount;
         this.clientPlayer = new ClientPlayer(session.getUsername(), GeneralHelper.uuidFromStringNoDashes(session.getUuid()), this);
-        this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler(this);
+        this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler();
         this.commandManager = new CommandManager(this);
         this.processManager = new ProcessManager(this);
         this.packetCrypt = new PacketCrypt();
         this.tpsHelper = new TPSHelper();
         this.playerManager = new PlayerManager();
         this.eventManager = new EventManager();
-
         updateTranslations();
         getEventManager().register(this);
         getEventManager().register(ChatBot.getGui());
+        isConnected = true;
     }
 
     @EventPointer
@@ -109,7 +95,8 @@ public class ClientConnection {
     });
 
     public void loadProcesses() {
-        getProcessManager().stopAll();
+        if (!getProcessManager().getProcesses().isEmpty())
+            getProcessManager().stopAll();
         if (ChatBot.getConfig().isAntiAFK())
             getProcessManager().addProcess(new AntiAFKProcess(this));
         if (ChatBot.getConfig().isCrackedLogin())
@@ -129,7 +116,6 @@ public class ClientConnection {
     }
 
     public void connect() {
-        this.isConnected = true;
         this.commandManager.init();
         GeneralHelper.print("Setting client version to " + ChatBot.getConfig().getClientVersion() + " (" + ChatBot.getConfig().getProtocolVersion() + ")", ChatMessage.TextColors.AQUA);
         GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColors.GREEN);
@@ -155,26 +141,28 @@ public class ClientConnection {
     }
 
     public void activateEncryption() {
-        try {
-            isEncrypted = true;
-            this.out.flush();
-            this.out = new DataOutputStream(getPacketCrypt().encryptOutputStream(this.socket.getOutputStream()));
-            this.in = new DataInputStream(getPacketCrypt().decryptInputStream(this.socket.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        isEncrypted = true;
+        this.channel.pipeline().addBefore("splitter", "decrypt", new PacketDecryptor());
+        this.channel.pipeline().addBefore("size_prepender", "encrypt", new PacketEncryptor());
     }
 
     public void close() {
-        try {
-            getProcessManager().stopAll();
-            socket.close();
-            isConnected = false;
-            if (ChatBot.getGui() != null) {
-                ChatBot.getGui().getPlayerList().clear();
+        getProcessManager().stopAll();
+        if (channel != null)
+            channel.close();
+        if (ChatBot.getGui() != null) {
+            ChatBot.getGui().getPlayerList().clear();
+        }
+        isConnected = false;
+
+        if (ChatBot.getConfig().isReconnect()) {
+            GeneralHelper.print("Client disconnected, reconnecting in " + ChatBot.getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColors.DARK_PURPLE);
+            try {
+                Thread.sleep(ChatBot.getConfig().getReconnectDelay() * 1000L);
+                ChatBot.createConnection(ip, port, session, minecraftAccount);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -183,56 +171,43 @@ public class ClientConnection {
     }
 
     public void tick() {
-        getProcessManager().tick();
-        getClientPlayer().tick();
-        getClientBoundPacketHandler().listen();
+        if (isInGame()) {
+            getProcessManager().tick();
+            getClientPlayer().tick();
+        }
     }
 
     public void sendPacket(Packet packet) {
-        if (!isConnected())
-            return;
-        try {
-            byte[] data = packet.createPacket().toByteArray();
-            if (data.length > 0) {
-                if (this.getCompressionThreshold() > 0) {
-                    //deconstruct the packet to rebuild back into compressed format
-                    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-                    DataInputStream first = new DataInputStream(byteArrayInputStream);
-                    int size = Packet.readVarInt(byteArrayInputStream);
-                    byte[] packetData = new byte[size];
-                    first.readFully(packetData, 0, size);
-                    //TODO: test this to see if it actually works. it seems unnecessary currently, doesn't seem most packets go over the threshold
-                    /*if (size > this.getCompressionThreshold()) {
-                        GeneralHelper.print("Compressing packet", ChatMessage.TextColors.PURPLE);
-                        byte[] compressed = new byte[1024];
+        if (channel != null && channel.isOpen()) {
+            this.sendQueuedPackets();
+            if (channel.eventLoop().inEventLoop()) {
+                directSend(packet);
+            } else {
+                this.channel.eventLoop().execute(() -> directSend(packet));
+            }
+        } else {
+            queuedPackets.add(packet);
+        }
+    }
 
-                        Deflater deflater = new Deflater();
-                        deflater.setInput(packetData);
-                        int compressedSize = deflater.deflate(compressed);
-
-                        Packet.writeVarInt(out, size + compressedSize);//Length of Data Length + compressed length of (Packet ID + Data)
-                        Packet.writeVarInt(out, size);//Length of uncompressed (Packet ID + Data)
-                        out.write(compressed);
-                    } else {*/
-                        ByteArrayInputStream packetDataInputStream = new ByteArrayInputStream(packetData);
-                        DataInputStream second = new DataInputStream(packetDataInputStream);
-
-                        int packetId = Packet.readVarInt(second);
-                        if (packetId == -1)
-                            return;
-
-                        Packet.writeVarInt(out, packetData.length + Packet.sizeOfVarInt(packetId));//write size of packet id + data
-                        Packet.writeVarInt(out, 0);//send 0 so the server knows it's not compressed
-                        out.write(packetData);
-                        out.flush();
-                    //}
-                } else {
-                    out.write(data);
+    private void sendQueuedPackets() {
+        if (this.channel != null && this.channel.isOpen()) {
+            synchronized (this.queuedPackets) {
+                Packet packet;
+                while ((packet = queuedPackets.poll()) != null) {
+                    directSend(packet);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    }
+
+    private void directSend(Packet packet) {
+        ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
+        channelFuture.addListener((ChannelFutureListener) future -> {
+            if (!future.isSuccess()) {
+                future.channel().pipeline().fireExceptionCaught(future.cause());
+            }
+        });
     }
 
     public String getIp() {
@@ -241,14 +216,6 @@ public class ClientConnection {
 
     public int getPort() {
         return port;
-    }
-
-    public DataInputStream getIn() {
-        return in;
-    }
-
-    public DataOutputStream getOut() {
-        return out;
     }
 
     public Session getSession() {
@@ -283,10 +250,6 @@ public class ClientConnection {
         return eventManager;
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
-
     public NetworkState getNetworkState() {
         return networkState;
     }
@@ -315,16 +278,37 @@ public class ClientConnection {
         return isInGame;
     }
 
-    public void setConnected(boolean connected) {
-        isConnected = connected;
-    }
-
     public void setCompressionThreshold(int compressionThreshold) {
         this.compressionThreshold = compressionThreshold;
+        if (compressionThreshold >= 0) {
+            if (this.channel.pipeline().get("decompress") instanceof PacketInflater) {
+                ((PacketInflater)this.channel.pipeline().get("decompress")).setCompressionThreshold(compressionThreshold);
+            } else {
+                this.channel.pipeline().addBefore("decoder", "decompress", new PacketInflater(compressionThreshold));
+            }
+
+            if (this.channel.pipeline().get("compress") instanceof PacketDeflater) {
+                ((PacketDeflater)this.channel.pipeline().get("compress")).setCompressionThreshold(compressionThreshold);
+            } else {
+                this.channel.pipeline().addBefore("encoder", "compress", new PacketDeflater(compressionThreshold));
+            }
+        } else {
+            if (this.channel.pipeline().get("decompress") instanceof PacketInflater) {
+                this.channel.pipeline().remove("decompress");
+            }
+
+            if (this.channel.pipeline().get("compress") instanceof PacketDeflater) {
+                this.channel.pipeline().remove("compress");
+            }
+        }
     }
 
     public void setClientBoundPacketHandler(ClientBoundPacketHandler clientBoundPacketHandler) {
         this.clientBoundPacketHandler = clientBoundPacketHandler;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public enum NetworkState {

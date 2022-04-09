@@ -6,6 +6,7 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -18,42 +19,34 @@ public class ServerBoundClientSettingsPacket extends Packet {
     private final int enabledSkinParts;
 
     public ServerBoundClientSettingsPacket(String locale, boolean allowServerListings, int enabledSkinParts) {
+        super(PacketIDs.ServerBound.CLIENT_SETTINGS.getPacketId());
         this.locale = locale;
         this.allowServerListings = allowServerListings;
         this.enabledSkinParts = enabledSkinParts;
     }
 
     @Override
-    public ByteArrayDataOutput createPacket() throws IOException {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream packet = new DataOutputStream(baos);
-
-        writeVarInt(packet, PacketIDs.ServerBound.CLIENT_SETTINGS.getPacketId());//packet id
-
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer()) {//packet is very different in 1.7.10 and below
-            writeString(packet, locale);
-            packet.writeByte(8);//render distance
-            packet.writeByte(0);//chat mode. 0 = enabled
-            packet.writeBoolean(true);//color chat
-            packet.writeByte(3);//difficulty
-            packet.writeBoolean(true);//show cape
+            packetByteBuf.writeString(locale);
+            packetByteBuf.writeByte(8);//render distance
+            packetByteBuf.writeByte(0);//chat mode. 0 = enabled
+            packetByteBuf.writeBoolean(true);//color chat
+            packetByteBuf.writeByte(3);//difficulty
+            packetByteBuf.writeBoolean(true);//show cape
         } else {
-            writeString(packet, locale);
-            packet.writeByte(8);//render distance
-            writeVarInt(packet, 0);//chat mode. 0 = enabled
-            packet.writeBoolean(true);//chat colors
-            packet.writeByte(enabledSkinParts);
+            packetByteBuf.writeString(locale);
+            packetByteBuf.writeByte(8);//render distance
+            packetByteBuf.writeVarInt(0);//chat mode. 0 = enabled
+            packetByteBuf.writeBoolean(true);//chat colors
+            packetByteBuf.writeByte(enabledSkinParts);
             if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_8.getProtocolVer())//1.8 and below didn't have main/offhand
-                writeVarInt(packet, 1);//main hand - 0 = left 1 = right
+                packetByteBuf.writeVarInt(1);//main hand - 0 = left 1 = right
             if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer())
-                packet.writeBoolean(false);//text filtering
+                packetByteBuf.writeBoolean(false);//text filtering
             if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_18.getProtocolVer())//1.18, I *think* the version this was added
-                packet.writeBoolean(allowServerListings);
+                packetByteBuf.writeBoolean(allowServerListings);
         }
-        writeVarInt(out, baos.toByteArray().length);
-        out.write(baos.toByteArray());
-        return out;
     }
 
     public enum SkinPart {

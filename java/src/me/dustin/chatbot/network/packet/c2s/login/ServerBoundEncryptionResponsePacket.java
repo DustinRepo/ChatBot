@@ -5,6 +5,8 @@ import com.google.common.io.ByteStreams;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -18,6 +20,7 @@ public class ServerBoundEncryptionResponsePacket extends Packet {
     private final byte[] encryptedVerify;
 
     public ServerBoundEncryptionResponsePacket(byte[] encryptedSecret, byte[] encryptedVerify) {
+        super(0x01);
         this.encryptedSecret = encryptedSecret;
         this.encryptedVerify = encryptedVerify;
     }
@@ -34,26 +37,17 @@ public class ServerBoundEncryptionResponsePacket extends Packet {
     }
 
     @Override
-    public ByteArrayDataOutput createPacket() throws IOException {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        ByteArrayOutputStream encryptionResponseBytes = new ByteArrayOutputStream();
-        DataOutputStream encryptionResponsePacket = new DataOutputStream(encryptionResponseBytes);
-
-        encryptionResponsePacket.writeByte(0x01);//packet id
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer())
-            encryptionResponsePacket.writeShort(encryptedSecret.length);
+            packetByteBuf.writeShort(encryptedSecret.length);
         else
-            writeVarInt(encryptionResponsePacket, encryptedSecret.length);
-        encryptionResponsePacket.write(encryptedSecret);
+            packetByteBuf.writeVarInt(encryptedSecret.length);
+        packetByteBuf.writeBytes(encryptedSecret);
 
         if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer())
-            encryptionResponsePacket.writeShort(encryptedVerify.length);
+            packetByteBuf.writeShort(encryptedVerify.length);
         else
-            writeVarInt(encryptionResponsePacket, encryptedVerify.length);
-        encryptionResponsePacket.write(encryptedVerify);
-
-        writeVarInt(out, encryptionResponseBytes.toByteArray().length);
-        out.write(encryptionResponseBytes.toByteArray());
-        return out;
+            packetByteBuf.writeVarInt(encryptedVerify.length);
+        packetByteBuf.writeBytes(encryptedVerify);
     }
 }

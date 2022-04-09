@@ -40,6 +40,8 @@ dependencies {
     dep group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
     // https://mvnrepository.com/artifact/com.google.guava/guava
     dep group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+    // https://mvnrepository.com/artifact/io.netty/netty-all
+    dep group: 'io.netty', name: 'netty-all', version: '4.1.75.Final'
 }
 
 shadowJar {

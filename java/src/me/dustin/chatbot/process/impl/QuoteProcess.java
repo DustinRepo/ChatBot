@@ -2,6 +2,7 @@ package me.dustin.chatbot.process.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.MCAPIHelper;
@@ -17,21 +18,15 @@ import java.io.File;
 import java.util.*;
 
 public class QuoteProcess extends ChatBotProcess {
-    private final File file;
+    private static File file;
     private final StopWatch saveFileStopWatch = new StopWatch();
-    public Map<String, ArrayList<String>> quotes = new HashMap<>();
+    public static Map<String, ArrayList<String>> quotes = new HashMap<>();
     public QuoteProcess(ClientConnection clientConnection) {
         super(clientConnection);
-        String ipString = clientConnection.getIp() + (clientConnection.getPort() == 25565 ? "" : ":" + clientConnection.getPort());
-        File parentFolder = new File(new File("").getAbsolutePath() + File.separator + "trackers", ipString);
-        if (!parentFolder.exists())
-            parentFolder.mkdirs();
-        this.file = new File(parentFolder, "quotes.json");
     }
 
     @Override
     public void init() {
-        readFile();
         getClientConnection().getEventManager().register(this);
     }
 
@@ -102,14 +97,16 @@ public class QuoteProcess extends ChatBotProcess {
 
     @Override
     public void stop() {
-        saveFile();
+        if (!quotes.isEmpty())
+            saveFile();
         getClientConnection().getEventManager().unregister(this);
     }
 
-    public void readFile() {
-        if (!file.exists())
+    public static void readFile() {
+        if (!getFile().exists())
             return;
-        String s = GeneralHelper.readFile(file);
+        quotes.clear();
+        String s = GeneralHelper.readFile(getFile());
         JsonArray jsonArray = GeneralHelper.prettyGson.fromJson(s, JsonArray.class);
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
@@ -140,6 +137,17 @@ public class QuoteProcess extends ChatBotProcess {
             jsonArray.add(jsonObject);
         });
         ArrayList<String> list = new ArrayList<>(List.of(GeneralHelper.prettyGson.toJson(jsonArray).split("\n")));
-        GeneralHelper.writeFile(file, list);
+        GeneralHelper.writeFile(getFile(), list);
+    }
+
+    private static File getFile() {
+        if (file == null) {
+            String ipString = ChatBot.getClientConnection().getIp() + (ChatBot.getClientConnection().getPort() == 25565 ? "" : ":" + ChatBot.getClientConnection().getPort());
+            File parentFolder = new File(new File("").getAbsolutePath() + File.separator + "trackers", ipString);
+            if (!parentFolder.exists())
+                parentFolder.mkdirs();
+            file = new File(parentFolder, "quotes.json");
+        }
+        return file;
     }
 }

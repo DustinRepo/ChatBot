@@ -6,6 +6,7 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -16,23 +17,15 @@ public class ServerBoundKeepAlivePacket extends Packet {
     private long id;
 
     public ServerBoundKeepAlivePacket(long id) {
+        super(PacketIDs.ServerBound.KEEP_ALIVE.getPacketId());
         this.id = id;
     }
 
     @Override
-    public ByteArrayDataOutput createPacket() throws IOException {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream packet = new DataOutputStream(baos);
-
-        writeVarInt(packet, PacketIDs.ServerBound.KEEP_ALIVE.getPacketId());
+    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_12_1.getProtocolVer())//in 1.12.1 and below keepalive id is an int, not a long
-            writeVarInt(packet, (int) id);
+            packetByteBuf.writeVarInt((int) id);
         else
-            packet.writeLong(id);
-
-        writeVarInt(out, baos.toByteArray().length);
-        out.write(baos.toByteArray());
-        return out;
+            packetByteBuf.writeLong(id);
     }
 }
