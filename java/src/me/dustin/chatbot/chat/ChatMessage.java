@@ -159,7 +159,8 @@ public class ChatMessage {
         WHITE("white", 'f', "\u001B[0m", new Color(255, 255, 255)),
         GRAY("gray", '7', "\u001B[37m", new Color(170, 170, 170)),
         DARK_GRAY("dark_gray", '8', "\u001B[37m", new Color(85, 85, 85)),
-        BLACK("black", '0', "\u001B[30m", new Color(0, 0, 0));
+        BLACK("black", '0', "\u001B[30m", new Color(0, 0, 0)),
+        RESET("reset", 'r', "\u001B[0m", new Color(255, 255, 255));
 
 
         private final String ansi, name;

@@ -63,7 +63,7 @@ public class GeneralHelper {
             logger.info(chatMessage.getMessage());
     }
 
-    private static void printColorText(String text) {
+    public static void printColorText(String text) {
         ChatMessage.TextColor color;
         StyledDocument document = ChatBot.getGui() != null ? ChatBot.getGui().getOutput().getStyledDocument() : null;
         String timeStampString = String.format("[%s] ", getCurrentTimeStamp());

@@ -200,6 +200,11 @@ public class ChatBot {
                         getConfig().setProtocolVersion(version.get("protocol").getAsInt());
                         Protocols current = Protocols.get(getConfig().getProtocolVersion());
                         getConfig().setClientVersion(current.getNames()[0]);
+                        String s = ChatMessage.parse(jsonObject.get("description"));
+                        GeneralHelper.print("Server MOTD:", ChatMessage.TextColor.YELLOW);
+                        for (String s1 : s.split("\n")) {
+                            GeneralHelper.printColorText(s1);
+                        }
                     }
                 });
                 channel.pipeline().addLast(new NetworkExceptionHandler());
