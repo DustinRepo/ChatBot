@@ -159,7 +159,7 @@ public class ChatBot {
             });
             bootstrap = bootstrap.channel(NioSocketChannel.class);
             try {
-                bootstrap.connect(minecraftServerAddress.getIp(), minecraftServerAddress.getPort()).syncUninterruptibly();
+                bootstrap.connect(minecraftServerAddress.getIp(), minecraftServerAddress.getPort());
                 clientConnection.connect();
                 stopWatch.reset();
             } catch (Exception e) {

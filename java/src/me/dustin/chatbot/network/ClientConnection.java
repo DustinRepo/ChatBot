@@ -34,6 +34,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -80,6 +81,7 @@ public class ClientConnection {
         getEventManager().register(this);
         getEventManager().register(ChatBot.getGui());
         isConnected = true;
+        new Thread(this::tick).start();
     }
 
     @EventPointer
@@ -170,8 +172,10 @@ public class ClientConnection {
     }
 
     public void tick() {
-        if (isInGame()) {
-            getProcessManager().tick();
+        while (isConnected()) {
+            try {
+                getProcessManager().tick();
+            } catch (ConcurrentModificationException e) {}
             getClientPlayer().tick();
         }
     }

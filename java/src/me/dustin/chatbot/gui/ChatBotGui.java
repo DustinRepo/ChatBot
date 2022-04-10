@@ -75,7 +75,7 @@ public class ChatBotGui {
         });
         new Timer(50, e -> {
             if (ChatBot.getClientConnection() != null && ChatBot.getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
-                ChatBot.getClientConnection().tick();
+                //ChatBot.getClientConnection().tick();
                 tick();
             }
         }).start();
