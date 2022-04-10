@@ -18,6 +18,7 @@ import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.Protocols;
+import me.dustin.chatbot.network.MinecraftServerAddress;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.c2s.handshake.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.c2s.query.ServerBoundPingPacket;
@@ -82,13 +83,20 @@ public class ChatBot {
             port = Integer.parseInt(ip.split(":")[1]);
             ip = ip.split(":")[0];
         }
+
+        MinecraftServerAddress minecraftServerAddress = MinecraftServerAddress.resolve(ip, port);
+        if (minecraftServerAddress == null) {
+            GeneralHelper.print("Could not resolve hostname " + ip + "!", ChatMessage.TextColor.RED);
+            return;
+        }
+
         File loginFile = config.getLoginFile();
         if (!loginFile.exists()) {
             GeneralHelper.print("ERROR: No login file!", ChatMessage.TextColor.RED);
             return;
         }
         if (getConfig().getClientVersion().equalsIgnoreCase("auto"))
-            pingServer(ip, port);
+            pingServer(minecraftServerAddress);
 
         String[] loginInfo = GeneralHelper.readFile(loginFile).split("\n");
         MinecraftAccount minecraftAccount;
@@ -109,10 +117,10 @@ public class ChatBot {
         }
         GeneralHelper.print("Starting connection to " + ip + ":" + port, ChatMessage.TextColor.AQUA);
 
-        createConnection(ip, port, session, minecraftAccount);
+        createConnection(minecraftServerAddress, session, minecraftAccount);
     }
 
-    public static void createConnection(String ip, int port, Session session, MinecraftAccount minecraftAccount) throws InterruptedException {
+    public static void createConnection(MinecraftServerAddress minecraftServerAddress, Session session, MinecraftAccount minecraftAccount) throws InterruptedException {
         try {
             if (ChatBot.getConfig().isLog())
                 GeneralHelper.initLogger();
@@ -123,7 +131,7 @@ public class ChatBot {
             boolean bl = false;
             if (clientConnection == null && getConfig().isQuotes())
                 bl = true;
-            clientConnection = new ClientConnection(ip, port, session, minecraftAccount);
+            clientConnection = new ClientConnection(minecraftServerAddress, session, minecraftAccount);
             if (bl)
                 QuoteProcess.readFile();
             Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build()));
@@ -151,7 +159,7 @@ public class ChatBot {
             });
             bootstrap = bootstrap.channel(NioSocketChannel.class);
             try {
-                bootstrap.connect(ip, port).syncUninterruptibly();
+                bootstrap.connect(minecraftServerAddress.getIp(), minecraftServerAddress.getPort()).syncUninterruptibly();
                 clientConnection.connect();
                 stopWatch.reset();
             } catch (Exception e) {
@@ -163,7 +171,7 @@ public class ChatBot {
         }
     }
 
-    private static void pingServer(String ip, int port) {
+    private static void pingServer(MinecraftServerAddress minecraftServerAddress) {
         Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build()));
         bootstrap = bootstrap.handler(new ChannelInitializer<>() {
             protected void initChannel(Channel channel) {
@@ -198,10 +206,10 @@ public class ChatBot {
             }
         });
         bootstrap = bootstrap.channel(NioSocketChannel.class);
-        ChannelFuture channelFuture = bootstrap.connect(ip, port);
+        ChannelFuture channelFuture = bootstrap.connect(minecraftServerAddress.getIp(), minecraftServerAddress.getPort());
         channelFuture.addListener(future -> {
             if (future.isSuccess()) {
-                channelFuture.channel().writeAndFlush(new ServerBoundHandshakePacket(getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.STATUS_STATE));
+                channelFuture.channel().writeAndFlush(new ServerBoundHandshakePacket(getConfig().getProtocolVersion(), minecraftServerAddress.getIp(), minecraftServerAddress.getPort(), ServerBoundHandshakePacket.STATUS_STATE));
                 channelFuture.channel().writeAndFlush(new ServerBoundQueryRequestPacket());
                 channelFuture.channel().writeAndFlush(new ServerBoundPingPacket(System.currentTimeMillis()));
             }

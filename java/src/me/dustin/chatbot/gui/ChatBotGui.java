@@ -93,7 +93,7 @@ public class ChatBotGui {
 
     public void tick() {
         if (ChatBot.getClientConnection() != null && ChatBot.getClientConnection().isConnected())
-            frame.setTitle("ChatBot - " + ChatBot.getClientConnection().getIp() + ":" + ChatBot.getClientConnection().getPort());
+            frame.setTitle("ChatBot - " + ChatBot.getClientConnection().getMinecraftServerAddress().getIp() + ":" + ChatBot.getClientConnection().getMinecraftServerAddress().getPort());
     }
 
     public JFrame getFrame() {

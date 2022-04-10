@@ -141,7 +141,7 @@ public class QuoteProcess extends ChatBotProcess {
 
     private static File getFile() {
         if (file == null) {
-            String ipString = ChatBot.getClientConnection().getIp() + (ChatBot.getClientConnection().getPort() == 25565 ? "" : ":" + ChatBot.getClientConnection().getPort());
+            String ipString = ChatBot.getClientConnection().getMinecraftServerAddress().getIp() + (ChatBot.getClientConnection().getMinecraftServerAddress().getPort() == 25565 ? "" : ":" + ChatBot.getClientConnection().getMinecraftServerAddress().getPort());
             File parentFolder = new File(new File("").getAbsolutePath() + File.separator + "trackers", ipString);
             if (!parentFolder.exists())
                 parentFolder.mkdirs();

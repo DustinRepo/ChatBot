@@ -42,8 +42,7 @@ public class ClientConnection {
 
     private Channel channel;
 
-    private final String ip;
-    private final int port;
+    private final MinecraftServerAddress minecraftServerAddress;
 
     private final Session session;
     private final PlayerManager playerManager;
@@ -65,9 +64,8 @@ public class ClientConnection {
 
     private final Queue<Packet> queuedPackets = Queues.newConcurrentLinkedQueue();
 
-    public ClientConnection(String ip, int port, Session session, MinecraftAccount minecraftAccount) throws IOException {
-        this.ip = ip;
-        this.port = port;
+    public ClientConnection(MinecraftServerAddress minecraftServerAddress, Session session, MinecraftAccount minecraftAccount) throws IOException {
+        this.minecraftServerAddress = minecraftServerAddress;
         this.session = session;
         this.minecraftAccount = minecraftAccount;
         this.clientPlayer = new ClientPlayer(session.getUsername(), GeneralHelper.uuidFromStringNoDashes(session.getUuid()), this);
@@ -119,7 +117,7 @@ public class ClientConnection {
         this.commandManager.init();
         GeneralHelper.print("Setting client version to " + Protocols.getCurrent().getNames()[0] + " (" + Protocols.getCurrent().getProtocolVer() + ")", ChatMessage.TextColor.AQUA);
         GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColor.GREEN);
-        sendPacket(new ServerBoundHandshakePacket(Protocols.getCurrent().getProtocolVer(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
+        sendPacket(new ServerBoundHandshakePacket(Protocols.getCurrent().getProtocolVer(), getMinecraftServerAddress().getIp(), getMinecraftServerAddress().getPort(), ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
     }
 
@@ -160,7 +158,7 @@ public class ClientConnection {
             GeneralHelper.print("Client disconnected, reconnecting in " + ChatBot.getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColor.RED);
             try {
                 Thread.sleep(ChatBot.getConfig().getReconnectDelay() * 1000L);
-                ChatBot.createConnection(ip, port, session, minecraftAccount);
+                ChatBot.createConnection(getMinecraftServerAddress(), session, minecraftAccount);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -211,12 +209,8 @@ public class ClientConnection {
         });
     }
 
-    public String getIp() {
-        return ip;
-    }
-
-    public int getPort() {
-        return port;
+    public MinecraftServerAddress getMinecraftServerAddress() {
+        return minecraftServerAddress;
     }
 
     public Session getSession() {
