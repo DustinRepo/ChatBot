@@ -54,9 +54,18 @@ public enum Protocols {
         return Protocols.values()[0];
     }
 
+    public static Protocols get(int v) {
+        for (Protocols value : Protocols.values()) {
+            if (value.getProtocolVer() == v)
+                return value;
+        }
+        return Protocols.values()[0];
+    }
+
     public static Protocols getCurrent() {
-        if (current == null)
+        if (current == null) {
             current = get(ChatBot.getConfig().getClientVersion());
+        }
         return current;
     }
 

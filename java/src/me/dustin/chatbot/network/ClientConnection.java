@@ -117,9 +117,9 @@ public class ClientConnection {
 
     public void connect() {
         this.commandManager.init();
-        GeneralHelper.print("Setting client version to " + ChatBot.getConfig().getClientVersion() + " (" + ChatBot.getConfig().getProtocolVersion() + ")", ChatMessage.TextColors.AQUA);
+        GeneralHelper.print("Setting client version to " + Protocols.getCurrent().getNames()[0] + " (" + Protocols.getCurrent().getProtocolVer() + ")", ChatMessage.TextColors.AQUA);
         GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColors.GREEN);
-        sendPacket(new ServerBoundHandshakePacket(ChatBot.getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
+        sendPacket(new ServerBoundHandshakePacket(Protocols.getCurrent().getProtocolVer(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
     }
 

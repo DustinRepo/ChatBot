@@ -1,6 +1,7 @@
 package me.dustin.chatbot;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.JsonObject;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,8 +17,14 @@ import me.dustin.chatbot.gui.ChatBotGui;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.Protocols;
+import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.c2s.handshake.ServerBoundHandshakePacket;
+import me.dustin.chatbot.network.packet.c2s.query.ServerBoundPingPacket;
+import me.dustin.chatbot.network.packet.c2s.query.ServerBoundQueryRequestPacket;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.*;
+import me.dustin.chatbot.network.packet.s2c.query.ClientBoundQueryResponsePacket;
 import me.dustin.chatbot.process.impl.QuoteProcess;
 
 import javax.swing.*;
@@ -80,6 +87,8 @@ public class ChatBot {
             GeneralHelper.print("ERROR: No login file!", ChatMessage.TextColors.RED);
             return;
         }
+        if (getConfig().getClientVersion().equalsIgnoreCase("auto"))
+            pingServer(ip, port);
 
         String[] loginInfo = GeneralHelper.readFile(loginFile).split("\n");
         MinecraftAccount minecraftAccount;
@@ -95,8 +104,10 @@ public class ChatBot {
         if (session == null) {
             GeneralHelper.print("ERROR: Login failed!", ChatMessage.TextColors.RED);
             return;
+        } else {
+            GeneralHelper.print("Logged in.", ChatMessage.TextColors.YELLOW);
         }
-        GeneralHelper.print("Logged in. Starting connection to " + ip + ":" + port, ChatMessage.TextColors.AQUA);
+        GeneralHelper.print("Starting connection to " + ip + ":" + port, ChatMessage.TextColors.AQUA);
 
         createConnection(ip, port, session, minecraftAccount);
     }
@@ -150,6 +161,51 @@ public class ChatBot {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void pingServer(String ip, int port) {
+        Bootstrap bootstrap = new Bootstrap().group(new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build()));
+        bootstrap = bootstrap.handler(new ChannelInitializer<>() {
+            protected void initChannel(Channel channel) {
+                channel.config().setOption(ChannelOption.TCP_NODELAY, true);
+                String proxyString = getConfig().getProxyString();
+                if (!proxyString.isEmpty()) {
+                    String proxyIP = proxyString.split(":")[0];
+                    int proxyPort = Integer.parseInt(proxyString.split(":")[1]);
+                    if (getConfig().getProxySOCKS() == 5)
+                        channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxyIP, proxyPort), getConfig().getProxyUsername(), getConfig().getProxyPassword()));
+                    else
+                        channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxyIP, proxyPort)));
+                }
+
+                channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
+                channel.pipeline().addLast("splitter", new PacketSplitterHandler());
+                channel.pipeline().addLast("decoder", new QueryPacketDecoderHandler());
+                channel.pipeline().addLast("size_prepender", new PacketSizePrepender());
+                channel.pipeline().addLast("encoder", new PacketEncoder());
+                channel.pipeline().addLast("packet_handler", new SimpleChannelInboundHandler<Packet.ClientBoundPacket>() {
+                    @Override
+                    protected void channelRead0(ChannelHandlerContext ctx, Packet.ClientBoundPacket msg) throws Exception {
+                        ClientBoundQueryResponsePacket responsePacket = (ClientBoundQueryResponsePacket)msg;
+                        JsonObject jsonObject = GeneralHelper.gson.fromJson(responsePacket.getJsonData(), JsonObject.class);
+                        JsonObject version = jsonObject.getAsJsonObject("version");
+                        getConfig().setProtocolVersion(version.get("protocol").getAsInt());
+                        Protocols current = Protocols.get(getConfig().getProtocolVersion());
+                        getConfig().setClientVersion(current.getNames()[0]);
+                    }
+                });
+                channel.pipeline().addLast(new NetworkExceptionHandler());
+            }
+        });
+        bootstrap = bootstrap.channel(NioSocketChannel.class);
+        ChannelFuture channelFuture = bootstrap.connect(ip, port).syncUninterruptibly();
+        channelFuture.addListener(future -> {
+            if (future.isSuccess()) {
+                channelFuture.channel().writeAndFlush(new ServerBoundHandshakePacket(getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.STATUS_STATE));
+                channelFuture.channel().writeAndFlush(new ServerBoundQueryRequestPacket());
+                channelFuture.channel().writeAndFlush(new ServerBoundPingPacket(System.currentTimeMillis()));
+            }
+        });
     }
 
     public static long connectionTime() {

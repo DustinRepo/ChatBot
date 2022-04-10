@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.c2s.query.ServerBoundPingPacket;
 
 
 public class PacketEncoder extends MessageToByteEncoder<Packet> {

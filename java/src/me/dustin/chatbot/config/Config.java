@@ -71,7 +71,8 @@ public class Config {
         loginCommand = parser.readString("loginCommand");
         passwordCreateCommand = parser.readString("passwordCreateCommand");
         clientVersion = parser.readString("clientVersion");
-        protocolVersion = Protocols.get(clientVersion).getProtocolVer();
+        if (!clientVersion.equalsIgnoreCase("auto"))
+            protocolVersion = Protocols.get(clientVersion).getProtocolVer();
 
         commands = parser.readBoolean("commands");
         log = parser.readBoolean("log");
@@ -220,6 +221,14 @@ public class Config {
 
     public int getProtocolVersion() {
         return protocolVersion;
+    }
+
+    public void setProtocolVersion(int v) {
+        this.protocolVersion = v;
+    }
+
+    public void setClientVersion(String clientVersion) {
+        this.clientVersion = clientVersion;
     }
 
     public int getReconnectDelay() {

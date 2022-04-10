@@ -19,7 +19,7 @@ public class NetworkExceptionHandler extends ChannelDuplexHandler {
             GeneralHelper.print("Unknown host.", ChatMessage.TextColors.RED);
             ChatBot.getClientConnection().close();
         } else if (cause != null) {
-            //cause.printStackTrace();
+            cause.printStackTrace();
             GeneralHelper.print(cause.toString(), ChatMessage.TextColors.RED);
         }
     }

@@ -10,6 +10,7 @@ import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.s2c.login.*;
 import me.dustin.chatbot.network.packet.s2c.play.*;
+import me.dustin.chatbot.network.packet.s2c.query.ClientBoundQueryResponsePacket;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,6 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
 
     private final Map<Integer, Class<? extends Packet.ClientBoundPacket>> loginMap = new HashMap<>();
     private final Map<Integer, Class<? extends Packet.ClientBoundPacket>> playMap = new HashMap<>();
-
     public PacketDecoderHandler() {
         loginMap.put(0x00, ClientBoundDisconnectLoginPacket.class);
         loginMap.put(0x01, ClientBoundEncryptionStartPacket.class);
@@ -50,7 +50,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
             int packetId = packetByteBuf.readVarInt();
             Class<? extends Packet.ClientBoundPacket> c = ChatBot.getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY ? playMap.get(packetId) : loginMap.get(packetId);
             if (c != null) {
-                Packet.ClientBoundPacket packet = c.getDeclaredConstructor(ClientBoundPacketHandler.class).newInstance(ChatBot.getClientConnection().getClientBoundPacketHandler());
+                Packet.ClientBoundPacket packet = c.getDeclaredConstructor(ClientBoundPacketHandler.class).newInstance(ChatBot.getClientConnection() == null ? (ClientBoundPacketHandler)null : ChatBot.getClientConnection().getClientBoundPacketHandler());
                 packet.createPacket(packetByteBuf);
                 out.add(packet);
             }
