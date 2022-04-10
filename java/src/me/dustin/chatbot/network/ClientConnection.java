@@ -81,7 +81,8 @@ public class ClientConnection {
         this.eventManager = new EventManager();
         updateTranslations();
         getEventManager().register(this);
-        getEventManager().register(ChatBot.getGui());
+        if (ChatBot.getGui() != null)
+            getEventManager().register(ChatBot.getGui());
         isConnected = true;
         new Thread(this::tick).start();
     }
