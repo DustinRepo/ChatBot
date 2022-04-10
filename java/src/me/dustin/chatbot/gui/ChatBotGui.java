@@ -14,8 +14,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class ChatBotGui {
-    private final JFrame frame;
+public class ChatBotGui extends JFrame {
     private final  CustomTextPane output;
     private final  JTextField input;
     private final DefaultListModel<String> model;
@@ -27,26 +26,33 @@ public class ChatBotGui {
         JList<String> playerList = new JList<>();
         JScrollPane outputScrollPane = new JScrollPane(output);
         JScrollPane playerListScrollPane = new JScrollPane(playerList);
-        outputScrollPane.setBounds(1, 1, 600, 550);
-        playerListScrollPane.setBounds(601, 1, 195, 550);
-        input.setBounds(1, 555, 600, 35);
-        sendButton.setBounds(601, 555, 195, 35);
+        boolean linux = System.getProperty("os.name").toLowerCase().contains("linux");
+        if (!linux) {
+            outputScrollPane.setBounds(1, 1, 600, 550);
+            playerListScrollPane.setBounds(601, 1, 182, 550);
+            input.setBounds(1, 555, 600, 30);
+            sendButton.setBounds(601, 555, 182, 30);
+        } else {
+            outputScrollPane.setBounds(1, 1, 600, 550);
+            playerListScrollPane.setBounds(601, 1, 193, 550);
+            input.setBounds(1, 555, 600, 35);
+            sendButton.setBounds(601, 555, 193, 35);
+        }
         sendButton.setText("Send");
         output.setEditable(false);
-        this.frame = new JFrame("ChatBot");
-        this.frame.setSize(800, 625);
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setVisible(true);
-        this.frame.setResizable(false);
-        this.frame.setLocationRelativeTo(null);
-        this.frame.getContentPane().setLayout(null);
-        this.frame.getContentPane().add(outputScrollPane);
-        this.frame.getContentPane().add(playerListScrollPane);
-        this.frame.getContentPane().add(this.input);
-        this.frame.getContentPane().add(sendButton);
+        this.setTitle("ChatBot");
+        this.setSize(800, linux ? 620 : 625);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);
+        this.getContentPane().setLayout(null);
+        this.getContentPane().add(outputScrollPane);
+        this.getContentPane().add(playerListScrollPane);
+        this.getContentPane().add(this.input);
+        this.getContentPane().add(sendButton);
 
         this.output.setText("");
-
         model = new DefaultListModel<>();
         playerList.setModel(model);
 
@@ -65,7 +71,7 @@ public class ChatBotGui {
                 ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(input.getText()));
             this.input.setText("");
         });
-        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 if (ChatBot.getClientConnection() != null)
@@ -75,7 +81,6 @@ public class ChatBotGui {
         });
         new Timer(50, e -> {
             if (ChatBot.getClientConnection() != null && ChatBot.getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY) {
-                //ChatBot.getClientConnection().tick();
                 tick();
             }
         }).start();
@@ -93,15 +98,11 @@ public class ChatBotGui {
 
     public void tick() {
         if (ChatBot.getClientConnection() != null && ChatBot.getClientConnection().isConnected())
-            frame.setTitle("ChatBot - " + ChatBot.getClientConnection().getMinecraftServerAddress().getIp() + ":" + ChatBot.getClientConnection().getMinecraftServerAddress().getPort());
-    }
-
-    public JFrame getFrame() {
-        return frame;
+            setTitle("ChatBot - " + ChatBot.getClientConnection().getMinecraftServerAddress().getIp() + ":" + ChatBot.getClientConnection().getMinecraftServerAddress().getPort());
     }
 
     public void updateComponents() {
-        if (!System.getProperty("os.name").toLowerCase().contains("linux") && ChatBot.getConfig().isColorConsole()) {
+        if (!System.getProperty("os.name").toLowerCase().contains("linux")) {
             UIDefaults defs = UIManager.getDefaults();
             defs.put("TextPane.background", new ColorUIResource(new Color(60, 60, 60)));
             defs.put("TextPane.inactiveBackground", new ColorUIResource(new Color(60, 60, 60)));
@@ -110,7 +111,8 @@ public class ChatBotGui {
             defs.put("TextField.background", new ColorUIResource(new Color(60, 60, 60)));
             defs.put("TextField.foreground", new ColorUIResource(Color.WHITE));
         }
-        SwingUtilities.updateComponentTreeUI(frame);
+        getContentPane().setBackground(new Color(30, 30, 30));
+        SwingUtilities.updateComponentTreeUI(this);
     }
 
     public JTextPane getOutput() {

@@ -59,8 +59,8 @@ public class ChatBot {
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
                 else
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                gui.updateComponents();
             } catch (Exception e) {}
+            gui.updateComponents();
         }
 
         config = new Config(new File(jarPath, "config.cfg"));
