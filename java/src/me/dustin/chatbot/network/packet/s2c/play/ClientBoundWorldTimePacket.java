@@ -3,7 +3,7 @@ package me.dustin.chatbot.network.packet.s2c.play;
 import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class ClientBoundWorldTimePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleWorldTimePacket(this);
+        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleWorldTimePacket(this);
     }
 
     public long getWorldAge() {

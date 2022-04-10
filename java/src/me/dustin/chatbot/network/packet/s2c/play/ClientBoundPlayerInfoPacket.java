@@ -6,7 +6,7 @@ import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.OtherPlayer;
 
@@ -93,7 +93,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handlePlayerInfoPacket(this);
+        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handlePlayerInfoPacket(this);
     }
 
     public int getAction() {

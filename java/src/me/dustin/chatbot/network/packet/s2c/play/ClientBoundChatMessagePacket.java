@@ -7,7 +7,7 @@ import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleChatMessagePacket(this);
+        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleChatMessagePacket(this);
     }
 
     public ChatMessage getMessage() {

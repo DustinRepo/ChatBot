@@ -18,7 +18,7 @@ import me.dustin.chatbot.network.packet.c2s.handshake.ServerBoundHandshakePacket
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundLoginStartPacket;
 import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
-import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketDecryptor;
 import me.dustin.chatbot.network.packet.pipeline.PacketDeflater;
@@ -71,7 +71,7 @@ public class ClientConnection {
         this.session = session;
         this.minecraftAccount = minecraftAccount;
         this.clientPlayer = new ClientPlayer(session.getUsername(), GeneralHelper.uuidFromStringNoDashes(session.getUuid()), this);
-        this.clientBoundPacketHandler = new ClientBoundLoginClientBoundPacketHandler();
+        this.clientBoundPacketHandler = new LoginClientBoundPacketHandler();
         this.commandManager = new CommandManager(this);
         this.processManager = new ProcessManager(this);
         this.packetCrypt = new PacketCrypt();

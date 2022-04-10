@@ -11,7 +11,7 @@ import me.dustin.chatbot.network.packet.s2c.login.*;
 import javax.crypto.SecretKey;
 import java.math.BigInteger;
 
-public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketHandler {
+public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public void handleEncryptionRequest(ClientBoundEncryptionStartPacket encryptionStartPacket) {
         GeneralHelper.print("Received EncryptionRequest", ChatMessage.TextColors.GREEN);
@@ -55,7 +55,7 @@ public class ClientBoundLoginClientBoundPacketHandler extends ClientBoundPacketH
 
     public void handleLoginSuccess(ClientBoundLoginSuccessPacket clientBoundLoginSuccessPacket) {
         getClientConnection().setNetworkState(ClientConnection.NetworkState.PLAY);
-        getClientConnection().setClientBoundPacketHandler(new ClientBoundPlayClientBoundPacketHandler());
+        getClientConnection().setClientBoundPacketHandler(new PlayClientBoundPacketHandler());
         getClientConnection().getTpsHelper().clear();
         GeneralHelper.print("Login Success Packet. You are connected.", ChatMessage.TextColors.GREEN);
         GeneralHelper.print("Username: " + clientBoundLoginSuccessPacket.getUsername(), ChatMessage.TextColors.GOLD);

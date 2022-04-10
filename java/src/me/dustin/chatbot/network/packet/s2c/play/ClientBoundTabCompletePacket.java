@@ -6,7 +6,7 @@ import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
-import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleTabComplete(this);
+        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleTabComplete(this);
     }
 
     public int getId() {

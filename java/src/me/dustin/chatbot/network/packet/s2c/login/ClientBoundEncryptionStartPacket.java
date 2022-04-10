@@ -4,7 +4,7 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.handler.ClientBoundLoginClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        ((ClientBoundLoginClientBoundPacketHandler)clientBoundPacketHandler).handleEncryptionRequest(this);
+        ((LoginClientBoundPacketHandler)clientBoundPacketHandler).handleEncryptionRequest(this);
     }
 
     public String getServerID() {

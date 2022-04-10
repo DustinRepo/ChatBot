@@ -4,7 +4,7 @@ import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
-import me.dustin.chatbot.network.packet.handler.ClientBoundPlayClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.OtherPlayer;
 
 import java.io.IOException;
@@ -65,7 +65,7 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void apply() {
-        ((ClientBoundPlayClientBoundPacketHandler)clientBoundPacketHandler).handleJoinGamePacket(this);
+        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleJoinGamePacket(this);
     }
 
     public int getEntityId() {
