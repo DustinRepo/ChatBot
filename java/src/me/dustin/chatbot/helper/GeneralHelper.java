@@ -28,13 +28,13 @@ public class GeneralHelper {
 
     private static Logger logger;
 
-    public static void print(String s, ChatMessage.TextColors color) {
+    public static void print(String s, ChatMessage.TextColor color) {
         String timeStampString = getCurrentTimeStamp();
         timeStampString = String.format("[%s] ", timeStampString);
         if (ChatBot.getGui() != null) {
             try {
                 StyledDocument document = ChatBot.getGui().getOutput().getStyledDocument();
-                document.insertString(document.getLength(), timeStampString, ChatMessage.TextColors.GRAY.getStyle());
+                document.insertString(document.getLength(), timeStampString, ChatMessage.TextColor.GRAY.getStyle());
                 document.insertString(document.getLength(), s + "\n", ChatBot.getConfig() != null && ChatBot.getConfig().isColorConsole() ? color.getStyle() : null);
 
                 ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
@@ -55,7 +55,7 @@ public class GeneralHelper {
             chatMessage = new ChatMessage("<" + chatMessage.getSenderName() + (chatMessage.getSenderName().contains("§") ? "§f" : "") +">", chatMessage.getBody());
         String m = chatMessage.getMessage();
         if (!m.contains("§") || !ChatBot.getConfig().isColorConsole()) {
-            print(strip(m), ChatMessage.TextColors.WHITE);
+            print(strip(m), ChatMessage.TextColor.WHITE);
             return;
         }
         printColorText(chatMessage.getMessage());
@@ -64,26 +64,26 @@ public class GeneralHelper {
     }
 
     private static void printColorText(String text) {
-        ChatMessage.TextColors color;
+        ChatMessage.TextColor color;
         StyledDocument document = ChatBot.getGui() != null ? ChatBot.getGui().getOutput().getStyledDocument() : null;
         String timeStampString = String.format("[%s] ", getCurrentTimeStamp());
         try {
             if (document != null)
-                document.insertString(document.getLength(), timeStampString, ChatMessage.TextColors.GRAY.getStyle());
+                document.insertString(document.getLength(), timeStampString, ChatMessage.TextColor.GRAY.getStyle());
             System.out.print(ANSI_RESET + timeStampString);
             for (String s : text.split("§")) {
                 if (s.length() == 0)
                     continue;
-                color = ChatMessage.TextColors.getFromChar(s.charAt(0));
+                color = ChatMessage.TextColor.getFromChar(s.charAt(0));
                 String s1 = color == null ? s : s.substring(1);
                 if (color == null)
-                    color = ChatMessage.TextColors.WHITE;
+                    color = ChatMessage.TextColor.WHITE;
                 if (document != null)
                     document.insertString(document.getLength(), s1, color.getStyle());
                 System.out.print(color.getAnsi() + s1 + ANSI_RESET);
             }
             if (document != null) {
-                document.insertString(document.getLength(), "\n", ChatMessage.TextColors.WHITE.getStyle());
+                document.insertString(document.getLength(), "\n", ChatMessage.TextColor.WHITE.getStyle());
                 ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
             }
             System.out.print(ANSI_RESET + "\n");

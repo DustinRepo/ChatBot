@@ -13,14 +13,14 @@ public class NetworkExceptionHandler extends ChannelDuplexHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (cause instanceof ReadTimeoutException) {
-            GeneralHelper.print("Timed out.", ChatMessage.TextColors.RED);
+            GeneralHelper.print("Timed out.", ChatMessage.TextColor.RED);
             ChatBot.getClientConnection().close();
         } else if (cause instanceof UnknownHostException) {
-            GeneralHelper.print("Unknown host.", ChatMessage.TextColors.RED);
+            GeneralHelper.print("Unknown host.", ChatMessage.TextColor.RED);
             ChatBot.getClientConnection().close();
         } else if (cause != null) {
             cause.printStackTrace();
-            GeneralHelper.print(cause.toString(), ChatMessage.TextColors.RED);
+            GeneralHelper.print(cause.toString(), ChatMessage.TextColor.RED);
         }
     }
 }

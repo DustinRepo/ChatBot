@@ -14,7 +14,7 @@ import me.dustin.chatbot.network.player.OtherPlayer;
 public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public void handleDisconnectPacket(ClientBoundDisconnectPlayPacket clientBoundDisconnectPacket) {
-        GeneralHelper.print("Disconnected", ChatMessage.TextColors.DARK_RED);
+        GeneralHelper.print("Disconnected", ChatMessage.TextColor.DARK_RED);
         GeneralHelper.printChat(ChatMessage.of(clientBoundDisconnectPacket.getReason()));
     }
 

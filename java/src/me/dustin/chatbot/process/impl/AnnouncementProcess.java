@@ -24,7 +24,7 @@ public class AnnouncementProcess extends ChatBotProcess {
                 announcements.add(array.get(i).getAsString());
             }
         } else {
-            GeneralHelper.print("No announcement file found!", ChatMessage.TextColors.DARK_RED);
+            GeneralHelper.print("No announcement file found!", ChatMessage.TextColor.DARK_RED);
         }
     }
 

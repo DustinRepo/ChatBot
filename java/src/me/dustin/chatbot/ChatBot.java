@@ -66,12 +66,12 @@ public class ChatBot {
 
         if (ip == null) {
             if (noGui) {
-                GeneralHelper.print("ERROR: No IP specified in arguments! Use --ip=<ip:port>!", ChatMessage.TextColors.RED);
+                GeneralHelper.print("ERROR: No IP specified in arguments! Use --ip=<ip:port>!", ChatMessage.TextColor.RED);
                 return;
             } else {
                 ip = JOptionPane.showInputDialog("Input ip or ip:port");
                 if (ip == null) {
-                    GeneralHelper.print("ERROR: You have to specify an IP!", ChatMessage.TextColors.RED);
+                    GeneralHelper.print("ERROR: You have to specify an IP!", ChatMessage.TextColor.RED);
                     return;
                 }
             }
@@ -84,7 +84,7 @@ public class ChatBot {
         }
         File loginFile = config.getLoginFile();
         if (!loginFile.exists()) {
-            GeneralHelper.print("ERROR: No login file!", ChatMessage.TextColors.RED);
+            GeneralHelper.print("ERROR: No login file!", ChatMessage.TextColor.RED);
             return;
         }
         if (getConfig().getClientVersion().equalsIgnoreCase("auto"))
@@ -96,18 +96,18 @@ public class ChatBot {
             case "MSA" -> minecraftAccount = new MinecraftAccount.MicrosoftAccount(loginInfo[0], loginInfo[1]);
             case "MOJ" -> minecraftAccount = loginInfo.length > 1 ? new MinecraftAccount.MojangAccount(loginInfo[0], loginInfo[1]) : new MinecraftAccount.MojangAccount(loginInfo[0]);
             default -> {
-                GeneralHelper.print("ERROR: Unknown account type in config!", ChatMessage.TextColors.RED);
+                GeneralHelper.print("ERROR: Unknown account type in config!", ChatMessage.TextColor.RED);
                 return;
             }
         }
         Session session = minecraftAccount.login();
         if (session == null) {
-            GeneralHelper.print("ERROR: Login failed!", ChatMessage.TextColors.RED);
+            GeneralHelper.print("ERROR: Login failed!", ChatMessage.TextColor.RED);
             return;
         } else {
-            GeneralHelper.print("Logged in.", ChatMessage.TextColors.YELLOW);
+            GeneralHelper.print("Logged in.", ChatMessage.TextColor.YELLOW);
         }
-        GeneralHelper.print("Starting connection to " + ip + ":" + port, ChatMessage.TextColors.AQUA);
+        GeneralHelper.print("Starting connection to " + ip + ":" + port, ChatMessage.TextColor.AQUA);
 
         createConnection(ip, port, session, minecraftAccount);
     }
@@ -155,7 +155,7 @@ public class ChatBot {
                 clientConnection.connect();
                 stopWatch.reset();
             } catch (Exception e) {
-                GeneralHelper.print(e.getMessage(), ChatMessage.TextColors.DARK_RED);
+                GeneralHelper.print(e.getMessage(), ChatMessage.TextColor.DARK_RED);
                 clientConnection.close();
             }
         } catch (Exception e) {

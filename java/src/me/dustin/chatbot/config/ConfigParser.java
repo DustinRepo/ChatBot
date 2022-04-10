@@ -62,6 +62,6 @@ public class ConfigParser {
     private void error(String name) {
         if (ChatBot.getGui() != null)
             JOptionPane.showMessageDialog(ChatBot.getGui().getFrame(), "Error! Could not find option: " + name + " in config!");
-        GeneralHelper.print("Error! Could not find option: " + name + " in config!", ChatMessage.TextColors.RED);
+        GeneralHelper.print("Error! Could not find option: " + name + " in config!", ChatMessage.TextColor.RED);
     }
 }

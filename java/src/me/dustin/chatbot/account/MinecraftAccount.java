@@ -73,11 +73,11 @@ public class MinecraftAccount {
 
     public Session login() {
         if (this instanceof MicrosoftAccount microsoftAccount) {
-            GeneralHelper.print("Logging in to Microsoft account...", ChatMessage.TextColors.YELLOW);
+            GeneralHelper.print("Logging in to Microsoft account...", ChatMessage.TextColor.YELLOW);
             MSLoginHelper msLoginHelper = new MSLoginHelper(microsoftAccount);
             return msLoginHelper.login(s -> {});
         } else {
-            GeneralHelper.print("Logging in to Mojang account...", ChatMessage.TextColors.YELLOW);
+            GeneralHelper.print("Logging in to Mojang account...", ChatMessage.TextColor.YELLOW);
             MojangAccount mojangAccount = (MojangAccount)this;
             MojangLoginHelper mojangLoginHelper = new MojangLoginHelper(mojangAccount);
             return mojangLoginHelper.login();

@@ -14,7 +14,7 @@ import java.math.BigInteger;
 public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public void handleEncryptionRequest(ClientBoundEncryptionStartPacket encryptionStartPacket) {
-        GeneralHelper.print("Received EncryptionRequest", ChatMessage.TextColors.GREEN);
+        GeneralHelper.print("Received EncryptionRequest", ChatMessage.TextColor.GREEN);
         if (encryptionStartPacket.getPublicKey() == null)
             return;
         try {
@@ -24,7 +24,7 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
             getClientConnection().getPacketCrypt().generateCiphers();
 
             String serverHash = new BigInteger(getClientConnection().getPacketCrypt().hash(encryptionStartPacket.getServerID().getBytes("ISO_8859_1"), getClientConnection().getPacketCrypt().getSecretKey().getEncoded(), getClientConnection().getPacketCrypt().getPublicKey().getEncoded())).toString(16);
-            GeneralHelper.print("Contacting Auth Servers...", ChatMessage.TextColors.GREEN);
+            GeneralHelper.print("Contacting Auth Servers...", ChatMessage.TextColor.GREEN);
             if (getClientConnection().contactAuthServers(serverHash)) {
                 byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
                 byte[] encryptedVerify = getClientConnection().getPacketCrypt().encrypt(encryptionStartPacket.getVerifyToken());
@@ -32,10 +32,10 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
                 ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
 
                 getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
-                GeneralHelper.print("Encrypting connection...", ChatMessage.TextColors.GREEN);
+                GeneralHelper.print("Encrypting connection...", ChatMessage.TextColor.GREEN);
                 getClientConnection().activateEncryption();
             } else {
-                GeneralHelper.print("Error! Could not verify with auth servers", ChatMessage.TextColors.DARK_RED);
+                GeneralHelper.print("Error! Could not verify with auth servers", ChatMessage.TextColor.DARK_RED);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,13 +43,13 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
     }
 
     public void handleCompressionPacket(ClientBoundSetCompressionPacket clientBoundSetCompressionPacket) {
-        GeneralHelper.print("Setting compression threshold to: " + clientBoundSetCompressionPacket.getCompressionThreshold(), ChatMessage.TextColors.GREEN);
+        GeneralHelper.print("Setting compression threshold to: " + clientBoundSetCompressionPacket.getCompressionThreshold(), ChatMessage.TextColor.GREEN);
         getClientConnection().setCompressionThreshold(clientBoundSetCompressionPacket.getCompressionThreshold());
     }
 
     public void handlePluginRequestPacket(ClientBoundPluginRequestPacket clientBoundPluginRequestPacket) {
         int id = clientBoundPluginRequestPacket.getMessageId();
-        GeneralHelper.print("Received Plugin Request packet " + id + " " + clientBoundPluginRequestPacket.getIdentifier(), ChatMessage.TextColors.GREEN);
+        GeneralHelper.print("Received Plugin Request packet " + clientBoundPluginRequestPacket.getIdentifier(), ChatMessage.TextColor.GREEN);
         getClientConnection().sendPacket(new ServerBoundPluginResponsePacket(id));
     }
 
@@ -57,13 +57,13 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
         getClientConnection().setNetworkState(ClientConnection.NetworkState.PLAY);
         getClientConnection().setClientBoundPacketHandler(new PlayClientBoundPacketHandler());
         getClientConnection().getTpsHelper().clear();
-        GeneralHelper.print("Login Success Packet. You are connected.", ChatMessage.TextColors.GREEN);
-        GeneralHelper.print("Username: " + clientBoundLoginSuccessPacket.getUsername(), ChatMessage.TextColors.GOLD);
+        GeneralHelper.print("Login Success Packet. You are connected.", ChatMessage.TextColor.GREEN);
+        GeneralHelper.print("Username: " + clientBoundLoginSuccessPacket.getUsername(), ChatMessage.TextColor.GOLD);
         new EventLoginSuccess().run(getClientConnection());
     }
 
     public void handleDisconnectPacket(ClientBoundDisconnectLoginPacket clientBoundDisconnectLoginPacket) {
-        GeneralHelper.print("Disconnected", ChatMessage.TextColors.DARK_RED);
+        GeneralHelper.print("Disconnected", ChatMessage.TextColor.DARK_RED);
         GeneralHelper.printChat(ChatMessage.of(clientBoundDisconnectLoginPacket.getReason()));
     }
 

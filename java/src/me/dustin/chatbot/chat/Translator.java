@@ -27,7 +27,7 @@ public class Translator {
             translations = GeneralHelper.gson.fromJson(sb.toString(), JsonObject.class);
         } catch (Exception e) {
             e.printStackTrace();
-            GeneralHelper.print("Error grabbing translation file: " + translation + ".json", ChatMessage.TextColors.DARK_RED);
+            GeneralHelper.print("Error grabbing translation file: " + translation + ".json", ChatMessage.TextColor.DARK_RED);
         }
     }
 

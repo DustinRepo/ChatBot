@@ -91,7 +91,7 @@ public class ClientConnection {
         isInGame = true;
         loadProcesses();
         sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
-        GeneralHelper.print("Received Join Game. Sending ClientSettings packet and loading processes.", ChatMessage.TextColors.GOLD);
+        GeneralHelper.print("Received Join Game. Sending ClientSettings packet and loading processes.", ChatMessage.TextColor.GOLD);
     });
 
     public void loadProcesses() {
@@ -117,8 +117,8 @@ public class ClientConnection {
 
     public void connect() {
         this.commandManager.init();
-        GeneralHelper.print("Setting client version to " + Protocols.getCurrent().getNames()[0] + " (" + Protocols.getCurrent().getProtocolVer() + ")", ChatMessage.TextColors.AQUA);
-        GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColors.GREEN);
+        GeneralHelper.print("Setting client version to " + Protocols.getCurrent().getNames()[0] + " (" + Protocols.getCurrent().getProtocolVer() + ")", ChatMessage.TextColor.AQUA);
+        GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColor.GREEN);
         sendPacket(new ServerBoundHandshakePacket(Protocols.getCurrent().getProtocolVer(), ip, port, ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
     }
@@ -157,7 +157,7 @@ public class ClientConnection {
         }
         isConnected = false;
         if (ChatBot.getConfig().isReconnect()) {
-            GeneralHelper.print("Client disconnected, reconnecting in " + ChatBot.getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColors.RED);
+            GeneralHelper.print("Client disconnected, reconnecting in " + ChatBot.getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColor.RED);
             try {
                 Thread.sleep(ChatBot.getConfig().getReconnectDelay() * 1000L);
                 ChatBot.createConnection(ip, port, session, minecraftAccount);

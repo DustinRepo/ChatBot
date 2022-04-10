@@ -1,6 +1,7 @@
 package me.dustin.chatbot.chat;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.GeneralHelper;
@@ -13,9 +14,10 @@ import java.util.StringJoiner;
 
 public class ChatMessage {
 
-    private final String senderName;
-    private final String body;
-    private boolean isChat;
+    private String senderName;
+    private String body;
+
+    private static final ChatMessage parsingMessage = new ChatMessage("", "");
 
     public ChatMessage(String senderName, String body) {
         this.senderName = senderName;
@@ -36,111 +38,70 @@ public class ChatMessage {
         return body;
     }
 
-    public boolean isChat() {
-        return isChat;
-    }
+    public static String parse(JsonElement element) {
+        StringJoiner sj = new StringJoiner(" ");
+        if (element.isJsonPrimitive())
+            return element.getAsString();
+        if (!element.isJsonObject()) {
+            JsonArray array = element.getAsJsonArray();
+            for (JsonElement jsonElement : array) {
+                sj.add(parse(jsonElement));
+            }
+            return sj.toString();
+        } else {
+            JsonObject jsonObject = element.getAsJsonObject();
+            StringBuilder sb = new StringBuilder();
+            if (jsonObject.get("color") != null) {
+                TextColor textColor = TextColor.getFromName(jsonObject.get("color").getAsString());
+                if (textColor != null)
+                    sb.append("§").append(textColor.getChar());
+            }
+            if (jsonObject.has("text")) {
+                if (jsonObject.has("translate") && jsonObject.get("translate").getAsString().equalsIgnoreCase("chat.type.text")) {
+                    parsingMessage.senderName = sb.append(jsonObject.get("text").getAsString()).toString();
+                } else
+                    sj.add(sb.append(jsonObject.get("text").getAsString()).toString());
+            } else {
+                String translate = "";
+                if (jsonObject.has("translate")) {
+                    translate = jsonObject.get("translate").getAsString();
+                    if (jsonObject.has("with")) {
+                        JsonArray array = jsonObject.getAsJsonArray("with");
+                        String[] args = new String[array.size()];
+                        for (int i = 0; i < array.size(); i++) {
+                            args[i] = parse(array.get(i));
+                        }
 
-    public void setChat(boolean chat) {
-        isChat = chat;
+                        String translated = Translator.translate(translate);
+                        for (int i = 0; i < args.length; i++) {
+                            String arg = args[i];
+                            translated = translated.replaceFirst("%(?:(\\d+)\\$)?([A-Za-z%]|$)", arg);
+                        }
+                        sj.add(sb.append(translated));
+                    } else {
+                        sj.add(sb.append(Translator.translate(translate)));
+                    }
+                }
+            }
+            if (jsonObject.has("extra")) {
+                sj.add(getExtra(jsonObject));
+            }
+            return sj.toString().trim();
+        }
     }
 
     public static ChatMessage of(String jsonData) {
-        try {
-            if (jsonData.isEmpty())
-                return new ChatMessage("", "");
-            StringBuilder name = new StringBuilder();
-            StringBuilder body = new StringBuilder();
-            StringJoiner insertion = new StringJoiner(",");
-            boolean isChat = false;
-            JsonObject jsonObject = GeneralHelper.gson.fromJson(jsonData, JsonObject.class);
-            JsonArray with = jsonObject.getAsJsonArray("with");
-            String translate = "";
-            if (jsonObject.get("translate") != null) {
-                translate = jsonObject.get("translate").getAsString();
-                if (translate.equalsIgnoreCase("chat.type.text"))
-                    isChat = true;
-            }
-
-            if (with != null) {
-                for (int i = 0; i < with.size(); i++) {
-                    try {
-                        JsonObject object = with.get(i).getAsJsonObject();
-
-                        if (object.get("with") != null) {
-                            JsonArray with2 = object.getAsJsonArray("with");
-                            for (int ii = 0; ii < with2.size(); ii++) {
-                                JsonObject o = with2.get(ii).getAsJsonObject();
-                                if (o.get("insertion") != null && !insertion.toString().contains(o.get("insertion").getAsString())) {
-                                    insertion.add(o.get("insertion").getAsString());
-                                }
-                            }
-                        }
-                        if (object.get("insertion") != null && insertion.toString().isEmpty()) {
-                            String s = object.get("insertion").getAsString();
-                            insertion.add(s);
-                        }
-                        if (object.get("color") != null) {
-                            TextColors textColors = TextColors.getFromName(object.get("color").getAsString());
-                            if (textColors != null)
-                                name.append("§").append(textColors.getChar());
-                        }
-                        String text = object.get("text").getAsString();
-                        if ((isChat || name.isEmpty()) && !Translator.translate(translate).startsWith("%1$s")) {
-                            name.append(text);
-                        }
-                    } catch (Exception e) {
-                        try {
-                            body.append(" ").append(with.get(i).getAsString());
-                        } catch (Exception e1) {
-                        }
-                    }
-                }
-            }
-            if (jsonObject.get("translate") != null) {
-                if (jsonObject.get("color") != null) {
-                    TextColors textColors = TextColors.getFromName(jsonObject.get("color").getAsString());
-                    if (textColors != null)
-                        body.append("§").append(textColors.getChar());
-                }
-                if (!translate.equalsIgnoreCase("chat.type.text")) {
-                    String translated = Translator.translate(translate);
-                    if (!insertion.toString().isEmpty()) {
-                        String[] insertions = insertion.toString().split(",");
-                        int c = 0;
-                        for (int i = 0; i < insertions.length; i++) {
-                            if (translated.contains("%" + (i + 1) + "$s")) {
-                                translated = translated.replace("%" + (i + 1) + "$s", insertions[i]);
-                                c++;
-                            } else
-                                break;
-                        }
-                        for (int i = c; i < insertions.length; i++) {
-                            translated = translated.replaceFirst("%s", insertions[i]);
-                        }
-                    }
-                    //translated = translated.replace("%s", insertions[insertions.length - 1]);
-                    body.append(" ").append(translated);
-                }
-            }
-            body.append(getExtra(jsonObject));
-            if (body.toString().startsWith("<") && body.toString().contains("> ") && name.toString().isEmpty()) {//crude way to move player name to actual name field if the text is set up weird
-                String s = body.toString().split("<")[1].split(">")[0];
-                name.append(s);
-                body = new StringBuilder(body.toString().replace("<" + s + "> ", ""));
-            }
-
-            if (body.toString().startsWith(" ")) {
-                body = new StringBuilder(body.substring(1));
-            }
-            if (jsonObject.get("text") != null) {
-                body.append(jsonObject.get("text").getAsString());
-            }
-            ChatMessage chatMessage = new ChatMessage(name.toString(), body.toString());
-            chatMessage.setChat(isChat);
-            return chatMessage;
-        } catch (Exception e) {
-            return new ChatMessage("", jsonData);
+        parsingMessage.senderName = "";
+        parsingMessage.body = "";
+        JsonObject jsonObject = GeneralHelper.gson.fromJson(jsonData, JsonObject.class);
+        parsingMessage.body = parse(jsonObject);
+        String body = parsingMessage.body;
+        if (body.startsWith("<") && body.contains("> ") && parsingMessage.senderName.toString().isEmpty()) {//crude way to move player name to actual name field if the text is set up weird
+            String s = body.split("<")[1].split(">")[0];
+            parsingMessage.senderName = s;
+            parsingMessage.body = body.replace("<" + s + "> ", "");
         }
+        return parsingMessage;
     }
 
     private static String getExtra(JsonObject jsonObject) {
@@ -151,9 +112,9 @@ public class ChatMessage {
                 try {
                     JsonObject object = extra.get(i).getAsJsonObject();
                     if (object.get("color") != null) {
-                        TextColors textColors = TextColors.getFromName(object.get("color").getAsString());
-                        if (textColors != null)
-                            s.append("§").append(textColors.getChar());
+                        TextColor textColor = TextColor.getFromName(object.get("color").getAsString());
+                        if (textColor != null)
+                            s.append("§").append(textColor.getChar());
                     }
                     String text = object.get("text").getAsString();
                     s.append(text);
@@ -166,9 +127,9 @@ public class ChatMessage {
                     } catch (Exception e1) {
                         JsonObject o = extra.get(i).getAsJsonObject();
                         if (o.get("color") != null) {
-                            TextColors textColors = TextColors.getFromName(o.get("color").getAsString());
-                            if (textColors != null)
-                                s.append("§").append(textColors.getChar());
+                            TextColor textColor = TextColor.getFromName(o.get("color").getAsString());
+                            if (textColor != null)
+                                s.append("§").append(textColor.getChar());
                         }
                         if (o.get("translate") != null) {
                             String translate = o.get("translate").getAsString();
@@ -182,7 +143,7 @@ public class ChatMessage {
         return s.toString();
     }
 
-    public enum TextColors {
+    public enum TextColor {
         DARK_RED("dark_red", '4', "\u001B[31m", new Color(170, 0, 0)),
         RED("red", 'c', "\u001B[31m", new Color(255, 85, 85)),
         GOLD("gold", '6', "\u001B[33m", new Color(255, 170, 0)),
@@ -205,23 +166,23 @@ public class ChatMessage {
         private final char char_;
         private final Color color;
         private Style style;
-        TextColors(String name, char char_, String ansi, Color color) {
+        TextColor(String name, char char_, String ansi, Color color) {
             this.ansi = ansi;
             this.name = name;
             this.char_ = char_;
             this.color = color;
         }
 
-        public static TextColors getFromName(String name) {
-            for (TextColors value : TextColors.values()) {
+        public static TextColor getFromName(String name) {
+            for (TextColor value : TextColor.values()) {
                 if (value.getName().equalsIgnoreCase(name))
                     return value;
             }
             return null;
         }
 
-        public static TextColors getFromChar(char char_) {
-            for (TextColors value : TextColors.values()) {
+        public static TextColor getFromChar(char char_) {
+            for (TextColor value : TextColor.values()) {
                 if (value.getChar() == char_)
                     return value;
             }
