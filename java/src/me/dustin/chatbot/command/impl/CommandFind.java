@@ -1,29 +1,13 @@
 package me.dustin.chatbot.command.impl;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.proxy.Socks4ProxyHandler;
-import io.netty.handler.proxy.Socks5ProxyHandler;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.command.Command;
 import me.dustin.chatbot.event.EventTick;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.MinecraftServerAddress;
 import me.dustin.chatbot.network.Protocols;
-import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.c2s.handshake.ServerBoundHandshakePacket;
-import me.dustin.chatbot.network.packet.c2s.query.ServerBoundPingPacket;
-import me.dustin.chatbot.network.packet.c2s.query.ServerBoundQueryRequestPacket;
-import me.dustin.chatbot.network.packet.pipeline.*;
-import me.dustin.chatbot.network.packet.s2c.query.ClientBoundQueryResponsePacket;
-import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
@@ -31,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -41,6 +24,7 @@ public class CommandFind extends Command {
     private final ArrayList<Thread> threads = new ArrayList<>();
     private boolean isSearching;
     private boolean found;
+    private String name;
     public CommandFind() {
         super("find");
         servers.add("50kilo.org");
@@ -63,6 +47,7 @@ public class CommandFind extends Command {
             return;
         }
         String name = str.split(" ")[0];
+        this.name = name;
         searchServers(name);
         getClientConnection().getEventManager().register(this);
     }
@@ -86,7 +71,7 @@ public class CommandFind extends Command {
                 }
             }
             if (!runningThread) {
-                sendChat("Player not found.");
+                sendChat("Player " + name + " not found.");
                 isSearching = false;
                 threads.clear();
                 getClientConnection().getEventManager().unregister(this);
