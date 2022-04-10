@@ -2,8 +2,7 @@ package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.helper.MCAPIHelper;
-import me.dustin.chatbot.network.Protocols;
-import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
@@ -19,14 +18,14 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
     private UUID sender;
 
     public ClientBoundChatMessagePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(PacketIDs.ClientBound.CHAT_MESSAGE.getPacketId(), clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         this.message = ChatMessage.of(packetByteBuf.readString());
         this.type = packetByteBuf.readByte();
-        if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_15_2.getProtocolVer())
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.15.1").getProtocolVer())
             this.sender = packetByteBuf.readUuid();
         else if (!this.message.getSenderName().isEmpty()) {
             this.sender = MCAPIHelper.getUUIDFromName(this.message.getSenderName());

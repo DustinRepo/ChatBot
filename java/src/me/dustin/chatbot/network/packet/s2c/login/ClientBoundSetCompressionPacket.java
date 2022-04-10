@@ -10,7 +10,7 @@ import java.io.IOException;
 public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
     private int compressionThreshold;
     public ClientBoundSetCompressionPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x03, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override

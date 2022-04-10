@@ -13,7 +13,7 @@ public class ClientBoundPluginRequestPacket extends Packet.ClientBoundPacket {
     private String identifier;
 
     public ClientBoundPluginRequestPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x04, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {

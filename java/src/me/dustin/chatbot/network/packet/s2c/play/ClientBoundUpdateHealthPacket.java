@@ -1,6 +1,5 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
@@ -15,7 +14,7 @@ public class ClientBoundUpdateHealthPacket extends Packet.ClientBoundPacket {
     private float saturation;
 
     public ClientBoundUpdateHealthPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(PacketIDs.ClientBound.UPDATE_HEALTH.getPacketId(), clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override

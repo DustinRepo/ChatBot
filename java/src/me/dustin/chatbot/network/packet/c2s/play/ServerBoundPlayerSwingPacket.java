@@ -1,8 +1,7 @@
 package me.dustin.chatbot.network.packet.c2s.play;
 
-import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.io.IOException;
@@ -14,13 +13,13 @@ public class ServerBoundPlayerSwingPacket extends Packet {
     private final int hand;
 
     public ServerBoundPlayerSwingPacket(int hand) {
-        super(PacketIDs.ServerBound.PLAYER_SWING.getPacketId());
+        super(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.SERVERBOUND, "swing_arm"));
         this.hand = hand;
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_8.getProtocolVer())
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
             packetByteBuf.writeVarInt(hand);
     }
 

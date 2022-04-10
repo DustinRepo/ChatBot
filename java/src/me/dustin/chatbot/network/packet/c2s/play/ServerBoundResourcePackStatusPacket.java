@@ -1,7 +1,7 @@
 package me.dustin.chatbot.network.packet.c2s.play;
 
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class ServerBoundResourcePackStatusPacket extends Packet {
     private final int result;
 
     public ServerBoundResourcePackStatusPacket(int result) {
-        super(PacketIDs.ServerBound.RESOURCE_PACK_STATUS.getPacketId());
+        super(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.SERVERBOUND, "resourcepack"));
         this.result = result;
     }
 

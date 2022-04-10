@@ -1,7 +1,7 @@
 package me.dustin.chatbot.config;
 
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.network.Protocols;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,9 +70,9 @@ public class Config {
         locale = parser.readString("locale");
         loginCommand = parser.readString("loginCommand");
         passwordCreateCommand = parser.readString("passwordCreateCommand");
-        clientVersion = parser.readString("clientVersion");
-        if (!clientVersion.equalsIgnoreCase("auto"))
-            protocolVersion = Protocols.get(clientVersion).getProtocolVer();
+        clientVersion = parser.readString("clientVersion").replace("1.8", "1.8.9");
+        /*if (!clientVersion.equalsIgnoreCase("auto"))
+            protocolVersion = ProtocolHandler.getVersionFromName(clientVersion).getProtocolVer();*/
 
         commands = parser.readBoolean("commands");
         log = parser.readBoolean("log");

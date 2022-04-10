@@ -1,6 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
-import me.dustin.chatbot.network.Protocols;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
@@ -14,12 +14,12 @@ public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
     private String username;
 
     public ClientBoundLoginSuccessPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x02, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_15_2.getProtocolVer()) {//1.15.2 and below
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.15.1").getProtocolVer()) {
             String s = packetByteBuf.readString();
             String s1 = packetByteBuf.readString();
             this.uuid = s.length() > 0 ? UUID.fromString(s) : null;

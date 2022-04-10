@@ -11,7 +11,7 @@ public class ClientBoundDisconnectLoginPacket extends Packet.ClientBoundPacket {
     private String reason;
 
     public ClientBoundDisconnectLoginPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x00, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override

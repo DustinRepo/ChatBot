@@ -1,7 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.Protocols;
-import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -17,7 +16,7 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
     private boolean dismount;
 
     public ClientBoundPlayerPositionAndLookPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(PacketIDs.ClientBound.PLAYER_POS_LOOK.getPacketId(), clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -28,9 +27,9 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
         yaw = packetByteBuf.readFloat();
         pitch = packetByteBuf.readFloat();
         flags = packetByteBuf.readByte();
-        if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_18.getProtocolVer())
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.1").getProtocolVer())
             teleportId = packetByteBuf.readVarInt();
-        if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_16_5.getProtocolVer())//1.16.5
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.16.5").getProtocolVer())//1.16.5
             dismount = packetByteBuf.readBoolean();
     }
 

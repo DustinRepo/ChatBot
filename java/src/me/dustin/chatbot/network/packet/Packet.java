@@ -21,8 +21,8 @@ public class Packet {
     public static abstract class ClientBoundPacket extends Packet {
         protected final ClientBoundPacketHandler clientBoundPacketHandler;
 
-        public ClientBoundPacket(int packetId, ClientBoundPacketHandler clientBoundPacketHandler) {
-            super(packetId);
+        public ClientBoundPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
+            super(0);
             this.clientBoundPacketHandler = clientBoundPacketHandler;
         }
 

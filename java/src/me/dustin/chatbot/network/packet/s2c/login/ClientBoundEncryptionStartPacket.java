@@ -1,6 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
-import me.dustin.chatbot.network.Protocols;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
@@ -18,7 +18,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
     private byte[] verifyToken;
 
     public ClientBoundEncryptionStartPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x01, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
         this.serverID = packetByteBuf.readString();
 
         //public key
-        publicKeyLength = Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer() ? packetByteBuf.readShort() : packetByteBuf.readVarInt();
+        publicKeyLength = ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer() ? packetByteBuf.readShort() : packetByteBuf.readVarInt();
         byte[] publicKey = new byte[publicKeyLength];
         packetByteBuf.readBytes(publicKey, 0, publicKeyLength);
 
@@ -43,7 +43,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
         }
 
         //verifyToken
-        verifyTokenLength = Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer() ? packetByteBuf.readShort() : packetByteBuf.readVarInt();
+        verifyTokenLength = ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer() ? packetByteBuf.readShort() : packetByteBuf.readVarInt();
         this.verifyToken = new byte[verifyTokenLength];
         packetByteBuf.readBytes(this.verifyToken, 0, verifyTokenLength);
     }

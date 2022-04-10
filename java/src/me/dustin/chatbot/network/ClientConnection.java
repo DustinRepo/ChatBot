@@ -15,6 +15,7 @@ import me.dustin.chatbot.event.EventTick;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.TPSHelper;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.c2s.handshake.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.c2s.login.ServerBoundLoginStartPacket;
 import me.dustin.chatbot.network.crypt.PacketCrypt;
@@ -118,9 +119,9 @@ public class ClientConnection {
 
     public void connect() {
         this.commandManager.init();
-        GeneralHelper.print("Setting client version to " + Protocols.getCurrent().getNames()[0] + " (" + Protocols.getCurrent().getProtocolVer() + ")", ChatMessage.TextColor.AQUA);
+        GeneralHelper.print("Setting client version to " + ProtocolHandler.getCurrent().getName() + " (" + ProtocolHandler.getCurrent().getProtocolVer() + ")", ChatMessage.TextColor.AQUA);
         GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColor.GREEN);
-        sendPacket(new ServerBoundHandshakePacket(Protocols.getCurrent().getProtocolVer(), getMinecraftServerAddress().getIp(), getMinecraftServerAddress().getPort(), ServerBoundHandshakePacket.LOGIN_STATE));
+        sendPacket(new ServerBoundHandshakePacket(ProtocolHandler.getCurrent().getProtocolVer(), getMinecraftServerAddress().getIp(), getMinecraftServerAddress().getPort(), ServerBoundHandshakePacket.LOGIN_STATE));
         sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
     }
 
@@ -183,6 +184,8 @@ public class ClientConnection {
     }
 
     public void sendPacket(Packet packet) {
+        if (packet.getPacketId() == -1)
+            return;
         if (channel != null && channel.isOpen()) {
             this.sendQueuedPackets();
             if (channel.eventLoop().inEventLoop()) {

@@ -75,11 +75,6 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         }
     }
 
-    public void handlePlayerDeadPacket(ClientBoundCombatEventPacket clientBoundCombatEventPacket) {
-        if (clientBoundCombatEventPacket.getType() == ClientBoundCombatEventPacket.ENTITY_DIED || !clientBoundCombatEventPacket.getMessage().isEmpty())
-            getClientConnection().sendPacket(new ServerBoundClientStatusPacket(ServerBoundClientStatusPacket.RESPAWN));
-    }
-
     public void handlePlayerPositionAndLookPacket(ClientBoundPlayerPositionAndLookPacket clientBoundPlayerPositionAndLookPacket) {
         byte flags = clientBoundPlayerPositionAndLookPacket.getFlags();
         boolean xRelative = (flags & 0x01) == 0x01;

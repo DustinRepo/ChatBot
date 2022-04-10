@@ -1,7 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.Protocols;
-import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -18,12 +17,12 @@ public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
     private final ArrayList<TabCompleteMatch> matches = new ArrayList<>();
 
     public ClientBoundTabCompletePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(PacketIDs.ClientBound.TAB_COMPLETE.getPacketId(), clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_12_2.getProtocolVer()) {//1.12
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer()) {//1.12
             int size = packetByteBuf.readVarInt();
             for (int i = 0; i < size - 1; i++) {
                 this.matches.add(new TabCompleteMatch(packetByteBuf.readString(), false, ""));

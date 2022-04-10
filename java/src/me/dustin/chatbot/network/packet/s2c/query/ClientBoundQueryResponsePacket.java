@@ -11,7 +11,7 @@ public class ClientBoundQueryResponsePacket extends Packet.ClientBoundPacket {
     private String jsonData;
 
     public ClientBoundQueryResponsePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(0x00, clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override

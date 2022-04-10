@@ -1,6 +1,5 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
@@ -12,7 +11,7 @@ public class ClientBoundDisconnectPlayPacket extends Packet.ClientBoundPacket {
     private String reason;
 
     public ClientBoundDisconnectPlayPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(PacketIDs.ClientBound.DISCONNECT.getPacketId(), clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override

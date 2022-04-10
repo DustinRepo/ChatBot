@@ -1,8 +1,7 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.helper.MCAPIHelper;
-import me.dustin.chatbot.network.Protocols;
-import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
@@ -22,13 +21,13 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
     private OtherPlayer[] players;
 
     public ClientBoundPlayerInfoPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(PacketIDs.ClientBound.PLAYER_INFO.getPacketId(), clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         //1.7 versions of this packet are very different
-        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer()) {
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer()) {
             String playerName = packetByteBuf.readString();
             boolean online = packetByteBuf.readBoolean();
             int ping = packetByteBuf.readShort();

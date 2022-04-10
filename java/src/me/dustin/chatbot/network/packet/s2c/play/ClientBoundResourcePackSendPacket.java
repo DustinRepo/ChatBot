@@ -1,8 +1,7 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.network.Protocols;
-import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -19,14 +18,14 @@ public class ClientBoundResourcePackSendPacket extends Packet.ClientBoundPacket 
     private String prompt;
 
     public ClientBoundResourcePackSendPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(PacketIDs.ClientBound.RESOURCE_PACK_SEND.getPacketId(), clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         this.url = packetByteBuf.readString();
         this.hash = packetByteBuf.readString();
-        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_12_2.getProtocolVer()) {
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer()) {
             this.forced = packetByteBuf.readBoolean();
             this.hasPrompt = packetByteBuf.readBoolean();
             if (hasPrompt) {

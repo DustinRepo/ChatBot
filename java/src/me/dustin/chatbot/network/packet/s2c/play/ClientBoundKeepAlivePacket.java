@@ -1,7 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.network.Protocols;
-import me.dustin.chatbot.network.packet.PacketIDs;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
@@ -13,14 +12,14 @@ public class ClientBoundKeepAlivePacket extends Packet.ClientBoundPacket {
 
     private long id;
     public ClientBoundKeepAlivePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(PacketIDs.ClientBound.KEEP_ALIVE.getPacketId(), clientBoundPacketHandler);
+        super(clientBoundPacketHandler);
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer())
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
             this.id = packetByteBuf.readInt();
-        else if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_12_1.getProtocolVer())//in 1.12.1 and below keepalive id is an int, not a long
+        else if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.1").getProtocolVer())//in 1.12.1 and below keepalive id is an int, not a long
             this.id = packetByteBuf.readVarInt();
         else
             this.id = packetByteBuf.readLong();

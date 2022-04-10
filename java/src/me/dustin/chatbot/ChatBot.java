@@ -17,9 +17,9 @@ import me.dustin.chatbot.gui.ChatBotGui;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.MinecraftServerAddress;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.c2s.handshake.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.c2s.query.ServerBoundPingPacket;
 import me.dustin.chatbot.network.packet.c2s.query.ServerBoundQueryRequestPacket;
@@ -64,6 +64,8 @@ public class ChatBot {
         }
 
         config = new Config(new File(jarPath, "config.cfg"));
+        GeneralHelper.print("Downloading protocol data...", ChatMessage.TextColor.YELLOW);
+        ProtocolHandler.downloadData();
 
         if (ip == null) {
             if (noGui) {
@@ -112,8 +114,6 @@ public class ChatBot {
         if (session == null) {
             GeneralHelper.print("ERROR: Login failed!", ChatMessage.TextColor.RED);
             return;
-        } else {
-            GeneralHelper.print("Logged in.", ChatMessage.TextColor.YELLOW);
         }
         GeneralHelper.print("Starting connection to " + ip + ":" + port, ChatMessage.TextColor.AQUA);
 
@@ -198,8 +198,8 @@ public class ChatBot {
                         JsonObject jsonObject = GeneralHelper.gson.fromJson(responsePacket.getJsonData(), JsonObject.class);
                         JsonObject version = jsonObject.getAsJsonObject("version");
                         getConfig().setProtocolVersion(version.get("protocol").getAsInt());
-                        Protocols current = Protocols.get(getConfig().getProtocolVersion());
-                        getConfig().setClientVersion(current.getNames()[0]);
+                        ProtocolHandler.setCurrent(getConfig().getProtocolVersion());
+                        getConfig().setClientVersion(ProtocolHandler.getCurrent().getName());
                         String s = ChatMessage.parse(jsonObject.get("description"));
                         GeneralHelper.print("Server MOTD:", ChatMessage.TextColor.YELLOW);
                         for (String s1 : s.split("\n")) {
@@ -214,7 +214,7 @@ public class ChatBot {
         ChannelFuture channelFuture = bootstrap.connect(minecraftServerAddress.getIp(), minecraftServerAddress.getPort());
         channelFuture.addListener(future -> {
             if (future.isSuccess()) {
-                channelFuture.channel().writeAndFlush(new ServerBoundHandshakePacket(getConfig().getProtocolVersion(), minecraftServerAddress.getIp(), minecraftServerAddress.getPort(), ServerBoundHandshakePacket.STATUS_STATE));
+                channelFuture.channel().writeAndFlush(new ServerBoundHandshakePacket(ProtocolHandler.getCurrent().getProtocolVer(), minecraftServerAddress.getIp(), minecraftServerAddress.getPort(), ServerBoundHandshakePacket.STATUS_STATE));
                 channelFuture.channel().writeAndFlush(new ServerBoundQueryRequestPacket());
                 channelFuture.channel().writeAndFlush(new ServerBoundPingPacket(System.currentTimeMillis()));
             }
