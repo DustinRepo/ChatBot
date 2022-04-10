@@ -1,8 +1,6 @@
 package me.dustin.chatbot.command;
 
-import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 
 import java.util.ArrayList;
 import java.util.List;

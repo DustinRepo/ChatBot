@@ -1,6 +1,5 @@
 package me.dustin.chatbot.network.packet.s2c.login;
 
-import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;

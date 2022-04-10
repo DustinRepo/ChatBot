@@ -1,11 +1,8 @@
 package me.dustin.chatbot.gui;
 
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventRemovePlayer;
-import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.events.core.EventListener;

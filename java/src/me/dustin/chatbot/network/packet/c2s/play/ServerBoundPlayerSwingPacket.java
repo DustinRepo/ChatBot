@@ -1,6 +1,5 @@
 package me.dustin.chatbot.network.packet.c2s.play;
 
-import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.PacketIDs;

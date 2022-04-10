@@ -10,7 +10,6 @@ import me.dustin.chatbot.network.packet.PacketIDs;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.s2c.login.*;
 import me.dustin.chatbot.network.packet.s2c.play.*;
-import me.dustin.chatbot.network.packet.s2c.query.ClientBoundQueryResponsePacket;
 
 import java.util.HashMap;
 import java.util.List;

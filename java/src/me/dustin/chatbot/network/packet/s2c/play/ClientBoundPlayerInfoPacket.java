@@ -1,6 +1,5 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
-import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.MCAPIHelper;
 import me.dustin.chatbot.network.Protocols;
 import me.dustin.chatbot.network.packet.PacketIDs;

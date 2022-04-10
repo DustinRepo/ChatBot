@@ -4,18 +4,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.helper.BadPacketException;
-import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.Packet;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
 
 public class ClientBoundPacketHandler extends SimpleChannelInboundHandler<Packet.ClientBoundPacket> {
 

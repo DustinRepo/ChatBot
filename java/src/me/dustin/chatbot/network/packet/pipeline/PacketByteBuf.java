@@ -25,12 +25,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 
 public class PacketByteBuf extends ByteBuf {
-    private static final int MAX_VAR_INT_LENGTH = 5;
-    private static final int MAX_VAR_LONG_LENGTH = 10;
-    private static final int MAX_READ_NBT_SIZE = 2097152;
     private final ByteBuf parent;
-    public static final short DEFAULT_MAX_STRING_LENGTH = 32767;
-    public static final int MAX_TEXT_LENGTH = 262144;
 
     public PacketByteBuf(ByteBuf parent) {
         this.parent = parent;

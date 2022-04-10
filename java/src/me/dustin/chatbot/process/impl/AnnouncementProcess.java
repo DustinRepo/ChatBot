@@ -1,14 +1,11 @@
 package me.dustin.chatbot.process.impl;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
-import me.dustin.chatbot.command.CommandManager;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 import me.dustin.chatbot.process.ChatBotProcess;
 
 import java.io.File;

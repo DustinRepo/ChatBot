@@ -5,10 +5,7 @@ import com.google.gson.GsonBuilder;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
 
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
