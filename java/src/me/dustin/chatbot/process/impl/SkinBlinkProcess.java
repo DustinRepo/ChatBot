@@ -3,6 +3,7 @@ package me.dustin.chatbot.process.impl;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
 import me.dustin.chatbot.process.ChatBotProcess;
 
@@ -16,6 +17,8 @@ public class SkinBlinkProcess extends ChatBotProcess {
 
     @Override
     public void init() {
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
+            return;
         getClientConnection().getEventManager().register(this);
     }
 
@@ -35,6 +38,8 @@ public class SkinBlinkProcess extends ChatBotProcess {
 
     @Override
     public void stop() {
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
+            return;
         getClientConnection().getEventManager().unregister(this);
     }
 }

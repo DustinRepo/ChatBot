@@ -177,7 +177,7 @@ public class ClientConnection {
         while (isConnected()) {
             try {
                 getProcessManager().tick();
-            } catch (ConcurrentModificationException e) {}
+            } catch (Exception e) {}
             getClientPlayer().tick();
             new EventTick().run(this);
         }

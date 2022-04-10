@@ -22,7 +22,8 @@ public class ServerBoundTabCompletePacket extends Packet {
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer()) {
             packetByteBuf.writeString(cmd);//text
             packetByteBuf.writeBoolean(false);//assume command - used for cmd blocks
-            packetByteBuf.writeBoolean(false);//has position
+            if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
+                packetByteBuf.writeBoolean(false);//has position
         } else {
             packetByteBuf.writeVarInt(transactionId);
             packetByteBuf.writeString(cmd);

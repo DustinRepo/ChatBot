@@ -143,7 +143,6 @@ public class ProtocolHandler {
                     }
                 }
             }
-            GeneralHelper.print(networkSide.name() + " " + "Could not find packet with names " + Arrays.toString(names), ChatMessage.TextColor.RED);
             return -1;
         }
 
