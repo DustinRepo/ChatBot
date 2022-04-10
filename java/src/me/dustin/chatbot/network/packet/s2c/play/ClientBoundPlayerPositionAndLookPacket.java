@@ -29,9 +29,9 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
         yaw = packetByteBuf.readFloat();
         pitch = packetByteBuf.readFloat();
         flags = packetByteBuf.readByte();
-        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_18.getProtocolVer())
+        if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_18.getProtocolVer())
             teleportId = packetByteBuf.readVarInt();
-        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_16_5.getProtocolVer())//1.16.5
+        if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_16_5.getProtocolVer())//1.16.5
             dismount = packetByteBuf.readBoolean();
     }
 

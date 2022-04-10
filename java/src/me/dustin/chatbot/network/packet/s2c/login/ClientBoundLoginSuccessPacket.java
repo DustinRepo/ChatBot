@@ -20,7 +20,7 @@ public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_15_2.getProtocolVer()) {//1.15.2 and below
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_15_2.getProtocolVer()) {//1.15.2 and below
             String s = packetByteBuf.readString();
             String s1 = packetByteBuf.readString();
             this.uuid = s.length() > 0 ? UUID.fromString(s) : null;

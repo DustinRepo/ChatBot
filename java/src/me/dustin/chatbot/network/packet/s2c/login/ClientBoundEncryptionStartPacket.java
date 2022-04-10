@@ -31,7 +31,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
         this.serverID = packetByteBuf.readString();
 
         //public key
-        publicKeyLength = ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer() ? packetByteBuf.readShort() : packetByteBuf.readVarInt();
+        publicKeyLength = Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer() ? packetByteBuf.readShort() : packetByteBuf.readVarInt();
         byte[] publicKey = new byte[publicKeyLength];
         packetByteBuf.readBytes(publicKey, 0, publicKeyLength);
 
@@ -44,7 +44,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
         }
 
         //verifyToken
-        verifyTokenLength = ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer() ? packetByteBuf.readShort() : packetByteBuf.readVarInt();
+        verifyTokenLength = Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer() ? packetByteBuf.readShort() : packetByteBuf.readVarInt();
         this.verifyToken = new byte[verifyTokenLength];
         packetByteBuf.readBytes(this.verifyToken, 0, verifyTokenLength);
     }

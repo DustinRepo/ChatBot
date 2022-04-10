@@ -23,14 +23,14 @@ public class ClientBoundCombatEventPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_16_5.getProtocolVer()) {//1.16.5
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_16_5.getProtocolVer()) {//1.16.5
             this.type = packetByteBuf.readVarInt();
             if (type != ENTITY_DIED)
                 return;
         }
         this.playerId = packetByteBuf.readVarInt();
         this.killerId = packetByteBuf.readInt();
-        if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer() || type == ENTITY_DIED)//1.17 or the player actually died
+        if (Protocols.getCurrent().getProtocolVer() >= Protocols.V1_17.getProtocolVer() || type == ENTITY_DIED)//1.17 or the player actually died
             this.message = packetByteBuf.readString();
     }
 

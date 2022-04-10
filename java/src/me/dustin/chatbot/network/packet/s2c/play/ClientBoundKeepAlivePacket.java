@@ -19,9 +19,9 @@ public class ClientBoundKeepAlivePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer())
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer())
             this.id = packetByteBuf.readInt();
-        else if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_12_1.getProtocolVer())//in 1.12.1 and below keepalive id is an int, not a long
+        else if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_12_1.getProtocolVer())//in 1.12.1 and below keepalive id is an int, not a long
             this.id = packetByteBuf.readVarInt();
         else
             this.id = packetByteBuf.readLong();

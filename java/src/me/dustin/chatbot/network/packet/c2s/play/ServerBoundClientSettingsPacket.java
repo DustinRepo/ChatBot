@@ -23,7 +23,7 @@ public class ServerBoundClientSettingsPacket extends Packet {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer()) {//packet is very different in 1.7.10 and below
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer()) {//packet is very different in 1.7.10 and below
             packetByteBuf.writeString(locale);
             packetByteBuf.writeByte(8);//render distance
             packetByteBuf.writeByte(0);//chat mode. 0 = enabled
@@ -36,11 +36,11 @@ public class ServerBoundClientSettingsPacket extends Packet {
             packetByteBuf.writeVarInt(0);//chat mode. 0 = enabled
             packetByteBuf.writeBoolean(true);//chat colors
             packetByteBuf.writeByte(enabledSkinParts);
-            if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_8.getProtocolVer())//1.8 and below didn't have main/offhand
+            if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_8.getProtocolVer())//1.8 and below didn't have main/offhand
                 packetByteBuf.writeVarInt(1);//main hand - 0 = left 1 = right
-            if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_17.getProtocolVer())
+            if (Protocols.getCurrent().getProtocolVer() >= Protocols.V1_17.getProtocolVer())
                 packetByteBuf.writeBoolean(false);//text filtering
-            if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_18.getProtocolVer())//1.18, I *think* the version this was added
+            if (Protocols.getCurrent().getProtocolVer() >= Protocols.V1_18.getProtocolVer())//1.18, I *think* the version this was added
                 packetByteBuf.writeBoolean(allowServerListings);
         }
     }

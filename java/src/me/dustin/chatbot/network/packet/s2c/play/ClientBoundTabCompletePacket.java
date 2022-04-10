@@ -24,7 +24,7 @@ public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_12_2.getProtocolVer()) {//1.12
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_12_2.getProtocolVer()) {//1.12
             int size = packetByteBuf.readVarInt();
             for (int i = 0; i < size - 1; i++) {
                 this.matches.add(new TabCompleteMatch(packetByteBuf.readString(), false, ""));

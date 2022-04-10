@@ -27,7 +27,7 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         this.message = ChatMessage.of(packetByteBuf.readString());
         this.type = packetByteBuf.readByte();
-        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_15_2.getProtocolVer())
+        if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_15_2.getProtocolVer())
             this.sender = packetByteBuf.readUuid();
         else if (!this.message.getSenderName().isEmpty()) {
             this.sender = MCAPIHelper.getUUIDFromName(this.message.getSenderName());

@@ -21,7 +21,7 @@ public class ServerBoundPlayerSwingPacket extends Packet {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() > Protocols.V1_8.getProtocolVer())
+        if (Protocols.getCurrent().getProtocolVer() > Protocols.V1_8.getProtocolVer())
             packetByteBuf.writeVarInt(hand);
     }
 

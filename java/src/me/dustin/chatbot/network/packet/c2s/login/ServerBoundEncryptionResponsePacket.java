@@ -33,13 +33,13 @@ public class ServerBoundEncryptionResponsePacket extends Packet {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer())
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer())
             packetByteBuf.writeShort(encryptedSecret.length);
         else
             packetByteBuf.writeVarInt(encryptedSecret.length);
         packetByteBuf.writeBytes(encryptedSecret);
 
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer())
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer())
             packetByteBuf.writeShort(encryptedVerify.length);
         else
             packetByteBuf.writeVarInt(encryptedVerify.length);

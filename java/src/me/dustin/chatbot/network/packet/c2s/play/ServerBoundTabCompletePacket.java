@@ -21,7 +21,7 @@ public class ServerBoundTabCompletePacket extends Packet {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_12_2.getProtocolVer()) {
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_12_2.getProtocolVer()) {
             packetByteBuf.writeString(cmd);//text
             packetByteBuf.writeBoolean(false);//assume command - used for cmd blocks
             packetByteBuf.writeBoolean(false);//has position

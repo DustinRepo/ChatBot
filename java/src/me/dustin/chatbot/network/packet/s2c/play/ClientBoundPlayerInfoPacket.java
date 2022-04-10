@@ -29,7 +29,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         //1.7 versions of this packet are very different
-        if (ChatBot.getConfig().getProtocolVersion() <= Protocols.V1_7_10.getProtocolVer()) {
+        if (Protocols.getCurrent().getProtocolVer() <= Protocols.V1_7_10.getProtocolVer()) {
             String playerName = packetByteBuf.readString();
             boolean online = packetByteBuf.readBoolean();
             int ping = packetByteBuf.readShort();
