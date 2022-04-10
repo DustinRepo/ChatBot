@@ -102,15 +102,13 @@ public class ChatBotGui extends JFrame {
     }
 
     public void updateComponents() {
-        if (!System.getProperty("os.name").toLowerCase().contains("linux")) {
-            UIDefaults defs = UIManager.getDefaults();
-            defs.put("TextPane.background", new ColorUIResource(new Color(60, 60, 60)));
-            defs.put("TextPane.inactiveBackground", new ColorUIResource(new Color(60, 60, 60)));
-            defs.put("List.background", new ColorUIResource(new Color(60, 60, 60)));
-            defs.put("List.foreground", new ColorUIResource(Color.WHITE));
-            defs.put("TextField.background", new ColorUIResource(new Color(60, 60, 60)));
-            defs.put("TextField.foreground", new ColorUIResource(Color.WHITE));
-        }
+        UIDefaults defs = UIManager.getDefaults();
+        defs.put("TextPane.background", new ColorUIResource(new Color(60, 60, 60)));
+        defs.put("TextPane.inactiveBackground", new ColorUIResource(new Color(60, 60, 60)));
+        defs.put("List.background", new ColorUIResource(new Color(60, 60, 60)));
+        defs.put("List.foreground", new ColorUIResource(Color.WHITE));
+        defs.put("TextField.background", new ColorUIResource(new Color(60, 60, 60)));
+        defs.put("TextField.foreground", new ColorUIResource(Color.WHITE));
         getContentPane().setBackground(new Color(30, 30, 30));
         SwingUtilities.updateComponentTreeUI(this);
     }
