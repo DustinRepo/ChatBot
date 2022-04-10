@@ -2,6 +2,7 @@ package me.dustin.chatbot.chat;
 
 import com.google.gson.JsonObject;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -13,21 +14,26 @@ public class Translator {
     private static JsonObject translations;
 
     public static void setTranslation(String translation) {
-        try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            InputStream is = loader.getResourceAsStream("translations/" + translation + ".json");
-            InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(streamReader);
-            StringBuilder sb = new StringBuilder();
-            for (String line; (line = reader.readLine()) != null;) {
-                sb.append(line);
+        String v = ProtocolHandler.getCurrent().getName().replace(".", "_");
+        //fat fuckin mess to create the version id needed for the link, i.e. 1_12 from 1.12.2
+        if (v.split("_").length > 2)
+            v = v.split("_")[0] + "_" + v.split("_")[1];
+        boolean useJson = ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.13").getProtocolVer();
+        //make the last two digits uppercase if 1.8 or below
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
+            translation = translation.substring(0, 3) + translation.substring(3).toUpperCase();
+        else
+            translation = translation.toLowerCase();
+
+        String url = "https://raw.githubusercontent.com/DustinRepo/MC-Translations/main/" + v + "/" + translation + (useJson ? ".json" : ".lang");
+        String data = GeneralHelper.httpRequest(url, null, null, "GET").data();
+        if (useJson) {
+            translations = GeneralHelper.gson.fromJson(data, JsonObject.class);
+        } else {
+            translations = new JsonObject();
+            for (String s : data.split("\n")) {
+                translations.addProperty(s.split("=")[0], s.split("=")[1]);
             }
-            is.close();
-            reader.close();
-            translations = GeneralHelper.gson.fromJson(sb.toString(), JsonObject.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            GeneralHelper.print("Error grabbing translation file: " + translation + ".json", ChatMessage.TextColor.DARK_RED);
         }
     }
 
