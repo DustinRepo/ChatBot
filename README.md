@@ -38,6 +38,8 @@ Just open terminal and run `./gradlew shadowJar` and wait for it to finish. The 
 ## Commands
 Below are a list of commands currently in ChatBot
 
+###### find -name-
+Searches through a list of servers to see if a player appears in the list
 ###### 8ball -question-
 Ask a question to the magic 8 ball
 ###### bible / pray

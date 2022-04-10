@@ -11,6 +11,7 @@ import me.dustin.chatbot.account.Session;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.chat.Translator;
 import me.dustin.chatbot.command.CommandManager;
+import me.dustin.chatbot.event.EventTick;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.TPSHelper;
 import me.dustin.chatbot.network.packet.Packet;
@@ -177,6 +178,7 @@ public class ClientConnection {
                 getProcessManager().tick();
             } catch (ConcurrentModificationException e) {}
             getClientPlayer().tick();
+            new EventTick().run(this);
         }
     }
 
