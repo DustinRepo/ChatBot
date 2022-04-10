@@ -157,7 +157,7 @@ public class ClientConnection {
         }
         isConnected = false;
         if (ChatBot.getConfig().isReconnect()) {
-            GeneralHelper.print("Client disconnected, reconnecting in " + ChatBot.getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColors.DARK_PURPLE);
+            GeneralHelper.print("Client disconnected, reconnecting in " + ChatBot.getConfig().getReconnectDelay() + " seconds...", ChatMessage.TextColors.RED);
             try {
                 Thread.sleep(ChatBot.getConfig().getReconnectDelay() * 1000L);
                 ChatBot.createConnection(ip, port, session, minecraftAccount);
