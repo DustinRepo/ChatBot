@@ -198,7 +198,7 @@ public class ChatBot {
             }
         });
         bootstrap = bootstrap.channel(NioSocketChannel.class);
-        ChannelFuture channelFuture = bootstrap.connect(ip, port).syncUninterruptibly();
+        ChannelFuture channelFuture = bootstrap.connect(ip, port);
         channelFuture.addListener(future -> {
             if (future.isSuccess()) {
                 channelFuture.channel().writeAndFlush(new ServerBoundHandshakePacket(getConfig().getProtocolVersion(), ip, port, ServerBoundHandshakePacket.STATUS_STATE));
