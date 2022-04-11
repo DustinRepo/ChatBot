@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'org.openjfx.javafxplugin' version '0.0.10'
     id 'com.github.johnrengelman.shadow' version "7.0.0"
 }
 
@@ -8,11 +7,6 @@ group 'me.dustin'
 version '2.6.0'
 
 apply plugin: 'com.github.johnrengelman.shadow'
-
-javafx {
-    version = "17.0.1"
-}
-
 
 repositories {
     mavenCentral()
@@ -53,3 +47,5 @@ jar {
     archiveName("ChatBot-NoLibs.jar");
     manifest.attributes("Main-Class": "me.dustin.chatbot.ChatBot")
 }
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16

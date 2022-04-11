@@ -239,14 +239,6 @@ public class GeneralHelper {
         return sj.toString();
     }
 
-    public static Authenticator getAuth(String user, String password) {
-       return new Authenticator() {
-            public PasswordAuthentication getPasswordAuthentication() {
-                return (new PasswordAuthentication(user, password.toCharArray()));
-            }
-        };
-    }
-
     public static void initLogger() {
         try {
             logger = Logger.getLogger("ChatBot");
