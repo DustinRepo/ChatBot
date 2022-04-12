@@ -32,7 +32,8 @@ public class Translator {
         } else {
             translations = new JsonObject();
             for (String s : data.split("\n")) {
-                translations.addProperty(s.split("=")[0], s.split("=")[1]);
+                if (s.contains("="))
+                    translations.addProperty(s.split("=")[0], s.split("=")[1]);
             }
         }
     }

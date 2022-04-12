@@ -105,6 +105,7 @@ public class ClientConnection {
     public void loadProcesses() {
         if (!getProcessManager().getProcesses().isEmpty())
             getProcessManager().stopAll();
+        getProcessManager().addProcess(new ContinuousPacketProcess(this));
         if (ChatBot.getConfig().isAntiAFK())
             getProcessManager().addProcess(new AntiAFKProcess(this));
         if (ChatBot.getConfig().isCrackedLogin())
