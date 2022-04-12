@@ -86,7 +86,7 @@ public class ChatMessage {
             if (jsonObject.has("extra")) {
                 sj.add(getExtra(jsonObject));
             }
-            return sj.toString().trim();
+            return removeFormatCodes(sj.toString().trim());
         }
     }
 
@@ -141,6 +141,10 @@ public class ChatMessage {
             }
         }
         return s.toString();
+    }
+
+    private static String removeFormatCodes(String s) {
+        return s.replace("§k", "").replace("§l", "").replace("§m", "").replace("§n", "").replace("§o", "").replace("§r", "");
     }
 
     public enum TextColor {
