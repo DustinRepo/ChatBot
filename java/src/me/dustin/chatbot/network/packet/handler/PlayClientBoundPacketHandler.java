@@ -65,6 +65,10 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         }
     }
 
+    public void handlePingPacket(ClientBoundPingPacket clientBoundPingPacket) {
+        getClientConnection().sendPacket(new ServerBoundPongPacket(clientBoundPingPacket.getPacketId()));
+    }
+
     public void handleWorldTimePacket(ClientBoundWorldTimePacket clientBoundWorldTimePacket) {
         getClientConnection().getTpsHelper().worldTime();
     }
