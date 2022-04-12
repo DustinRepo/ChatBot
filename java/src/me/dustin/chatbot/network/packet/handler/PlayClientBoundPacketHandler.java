@@ -65,6 +65,10 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         }
     }
 
+    public void handleServerDifficultyPacket(ClientBoundServerDifficultyPacket clientBoundServerDifficultyPacket) {
+        getClientConnection().getWorld().setDifficulty(clientBoundServerDifficultyPacket.getDifficulty());
+    }
+
     public void handlePingPacket(ClientBoundPingPacket clientBoundPingPacket) {
         getClientConnection().sendPacket(new ServerBoundPongPacket(clientBoundPingPacket.getPacketId()));
     }

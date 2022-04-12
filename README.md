@@ -78,6 +78,8 @@ Tells you the most recently changed name of the player
 See who has the lowest ping on the server
 ###### wp / worstping
 See who has the highest ping on the server
+###### difficulty
+See the server difficulty level
 ###### ping
 Get your ping
 ###### ping -name-

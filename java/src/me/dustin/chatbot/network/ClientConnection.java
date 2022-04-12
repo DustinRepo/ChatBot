@@ -29,6 +29,7 @@ import me.dustin.chatbot.network.packet.pipeline.PacketInflater;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundJoinGamePacket;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.PlayerManager;
+import me.dustin.chatbot.network.world.World;
 import me.dustin.chatbot.process.ProcessManager;
 import me.dustin.chatbot.process.impl.*;
 import me.dustin.events.EventManager;
@@ -62,6 +63,7 @@ public class ClientConnection {
     private boolean isEncrypted;
     private boolean isInGame;
 
+    private final World world;
     private final ClientPlayer clientPlayer;
     private final MinecraftAccount minecraftAccount;
 
@@ -72,6 +74,7 @@ public class ClientConnection {
         this.session = session;
         this.minecraftAccount = minecraftAccount;
         this.clientPlayer = new ClientPlayer(session.getUsername(), GeneralHelper.uuidFromStringNoDashes(session.getUuid()), this);
+        this.world = new World(this);
         this.clientBoundPacketHandler = new LoginClientBoundPacketHandler();
         this.commandManager = new CommandManager(this);
         this.processManager = new ProcessManager(this);
@@ -229,6 +232,10 @@ public class ClientConnection {
 
     public ClientPlayer getClientPlayer() {
         return clientPlayer;
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     public ClientBoundPacketHandler getClientBoundPacketHandler() {

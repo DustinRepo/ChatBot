@@ -37,6 +37,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "time"), ClientBoundWorldTimePacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "initialize"), ClientBoundJoinGamePacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "ping"), ClientBoundPingPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "difficulty"), ClientBoundServerDifficultyPacket.class);
     }
 
     @Override
