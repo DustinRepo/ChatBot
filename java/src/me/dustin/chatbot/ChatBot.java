@@ -41,7 +41,11 @@ public class ChatBot {
     private static final StopWatch stopWatch = new StopWatch();
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        String jarPath = new File("").getAbsolutePath();
+        File f = new File(System.getProperty("java.class.path"));
+        File dir = f.getAbsoluteFile().getParentFile();
+        String jarPath = dir.toString();
+        if (jarPath.contains(":"))
+            jarPath = new File("").getAbsolutePath();
         String ip = null;
         boolean noGui = false;
         if (args.length > 0)
