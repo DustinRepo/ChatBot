@@ -52,6 +52,8 @@ Returns a link to a random picture of coffee
 Tries to get the server plugins and returns them
 ###### roast
 Have the bot roast you
+###### boobs
+Get a titty pic from the bot
 ###### cock / pp
 The bot tells you your penis size
 ###### amogus / amongus

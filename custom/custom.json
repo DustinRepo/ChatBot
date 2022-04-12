@@ -13,6 +13,19 @@
   },
   {
     "names": [
+      "boobs",
+      "tits",
+      "booba"
+    ],
+    "responses": [
+      "(.)(.)",
+      "( . )( . )",
+      "(.) (.)",
+      "( . ) ( . )"
+    ]
+  },
+  {
+    "names": [
       "sex"
     ],
     "responses": [
@@ -72,7 +85,6 @@
       "insult"
     ],
     "responses": [
-      "Fuck off fatass",
       "{SENDER_NAME} probably hasn't showered in like 3 days",
       "{SENDER_NAME}'s mom is full of my cum",
       "What? You think you can tell me what to do? Fuck you.",
@@ -80,7 +92,11 @@
       "{SENDER_NAME} eats so much cum it's unbelievable",
       "Everyone remember when {SENDER_NAME} pissed his pants in 2nd grade?",
       "I would roast you, but I don't even know who you are, nn",
-      "I would rather fuck a pig than fuck your mom. Wait, there's no difference"
+      "I would rather fuck a pig than fuck your mom. Wait, there's no difference",
+      "I could fly a plane through your asshole like the west side of the pentagon and you probably wouldn't even feel it",
+      "Your face could make a priest reject an altar boy",
+      "I would rather listen to my parents fuck than hear you speak",
+      "You're about as useful as a ballsack dildo"
     ]
   },
   {
