@@ -13,6 +13,7 @@ import me.dustin.chatbot.chat.Translator;
 import me.dustin.chatbot.command.CommandManager;
 import me.dustin.chatbot.event.EventTick;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.helper.TPSHelper;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.ProtocolHandler;
@@ -37,7 +38,6 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
 import java.io.IOException;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -68,6 +68,8 @@ public class ClientConnection {
     private final MinecraftAccount minecraftAccount;
 
     private final Queue<Packet> queuedPackets = Queues.newConcurrentLinkedQueue();
+
+    private final StopWatch tickWatch = new StopWatch();
 
     public ClientConnection(MinecraftServerAddress minecraftServerAddress, Session session, MinecraftAccount minecraftAccount) throws IOException {
         this.minecraftServerAddress = minecraftServerAddress;
@@ -179,11 +181,15 @@ public class ClientConnection {
 
     public void tick() {
         while (isConnected()) {
-            try {
-                getProcessManager().tick();
-            } catch (Exception e) {}
-            getClientPlayer().tick();
-            new EventTick().run(this);
+            if (tickWatch.hasPassed(50)) {//only tick 20 times per second, just like normal mc
+                try {
+                    getProcessManager().tick();
+                } catch (Exception e) {
+                }
+                getClientPlayer().tick();
+                new EventTick().run(this);
+                tickWatch.reset();
+            }
         }
     }
 

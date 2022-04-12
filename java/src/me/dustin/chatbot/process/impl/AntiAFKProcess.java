@@ -26,8 +26,8 @@ public class AntiAFKProcess extends ChatBotProcess {
             Random random = new Random();
             float yaw = random.nextInt(360) - 180;
             float pitch = random.nextInt(180) - 90;
-            getClientConnection().sendPacket(new ServerBoundPlayerRotationPacket(yaw, pitch, true));
             getClientConnection().sendPacket(new ServerBoundPlayerSwingPacket(ServerBoundPlayerSwingPacket.MAIN_HAND));
+            getClientConnection().sendPacket(new ServerBoundPlayerRotationPacket(yaw, pitch, true));
             stopWatch.reset();
         }
     }

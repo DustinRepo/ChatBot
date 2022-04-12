@@ -108,12 +108,16 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
         if (!file.exists())
             return;
         String s = GeneralHelper.readFile(file);
-        JsonArray jsonArray = GeneralHelper.prettyGson.fromJson(s, JsonArray.class);
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-            String uuid = jsonObject.get("uuid").getAsString();
-            int count = jsonObject.get("count").getAsInt();
-            counts.put(uuid, count);
+        try {
+            JsonArray jsonArray = GeneralHelper.prettyGson.fromJson(s, JsonArray.class);
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+                String uuid = jsonObject.get("uuid").getAsString();
+                int count = jsonObject.get("count").getAsInt();
+                counts.put(uuid, count);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

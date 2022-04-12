@@ -6,6 +6,7 @@ import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventReceiveTabComplete;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.c2s.play.*;
 import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.ClientPlayer;
@@ -19,9 +20,7 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
     }
 
     public void handleKeepAlivePacket(ClientBoundKeepAlivePacket keepAlivePacket) {
-        //send KeepAlive packet back with same ID
-        long id = keepAlivePacket.getId();
-        getClientConnection().sendPacket(new ServerBoundKeepAlivePacket(id));
+        getClientConnection().sendPacket(new ServerBoundKeepAlivePacket(keepAlivePacket.getId()));
     }
 
     public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
@@ -118,6 +117,9 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         else
             clientPlayer.setPitch(clientBoundPlayerPositionAndLookPacket.getPitch());
 
-        getClientConnection().sendPacket(new ServerBoundConfirmTeleportPacket(clientBoundPlayerPositionAndLookPacket.getTeleportId()));
+        Packet packet = new ServerBoundConfirmTeleportPacket(clientBoundPlayerPositionAndLookPacket.getTeleportId());
+        if (packet.getPacketId() == -1)
+            packet = new ServerBoundPlayerPositionAndRotationPacket(clientPlayer.getX(), clientPlayer.getY(), clientPlayer.getZ(), clientPlayer.getYaw(), clientPlayer.getPitch(), true);
+        getClientConnection().sendPacket(packet);
     }
 }
