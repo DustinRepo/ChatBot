@@ -13,6 +13,26 @@
   },
   {
     "names": [
+      "sex"
+    ],
+    "responses": [
+      "yo {SENDER_NAME} tryna fuck?",
+      "Look, either we fuckin or I'm fuckin",
+      "me so horny, me love you long time $15. me sucky sucky"
+    ]
+  },
+  {
+    "names": [
+      "fart"
+    ],
+    "responses": [
+      "BRAAAAAAP",
+      "*toot* oh excuse me",
+      "I think I just shit myself"
+    ]
+  },
+  {
+    "names": [
       "cock",
       "penis",
       "dick",

@@ -84,6 +84,8 @@ See the server difficulty level
 Get your ping
 ###### ping -name-
 Get the ping of another player
+###### messages / messages -name-
+Count the amount of messages sent by a player
 ###### connected
 Get the amount of time the bot has been connected
 ###### coords
@@ -94,6 +96,10 @@ Get the coords of another player
 Get the current length of 2b2t queue
 ###### kanye / ye
 Get a random Kanye quote
+###### fart
+Make the bot fart
+###### sex
+Have sex with the bot
 ###### dox -name-
 Dox a player
 ###### resolve / ip -name-
