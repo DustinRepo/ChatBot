@@ -47,7 +47,6 @@ public class Config {
     private int messageDelay;
     private int announcementDelay;
     private int antiAFKDelay;
-    private int keepAliveCheckTime;
     private int skinBlinkDelay;
 
     private File loginFile;
@@ -94,7 +93,6 @@ public class Config {
         reconnectDelay = parser.readInt("reconnectDelay");
         messageDelay = parser.readInt("messageDelay");
         announcementDelay = parser.readInt("announcementDelay");
-        keepAliveCheckTime = parser.readInt("keepAliveCheckTime");
         antiAFKDelay = parser.readInt("antiAFKDelay");
         skinBlinkDelay = parser.readInt("skinBlinkDelay");
         proxySOCKS = parser.readInt("socks");
@@ -245,10 +243,6 @@ public class Config {
 
     public int getAntiAFKDelay() {
         return antiAFKDelay;
-    }
-
-    public int getKeepAliveCheckTime() {
-        return keepAliveCheckTime;
     }
 
     public int getSkinBlinkDelay() {
