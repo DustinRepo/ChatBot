@@ -16,6 +16,6 @@ public class CommandKanye extends Command {
     public void run(String str, UUID sender) {
         String resp = GeneralHelper.httpRequest("https://api.kanye.rest", null, null, "GET").data();
         JsonObject jsonObject = GeneralHelper.gson.fromJson(resp, JsonObject.class);
-        sendChat("Kanye says: " + jsonObject.get("quote").getAsString());
+        sendChat("Kanye says: " + jsonObject.get("quote").getAsString(), sender);
     }
 }

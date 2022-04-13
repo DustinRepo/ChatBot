@@ -18,14 +18,14 @@ public class CommandSkin extends Command {
     @Override
     public void run(String str, UUID sender) {
         if (str.isEmpty()) {
-            sendChat("Error! you have to say a player name!");
+            sendChat("Error! you have to say a player name!", sender);
             return;
         }
         String name = str.split(" ")[0];
         new Thread(() -> {
             UUID uuid = MCAPIHelper.getUUIDFromName(name);
             if (uuid == null) {
-                sendChat("Error! UUID returned null. Player may not exist.");
+                sendChat("Error! UUID returned null. Player may not exist.", sender);
                 return;
             }
             //going to explain what happens so I don't forget
@@ -47,7 +47,7 @@ public class CommandSkin extends Command {
             JsonObject skinObj = texturesObject.getAsJsonObject("SKIN");
             String skinURL = skinObj.get("url").getAsString();
 
-            sendChat(skinURL);
+            sendChat(skinURL, sender);
         }).start();
     }
 }

@@ -16,9 +16,10 @@ public class CommandPlugins extends Command {
     public CommandPlugins() {
         super("plugins");
     }
-
+    private UUID sender;
     @Override
     public void run(String str, UUID sender) {
+        this.sender = sender;
         getClientConnection().sendPacket(new ServerBoundTabCompletePacket(0, "/"));
         getClientConnection().getEventManager().register(this);
     }
@@ -36,7 +37,7 @@ public class CommandPlugins extends Command {
         StringJoiner sj = new StringJoiner(", ");
         plugins.forEach(sj::add);
         String message = "Plugins: (" + plugins.size() + ") " + sj.toString();
-        sendChat(message);
+        sendChat(message, sender);
         getClientConnection().getEventManager().unregister(this);
     });
 

@@ -13,8 +13,8 @@ public class CommandBible extends Command {
     }
 
     @Override
-    public void run(String str, UUID send) {
+    public void run(String str, UUID sender) {
         String verse = GeneralHelper.httpRequest("https://labs.bible.org/api/?passage=random", null, null, "GET").data().replace("<b>", "").replace("</b>", "").replace("\n", " ");
-        sendChat(verse);
+        sendChat(verse, sender);
     }
 }

@@ -20,9 +20,9 @@ public class CommandReload extends Command {
         try {
             ChatBot.getConfig().loadConfig();
             getClientConnection().updateTranslations();
-            sendChat("Reloaded commands and config!");
+            sendChat("Reloaded commands and config!", sender);
         } catch (Exception e) {
-            sendChat("Error in config! " + e.getMessage());
+            sendChat("Error in config! " + e.getMessage(), sender);
         }
     }
 }

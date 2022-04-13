@@ -11,6 +11,6 @@ public class CommandDifficulty extends Command {
 
     @Override
     public void run(String str, UUID sender) {
-        sendChat("The server is on " + getClientConnection().getWorld().getDifficulty().getName() + " difficulty");
+        sendChat("The server is on " + getClientConnection().getWorld().getDifficulty().getName() + " difficulty", sender);
     }
 }

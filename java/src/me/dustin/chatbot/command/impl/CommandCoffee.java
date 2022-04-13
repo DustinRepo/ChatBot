@@ -12,9 +12,9 @@ public class CommandCoffee extends Command {
     }
 
     @Override
-    public void run(String str, UUID send) {
+    public void run(String str, UUID sender) {
         String resp = GeneralHelper.httpRequest("https://coffee.alexflipnote.dev/random.json", null, null, "GET").data();
         JsonObject jsonObject = GeneralHelper.gson.fromJson(resp, JsonObject.class);
-        sendChat(jsonObject.get("file").getAsString());
+        sendChat(jsonObject.get("file").getAsString(), sender);
     }
 }

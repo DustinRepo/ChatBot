@@ -25,6 +25,7 @@ public class CommandFind extends Command {
     private boolean isSearching;
     private boolean found;
     private String name;
+    private UUID sender;
     public CommandFind() {
         super("find");
         servers.add("50kilo.org");
@@ -39,13 +40,14 @@ public class CommandFind extends Command {
     @Override
     public void run(String str, UUID sender) {
         if (isSearching) {
-            sendChat("Already searching through servers!");
+            sendChat("Already searching through servers!", sender);
             return;
         }
         if (str.isEmpty()) {
-            sendChat("Error! You have to specify a play name!");
+            sendChat("Error! You have to specify a play name!", sender);
             return;
         }
+        this.sender = sender;
         String name = str.split(" ")[0];
         this.name = name;
         searchServers(name);
@@ -71,7 +73,7 @@ public class CommandFind extends Command {
                 }
             }
             if (!runningThread) {
-                sendChat("Player " + name + " not found.");
+                sendChat("Player " + name + " not found.", sender);
                 isSearching = false;
                 threads.clear();
                 getClientConnection().getEventManager().unregister(this);
@@ -114,7 +116,7 @@ public class CommandFind extends Command {
                             JsonObject playerObj = jsonArray.get(i).getAsJsonObject();
                             String playerName = playerObj.get("name").getAsString();
                             if (playerName.equalsIgnoreCase(name)) {//we found him
-                                sendChat(name + " was found on: " + minecraftServerAddress.getIp() + ":" + minecraftServerAddress.getPort());
+                                sendChat(name + " was found on: " + minecraftServerAddress.getIp() + ":" + minecraftServerAddress.getPort(), sender);
                                 found = true;
                             }
                         }

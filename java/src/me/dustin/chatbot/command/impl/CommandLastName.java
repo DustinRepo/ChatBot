@@ -15,14 +15,14 @@ public class CommandLastName extends Command {
     public void run(String str, UUID sender) {
         UUID uuid = MCAPIHelper.getUUIDFromName(str.split(" ")[0]);
         if (uuid == null) {
-            sendChat("Error! Could not grab UUID from username " + str);
+            sendChat("Error! Could not grab UUID from username " + str, sender);
             return;
         }
         String name = MCAPIHelper.getLastChangedName(uuid);
         if (name != null) {
-            sendChat(str + "'s most recent name was " + name);
+            sendChat(str + "'s most recent name was " + name, sender);
         } else {
-            sendChat(str + " has never changed their name.");
+            sendChat(str + " has never changed their name.", sender);
         }
     }
 }

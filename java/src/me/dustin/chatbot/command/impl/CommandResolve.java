@@ -14,16 +14,16 @@ public class CommandResolve extends Command {
     @Override
     public void run(String str, UUID sender) {
         if (str.isEmpty()) {
-            sendChat("Error! You have to tell me who to dox!");
+            sendChat("Error! You have to tell me who to dox!", sender);
             return;
         }
         String name = str.split(" ")[0];
         if (name.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
-            sendChat("Nice try, dumbass");
+            sendChat("Nice try, dumbass", sender);
             return;
         }
         Random r = new Random();
         String ip = r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256);
-        sendChat(name + "'s IP is " + ip);
+        sendChat(name + "'s IP is " + ip, sender);
     }
 }

@@ -16,12 +16,12 @@ public class CommandDox extends Command {
     @Override
     public void run(String str, UUID sender) {
         if (str.isEmpty()) {
-            sendChat("Error! You have to tell me who to dox!");
+            sendChat("Error! You have to tell me who to dox!", sender);
             return;
         }
         String name = str.split(" ")[0];
         if (name.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
-            sendChat("Fuck you idiot");
+            sendChat("Fuck you idiot", sender);
             return;
         }
         String json = GeneralHelper.httpRequest("https://randomuser.me/api/?format=json", null, null, "GET").data();
@@ -36,6 +36,6 @@ public class CommandDox extends Command {
         String address = streetObject.get("number").getAsString() + " " + streetObject.get("name").getAsString() + ", " + addressObject.get("city").getAsString() + " " + addressObject.get("state").getAsString() + ", " + addressObject.get("country").getAsString();
         String phonenumber = object.get("cell").getAsString();
 
-        sendChat(name + "'s Name: " + fullName + ". Address: " + address + ". Phone#: " + phonenumber);
+        sendChat(name + "'s Name: " + fullName + ". Address: " + address + ". Phone#: " + phonenumber, sender);
     }
 }

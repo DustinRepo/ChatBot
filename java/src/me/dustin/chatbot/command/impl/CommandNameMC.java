@@ -17,13 +17,13 @@ public class CommandNameMC extends Command {
         if (str.isEmpty()) {
             OtherPlayer player = getClientConnection().getPlayerManager().get(sender);
             if (player == null) {
-                sendChat("Error! Couldn't find you in my player list :(");
+                sendChat("Error! Couldn't find you in my player list :(", sender);
                 return;
             }
-            sendChat("https://namemc.com/search?q=" + player.getName());
+            sendChat("https://namemc.com/search?q=" + player.getName(), sender);
             return;
         }
         String name = str.split(" ")[0];
-        sendChat("https://namemc.com/search?q=" + name);
+        sendChat("https://namemc.com/search?q=" + name, sender);
     }
 }

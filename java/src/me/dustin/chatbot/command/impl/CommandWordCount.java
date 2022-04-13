@@ -17,24 +17,24 @@ public class CommandWordCount extends Command {
     @Override
     public void run(String str, UUID sender) {
         if (str.isEmpty() || str.split(" ").length < 2) {
-            sendChat("Error! You have to specify a player name and a word / phrase!");
+            sendChat("Error! You have to specify a player name and a word / phrase!", sender);
             return;
         }
         String name = str.split(" ")[0];
         String phrase = str.replace(name + " ", "");
         if (name.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
-            sendChat("Sorry, I don't track myself in this.");
+            sendChat("Sorry, I don't track myself in this.", sender);
             return;
         }
         QuoteProcess quoteProcess = getClientConnection().getProcessManager().get(QuoteProcess.class);
         if (quoteProcess == null) {
-            sendChat("Sorry! I'm not tracking messages currently.");
+            sendChat("Sorry! I'm not tracking messages currently.", sender);
             return;
         }
 
         UUID uuid = MCAPIHelper.getUUIDFromName(name);
         if (uuid == null) {
-            sendChat("Error! UUID returned null on name: " + name);
+            sendChat("Error! UUID returned null on name: " + name, sender);
             return;
         }
         int count = 0;
@@ -43,9 +43,9 @@ public class CommandWordCount extends Command {
             count += GeneralHelper.countMatches(quote, phrase);
         }
         if (count == 0) {
-            sendChat(name + " hasn't said \"" + phrase + "\" yet.");
+            sendChat(name + " hasn't said \"" + phrase + "\" yet.", sender);
             return;
         }
-        sendChat(name + " has said \"" + phrase +"\" " + count + " times.");
+        sendChat(name + " has said \"" + phrase +"\" " + count + " times.", sender);
     }
 }

@@ -22,10 +22,10 @@ public class CommandIsEven extends Command {
             if (jsonObject != null) {
                 String ad = jsonObject.get("ad").getAsString();
                 boolean isEven = jsonObject.get("iseven").getAsBoolean();
-                sendChat("IsEven: " + isEven + " | AD: " + ad);
+                sendChat("IsEven: " + isEven + " | AD: " + ad, sender);
             }
         } catch (NumberFormatException e) {
-            sendChat("Error! Not a number!");
+            sendChat("Error! Not a number!", sender);
         }
     }
 }

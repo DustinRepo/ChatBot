@@ -26,6 +26,6 @@ public class CommandTPS extends Command {
             double sec60 = getClientConnection().getTpsHelper().getTPS(60);
             s += String.format(" | 60 seconds: %.2f", sec60);
         }
-        sendChat(s);
+        sendChat(s, sender);
     }
 }

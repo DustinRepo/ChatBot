@@ -13,9 +13,9 @@ public class CommandBestPing extends Command {
     }
 
     @Override
-    public void run(String str, UUID send) {
+    public void run(String str, UUID sender) {
         if (getClientConnection().getPlayerManager().getPlayers().isEmpty()) {
-            sendChat("Error! I don't see any players :(");
+            sendChat("Error! I don't see any players :(", sender);
             return;
         }
         int best = 9999;
@@ -27,6 +27,6 @@ public class CommandBestPing extends Command {
                 best = player.getPing();
             }
         }
-        sendChat(player.getName() + " has the lowest ping at " + best + "ms");
+        sendChat(player.getName() + " has the lowest ping at " + best + "ms", sender);
     }
 }

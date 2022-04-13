@@ -1,6 +1,7 @@
 package me.dustin.chatbot.command;
 
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.player.PlayerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,8 @@ public abstract class Command {
     private final String name;
     private final List<String> alias = new ArrayList<>();
     private ClientConnection clientConnection;
+
+    private boolean directMessage;
 
     public Command(String name) {
         this.name = name;
@@ -34,7 +37,18 @@ public abstract class Command {
         this.clientConnection = clientConnection;
     }
 
-    public void sendChat(String message) {
-        getClientConnection().getClientPlayer().chat(message);
+    public void setDirectMessage(boolean directMessage) {
+        this.directMessage = directMessage;
+    }
+
+    public boolean isDirectMessage() {
+        return directMessage;
+    }
+
+    public void sendChat(String message, UUID sender) {
+        if (isDirectMessage() && !message.startsWith("/"))
+            getClientConnection().getClientPlayer().chat("/msg " + getClientConnection().getPlayerManager().get(sender).getName() + " " + message);
+        else
+            getClientConnection().getClientPlayer().chat(message);
     }
 }

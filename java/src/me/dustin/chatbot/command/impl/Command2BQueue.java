@@ -21,6 +21,6 @@ public class Command2BQueue extends Command {
         int regQueue = object.get("regular").getAsInt();
         int priority = object.get("prio").getAsInt();
 
-        sendChat("2B2T queue is currently: " + regQueue + " players long. Priority Queue: " + priority);
+        sendChat("2B2T queue is currently: " + regQueue + " players long. Priority Queue: " + priority, sender);
     }
 }

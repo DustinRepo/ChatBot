@@ -12,14 +12,14 @@ public class CommandVoteKill extends Command {
     @Override
     public void run(String str, UUID sender) {
         if (str.isEmpty()) {
-            sendChat("You have to tell me who you want killed!");
+            sendChat("You have to tell me who you want killed!", sender);
             return;
         }
         String name = str.split(" ")[0];
         if (name.equalsIgnoreCase(getClientConnection().getSession().getUsername())) {
-            sendChat("Fuck you buddy");
+            sendChat("Fuck you buddy", sender);
             return;
         }
-        sendChat("Started a vote to kill " + name + ". Vote with /kill " + str);
+        sendChat("Started a vote to kill " + name + ". Vote with /kill " + str, sender);
     }
 }

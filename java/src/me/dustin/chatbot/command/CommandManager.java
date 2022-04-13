@@ -13,10 +13,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class CommandManager {
 
@@ -68,14 +65,16 @@ public class CommandManager {
 
     @EventPointer
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
+        boolean directMessage = false;
         ClientBoundChatMessagePacket clientBoundChatMessagePacket = event.getChatMessagePacket();
         UUID sender = clientBoundChatMessagePacket.getSender();
         String string = GeneralHelper.strip(event.getChatMessagePacket().getMessage().getBody());
         String[] sA = string.split(" ");
         if (sA.length > 2 && sA[1].equalsIgnoreCase("whispers:")) {
             string = string.substring(sA[0].length() + sA[1].length() + 2);
-            if (sender == null && getClientConnection().getPlayerManager().get(sA[1]) != null) {
-                sender = getClientConnection().getPlayerManager().get(sA[1]).getUuid();
+            if (sender == null && getClientConnection().getPlayerManager().get(sA[0]) != null) {
+                sender = getClientConnection().getPlayerManager().get(sA[0]).getUuid();
+                directMessage = true;
             }
         }
         if (!string.startsWith(ChatBot.getConfig().getCommandPrefix()) || (sender != null && GeneralHelper.matchUUIDs(sender.toString(), getClientConnection().getSession().getUuid()))) {
@@ -92,6 +91,7 @@ public class CommandManager {
             for (Command command : commands) {
                 if (command.getName().equalsIgnoreCase(cmd) || command.getAlias().contains(cmd.toLowerCase())) {
                     try {
+                        command.setDirectMessage(directMessage);
                         command.run(input, sender);
                         return;
                     } catch (Exception e) {
@@ -101,7 +101,7 @@ public class CommandManager {
             }
             for (CustomCommand customCommand : customCommands) {
                 if (customCommand.getNames().contains(cmd.toLowerCase())) {
-                    customCommand.runCommand(input, sender);
+                    customCommand.runCommand(input, sender, directMessage);
                     return;
                 }
             }
@@ -132,7 +132,7 @@ public class CommandManager {
             return responses;
         }
 
-        public void runCommand(String input, UUID sender) {
+        public void runCommand(String input, UUID sender, boolean directMessage) {
             Random random = new Random();
             int select = random.nextInt(responses.size());
             String response = responses.get(select);
@@ -141,6 +141,9 @@ public class CommandManager {
                 response = response.replace("{SENDER_UUID_NO_DASH}", sender.toString().replace("-", ""));
                 response = response.replace("{SENDER_NAME}", MCAPIHelper.getNameFromUUID(sender));
             }
+            if (directMessage)
+                getClientConnection().getClientPlayer().chat("/msg " + getClientConnection().getPlayerManager().get(sender).getName() + " " + response);
+            else
             getClientConnection().getClientPlayer().chat(response);
         }
     }

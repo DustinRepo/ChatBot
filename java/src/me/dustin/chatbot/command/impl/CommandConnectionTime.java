@@ -14,6 +14,6 @@ public class CommandConnectionTime extends Command {
     @Override
     public void run(String str, UUID sender) {
         String time = GeneralHelper.getDurationString(ChatBot.connectionTime());
-        sendChat("I have been connected for " + time);
+        sendChat("I have been connected for " + time, sender);
     }
 }

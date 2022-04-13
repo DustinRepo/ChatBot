@@ -13,10 +13,10 @@ public class CommandDupe extends Command {
     @Override
     public void run(String str, UUID sender) {
         if (str.isEmpty()) {
-            sendChat("You have to tell me what item you want duped!");
+            sendChat("You have to tell me what item you want duped!", sender);
             return;
         }
         OtherPlayer player = getClientConnection().getPlayerManager().get(sender);
-        sendChat((player == null ? "Successfully " : player.getName() + " just ") + "duped " + str + "!");
+        sendChat((player == null ? "Successfully " : player.getName() + " just ") + "duped " + str + "!", sender);
     }
 }
