@@ -17,6 +17,8 @@ public class ClientPlayer {
     private double x,y,z;
     private float yaw, pitch;
 
+    private OtherPlayer.GameMode gameMode = OtherPlayer.GameMode.SURVIVAL;
+
     private final StopWatch messageStopwatch = new StopWatch();
 
     private String lastMessage = "";
@@ -49,6 +51,14 @@ public class ClientPlayer {
 
     public String getName() {
         return name;
+    }
+
+    public OtherPlayer.GameMode getGameMode() {
+        return gameMode;
+    }
+
+    public void setGameMode(OtherPlayer.GameMode gameMode) {
+        this.gameMode = gameMode;
     }
 
     public double getX() {

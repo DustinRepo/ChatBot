@@ -14,8 +14,10 @@ import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.OtherPlayer;
+import me.dustin.chatbot.network.world.World;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
@@ -36,6 +38,16 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
     public void handleJoinGamePacket(ClientBoundJoinGamePacket clientBoundJoinGamePacket) {
         getClientConnection().getClientPlayer().setEntityId(clientBoundJoinGamePacket.getEntityId());
         getClientConnection().getEventManager().run(clientBoundJoinGamePacket);
+
+        //setup stuff from packet
+        ClientPlayer clientPlayer = getClientConnection().getClientPlayer();
+        World world = getClientConnection().getWorld();
+
+        world.setDimension(clientBoundJoinGamePacket.getDimension());
+        if (clientBoundJoinGamePacket.getDifficulty() != null)
+            world.setDifficulty(clientBoundJoinGamePacket.getDifficulty());
+        clientPlayer.setGameMode(clientBoundJoinGamePacket.getGameMode());
+
         //send brand data
         String channel = "minecraft:brand";
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer())
@@ -68,6 +80,14 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
                     if (player != null) {
                         getClientConnection().getPlayerManager().getPlayers().remove(player);
                         new EventRemovePlayer(player).run(getClientConnection());
+                    }
+                }
+                case ClientBoundPlayerInfoPacket.UPDATE_GAMEMODE -> {
+                    if (player != null) {
+                        UUID uuid = player.getUuid();
+                        if (GeneralHelper.matchUUIDs(getClientConnection().getSession().getUuid(), uuid.toString())) {
+                            getClientConnection().getClientPlayer().setGameMode(player.getGameMode());
+                        }
                     }
                 }
             }

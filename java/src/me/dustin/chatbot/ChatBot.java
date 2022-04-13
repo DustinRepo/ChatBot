@@ -71,8 +71,9 @@ public class ChatBot {
         config = new Config(new File(jarPath, "config.cfg"));
         GeneralHelper.print("Downloading protocol data...", ChatMessage.TextColor.YELLOW);
         ProtocolHandler.downloadData();
-        GeneralHelper.print("Downloading Block data...", ChatMessage.TextColor.YELLOW);
-        BlockState.downloadBlockStateData();
+        //Not actually used at the moment since I haven't finished the ChunkData packet
+        //GeneralHelper.print("Downloading Block data...", ChatMessage.TextColor.YELLOW);
+        //BlockState.downloadBlockStateData();
 
         if (ip == null) {
             if (noGui) {

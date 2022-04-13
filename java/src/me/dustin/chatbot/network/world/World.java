@@ -10,6 +10,7 @@ public class World {
     private final ArrayList<Chunk> chunks = new ArrayList<>();
 
     private Difficulty difficulty = Difficulty.PEACEFUL;
+    private Dimension dimension;
 
     public World(ClientConnection clientConnection) {
         this.clientConnection = clientConnection;
@@ -58,6 +59,14 @@ public class World {
         chunks.add(chunk);
     }
 
+    public Dimension getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(Dimension dimension) {
+        this.dimension = dimension;
+    }
+
     public enum Difficulty {
         PEACEFUL(0, "Peaceful"),
         EASY(1, "Easy"),
@@ -77,6 +86,47 @@ public class World {
 
         public String getName() {
             return name;
+        }
+    }
+
+    public enum Dimension {
+        NETHER("minecraft:nether", -1),
+        OVERWORLD("minecraft:overworld", 0),
+        END("minecraft:the_end", 1),
+        CUSTOM("", 2);
+
+        private String name;
+        private final int id;
+
+        Dimension(String name, int id) {
+            this.name = name;
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public static Dimension get(String name) {
+            for (Dimension value : Dimension.values()) {
+                if (value.getName().equalsIgnoreCase(name))
+                    return value;
+            }
+            Dimension dimension = CUSTOM;
+            dimension.name = name;
+            return dimension;
+        }
+
+        public static Dimension get(int id) {
+            for (Dimension value : Dimension.values()) {
+                if (value.getId() == id)
+                    return value;
+            }
+            return CUSTOM;
         }
     }
 }
