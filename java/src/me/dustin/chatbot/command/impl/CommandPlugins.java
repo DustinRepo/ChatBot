@@ -1,7 +1,6 @@
 package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.command.Command;
-import me.dustin.chatbot.event.EventReceiveTabComplete;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundTabCompletePacket;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundTabCompletePacket;
 import me.dustin.events.core.EventListener;
@@ -25,9 +24,9 @@ public class CommandPlugins extends Command {
     }
 
     @EventPointer
-    private final EventListener<EventReceiveTabComplete> eventReceiveTabCompleteEventListener = new EventListener<>(event -> {
+    private final EventListener<ClientBoundTabCompletePacket> eventReceiveTabCompleteEventListener = new EventListener<>(packet -> {
         ArrayList<String> plugins = new ArrayList<>();
-        event.getPacket().getMatches().forEach(tabCompleteMatch -> {
+        packet.getMatches().forEach(tabCompleteMatch -> {
             String cmd = tabCompleteMatch.match();
             String pluginName = cmd.split(":")[0];
             if (cmd.contains(":") && !pluginName.equalsIgnoreCase("minecraft") && !pluginName.equalsIgnoreCase("bukkit") && !plugins.contains(pluginName)) {
@@ -37,6 +36,8 @@ public class CommandPlugins extends Command {
         StringJoiner sj = new StringJoiner(", ");
         plugins.forEach(sj::add);
         String message = "Plugins: (" + plugins.size() + ") " + sj.toString();
+        if (plugins.size() == 0)
+            message = "I couldn't find any plugins.";
         sendChat(message, sender);
         getClientConnection().getEventManager().unregister(this);
     });

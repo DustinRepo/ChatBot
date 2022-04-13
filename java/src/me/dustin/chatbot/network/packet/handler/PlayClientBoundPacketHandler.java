@@ -4,7 +4,6 @@ import io.netty.buffer.Unpooled;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
-import me.dustin.chatbot.event.EventReceiveTabComplete;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.packet.Packet;
@@ -16,7 +15,6 @@ import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.OtherPlayer;
 import me.dustin.chatbot.network.world.World;
 
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
@@ -56,7 +54,7 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
     }
 
     public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {
-        new EventReceiveTabComplete(clientBoundTabCompletePacket).run(getClientConnection());
+        getClientConnection().getEventManager().run(clientBoundTabCompletePacket);
     }
 
     public void handleResourcePackPacket(ClientBoundResourcePackSendPacket clientBoundResourcePackSendPacket) {
