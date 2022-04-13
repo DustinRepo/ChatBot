@@ -3,11 +3,15 @@ package me.dustin.chatbot.network.packet.pipeline;
 import com.google.common.annotations.VisibleForTesting;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
+import me.dustin.chatbot.nbt.NbtElement;
+import me.dustin.chatbot.nbt.NbtEnd;
 
 import javax.annotation.Nullable;
+import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -193,6 +197,31 @@ public class PacketByteBuf extends ByteBuf {
 
     public PacketByteBuf writeEnumConstant(Enum<?> instance) {
         return this.writeVarInt(instance.ordinal());
+    }
+
+    public NbtElement readNbt() {
+        int i = this.readerIndex();
+        byte size = this.readByte();
+        if (size == 0) {
+            return null;
+        } else {
+            this.readerIndex(i);
+
+            return readNbt(new ByteBufInputStream(this), 0);
+        }
+    }
+
+    private NbtElement readNbt(DataInput input, int depth) {
+        try {
+            byte b = input.readByte();
+            if (b == 0)
+                return NbtEnd.END;
+            input.skipBytes(input.readUnsignedShort());
+
+            return NbtElement.read(b, input, depth);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public int readVarInt() {
