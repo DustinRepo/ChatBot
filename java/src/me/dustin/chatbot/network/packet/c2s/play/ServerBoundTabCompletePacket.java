@@ -21,6 +21,7 @@ public class ServerBoundTabCompletePacket extends Packet {
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer()) {
             packetByteBuf.writeString(cmd);//text
+            if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
             packetByteBuf.writeBoolean(false);//assume command - used for cmd blocks
             if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
                 packetByteBuf.writeBoolean(false);//has position

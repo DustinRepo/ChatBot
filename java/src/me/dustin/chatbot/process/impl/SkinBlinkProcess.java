@@ -16,11 +16,7 @@ public class SkinBlinkProcess extends ChatBotProcess {
     }
 
     @Override
-    public void init() {
-        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
-            return;
-        getClientConnection().getEventManager().register(this);
-    }
+    public void init() {}
 
     @Override
     public void tick() {
@@ -37,9 +33,5 @@ public class SkinBlinkProcess extends ChatBotProcess {
     }
 
     @Override
-    public void stop() {
-        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
-            return;
-        getClientConnection().getEventManager().unregister(this);
-    }
+    public void stop() {}
 }

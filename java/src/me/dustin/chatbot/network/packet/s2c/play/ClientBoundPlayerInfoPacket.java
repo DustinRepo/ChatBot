@@ -30,6 +30,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer()) {
             String playerName = packetByteBuf.readString();
             boolean online = packetByteBuf.readBoolean();
+            action = online ? ADD_PLAYER : REMOVE_PLAYER;
             int ping = packetByteBuf.readShort();
 
             players = new OtherPlayer[1];

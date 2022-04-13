@@ -112,7 +112,7 @@ public class ClientConnection {
             getProcessManager().addProcess(new CrackedLoginProcess(this));
         if (ChatBot.getConfig().isAnnouncements())
             getProcessManager().addProcess(new AnnouncementProcess(this));
-        if (ChatBot.getConfig().isSkinBlink())
+        if (ChatBot.getConfig().isSkinBlink() && ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
             getProcessManager().addProcess(new SkinBlinkProcess(this));
         if (ChatBot.getConfig().is2b2tCheck())
             getProcessManager().addProcess(new Chat2b2tProcess(this));

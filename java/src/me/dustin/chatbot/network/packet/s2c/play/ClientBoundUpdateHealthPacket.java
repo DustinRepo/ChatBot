@@ -1,5 +1,6 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
@@ -20,7 +21,10 @@ public class ClientBoundUpdateHealthPacket extends Packet.ClientBoundPacket {
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         this.health = packetByteBuf.readFloat();
-        this.food = packetByteBuf.readVarInt();
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
+            this.food = packetByteBuf.readShort();
+        else
+            this.food = packetByteBuf.readVarInt();
         this.saturation = packetByteBuf.readFloat();
     }
 

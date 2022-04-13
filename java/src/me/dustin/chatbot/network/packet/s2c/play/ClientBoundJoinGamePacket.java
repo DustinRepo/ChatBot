@@ -1,5 +1,7 @@
 package me.dustin.chatbot.network.packet.s2c.play;
 
+import me.dustin.chatbot.nbt.NbtCompound;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
@@ -12,17 +14,17 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
     private int entityId;
     private boolean isHardcore;
     private OtherPlayer.GameMode gameMode;
-    private byte previousGameMode;
+    private OtherPlayer.GameMode previousGameMode;
     private String[] dimNames;
-    private String dimensionCodec;
-    private String dimensionNBT;
+    private NbtCompound dimensionCodec;
+    private NbtCompound dimensionNBT;
     private String dimensionName;
     private long hashedSeed;
     private int maxPlayers;
     private int viewDistance;
     private int simulationDistance;
     private boolean reducedDebugInfo;
-    private boolean enabledRespawnScreen;
+    private boolean enabledRespawnScreen = true;
     private boolean isDebug;
     private boolean isFlat;
 
@@ -32,34 +34,50 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-
         this.entityId = packetByteBuf.readInt();
-        //this works on ~1.16 and above, but it's really not needed and has been massively changed throughout the versions
-        //I really only need this packet for confirmation that the player has joined
 
-        /*this.isHardcore = dataInputStream.readBoolean();
-        this.gameMode = OtherPlayer.GameMode.get(dataInputStream.readByte());
-        this.previousGameMode = dataInputStream.readByte();
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.15.2").getProtocolVer()) {
+            this.gameMode = OtherPlayer.GameMode.get(packetByteBuf.readByte());
+            this.dimensionName = getDimName(ProtocolHandler.getCurrent().getProtocolVer() < ProtocolHandler.getVersionFromName("1.10.2").getProtocolVer() ? packetByteBuf.readByte() : packetByteBuf.readInt());
+            if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.14").getProtocolVer())
+                this.hashedSeed = packetByteBuf.readLong();
+            if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.13").getProtocolVer())
+                packetByteBuf.readByte();//difficulty on 1.13 or below
+            this.maxPlayers = packetByteBuf.readByte();
+            this.isFlat = packetByteBuf.readString().contains("flat");
+            if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.13.2").getProtocolVer()) {
+                this.viewDistance = packetByteBuf.readVarInt();
+                this.simulationDistance = this.viewDistance;
+            }
+            if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
+                this.reducedDebugInfo = packetByteBuf.readBoolean();
+            if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.14").getProtocolVer())
+                this.enabledRespawnScreen = packetByteBuf.readBoolean();
+            return;
+        }
 
-        int worldCount = readVarInt(dataInputStream);
+        this.isHardcore = packetByteBuf.readBoolean();
+        this.gameMode = OtherPlayer.GameMode.get(packetByteBuf.readByte());
+        this.previousGameMode = OtherPlayer.GameMode.get(packetByteBuf.readByte());
+        int worldCount = packetByteBuf.readVarInt();
         dimNames = new String[worldCount];
         for (int i = 0; i < worldCount; i++) {
-            dimNames[i] = readString(dataInputStream);
+            dimNames[i] = packetByteBuf.readString();
         }
-        dimensionCodec = readString(dataInputStream);
-        dimensionNBT = readString(dataInputStream);
-        dimensionName = readString(dataInputStream);
-        hashedSeed = dataInputStream.readLong();
-        maxPlayers = readVarInt(dataInputStream);
-        viewDistance = readVarInt(dataInputStream);
-        if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_18.getProtocolVer())
-            simulationDistance = readVarInt(dataInputStream);
-        reducedDebugInfo = dataInputStream.readBoolean();
-        enabledRespawnScreen = dataInputStream.readBoolean();
-        if (ChatBot.getConfig().getProtocolVersion() >= Protocols.V1_15_2.getProtocolVer()) {
-            isDebug = dataInputStream.readBoolean();
-            isFlat = dataInputStream.readBoolean();
-        }*/
+        dimensionCodec = (NbtCompound) packetByteBuf.readNbt();
+        dimensionNBT = (NbtCompound) packetByteBuf.readNbt();
+        dimensionName = packetByteBuf.readString();
+        hashedSeed = packetByteBuf.readLong();
+        maxPlayers = packetByteBuf.readVarInt();
+        viewDistance = packetByteBuf.readVarInt();
+        if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.18.1").getProtocolVer())
+            simulationDistance = packetByteBuf.readVarInt();
+        else
+            simulationDistance = viewDistance;
+        reducedDebugInfo = packetByteBuf.readBoolean();
+        enabledRespawnScreen = packetByteBuf.readBoolean();
+        isDebug = packetByteBuf.readBoolean();
+        isFlat = packetByteBuf.readBoolean();
     }
 
     @Override
@@ -79,7 +97,7 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
         return gameMode;
     }
 
-    public byte getPreviousGameMode() {
+    public OtherPlayer.GameMode getPreviousGameMode() {
         return previousGameMode;
     }
 
@@ -87,11 +105,11 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
         return dimNames;
     }
 
-    public String getDimensionCodec() {
+    public NbtCompound getDimensionCodec() {
         return dimensionCodec;
     }
 
-    public String getDimensionNBT() {
+    public NbtCompound getDimensionNbt() {
         return dimensionNBT;
     }
 
@@ -129,5 +147,20 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
 
     public boolean isFlat() {
         return isFlat;
+    }
+
+    public String getDimName(int dim) {
+        switch (dim) {
+            case -1 -> {
+                return "minecraft:nether";
+            }
+            case 0 -> {
+                return "minecraft:overworld";
+            }
+            case 1 -> {
+                return "minecraft:end";
+            }
+        }
+        return "minecraft:overworld";
     }
 }

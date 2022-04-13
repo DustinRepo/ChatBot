@@ -21,6 +21,10 @@ public class ServerBoundPlayerSwingPacket extends Packet {
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
             packetByteBuf.writeVarInt(hand);
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer()) {
+            packetByteBuf.writeInt(getClientConnection().getClientPlayer().getEntityId());
+            packetByteBuf.writeByte(1);
+        }
     }
 
 }

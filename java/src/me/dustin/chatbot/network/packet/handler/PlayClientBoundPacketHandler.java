@@ -1,5 +1,6 @@
 package me.dustin.chatbot.network.packet.handler;
 
+import io.netty.buffer.Unpooled;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
@@ -7,10 +8,14 @@ import me.dustin.chatbot.event.EventReceiveTabComplete;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.packet.Packet;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.c2s.play.*;
+import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.network.player.OtherPlayer;
+
+import java.nio.charset.StandardCharsets;
 
 public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
@@ -31,6 +36,11 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
     public void handleJoinGamePacket(ClientBoundJoinGamePacket clientBoundJoinGamePacket) {
         getClientConnection().getClientPlayer().setEntityId(clientBoundJoinGamePacket.getEntityId());
         getClientConnection().getEventManager().run(clientBoundJoinGamePacket);
+        //send brand data
+        String channel = "minecraft:brand";
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer())
+            channel = "MC|Brand";
+        getClientConnection().sendPacket(new ServerBoundCustomDataPacket(channel, new PacketByteBuf(Unpooled.buffer()).writeString("vanilla")));
     }
 
     public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {
@@ -49,7 +59,7 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         for (OtherPlayer player : clientBoundPlayerInfoPacket.getPlayers()) {
             switch (clientBoundPlayerInfoPacket.getAction()) {
                 case ClientBoundPlayerInfoPacket.ADD_PLAYER -> {
-                    if (!getClientConnection().getPlayerManager().getPlayers().contains(player)) {
+                    if (getClientConnection().getPlayerManager().get(player.getName()) == null) {
                         getClientConnection().getPlayerManager().getPlayers().add(player);
                         new EventAddPlayer(player).run(getClientConnection());
                     }
@@ -80,6 +90,9 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         if (clientBoundUpdateHealthPacket.getHealth() <= 0) {
             getClientConnection().sendPacket(new ServerBoundClientStatusPacket(ServerBoundClientStatusPacket.RESPAWN));
         }
+    }
+
+    public void handleCustomDataPacket(ClientBoundCustomDataPacket clientBoundCustomDataPacket) {
     }
 
     public void handlePlayerPositionAndLookPacket(ClientBoundPlayerPositionAndLookPacket clientBoundPlayerPositionAndLookPacket) {

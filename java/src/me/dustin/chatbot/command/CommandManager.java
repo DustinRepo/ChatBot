@@ -141,7 +141,7 @@ public class CommandManager {
                 response = response.replace("{SENDER_UUID_NO_DASH}", sender.toString().replace("-", ""));
                 response = response.replace("{SENDER_NAME}", MCAPIHelper.getNameFromUUID(sender));
             }
-            if (directMessage)
+            if (directMessage && !response.startsWith("/"))
                 getClientConnection().getClientPlayer().chat("/msg " + getClientConnection().getPlayerManager().get(sender).getName() + " " + response);
             else
             getClientConnection().getClientPlayer().chat(response);

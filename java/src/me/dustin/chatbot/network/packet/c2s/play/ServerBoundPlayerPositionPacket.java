@@ -21,6 +21,8 @@ public class ServerBoundPlayerPositionPacket extends Packet {
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         packetByteBuf.writeDouble(x);
         packetByteBuf.writeDouble(y);
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
+            packetByteBuf.writeDouble(y + 1.65);
         packetByteBuf.writeDouble(z);
         packetByteBuf.writeBoolean(onGround);
         super.createPacket(packetByteBuf);

@@ -24,7 +24,8 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         this.message = ChatMessage.of(packetByteBuf.readString());
-        this.type = packetByteBuf.readByte();
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
+            this.type = packetByteBuf.readByte();
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.15.1").getProtocolVer())
             this.sender = packetByteBuf.readUuid();
         else if (!this.message.getSenderName().isEmpty()) {

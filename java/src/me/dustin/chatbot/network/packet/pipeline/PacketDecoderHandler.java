@@ -29,7 +29,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "chat_message"), ClientBoundChatMessagePacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "kick"), ClientBoundDisconnectPlayPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "heartbeat"), ClientBoundKeepAlivePacket.class);
-        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "tab_list"), ClientBoundPlayerInfoPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "tab_list", "legacy_tab_list"), ClientBoundPlayerInfoPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "position_rotation"), ClientBoundPlayerPositionAndLookPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "resourcepack"), ClientBoundResourcePackSendPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "chat_suggestions"), ClientBoundTabCompletePacket.class);
@@ -38,6 +38,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "initialize"), ClientBoundJoinGamePacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "ping"), ClientBoundPingPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "difficulty"), ClientBoundServerDifficultyPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "plugin"), ClientBoundCustomDataPacket.class);
         //playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "chunk"), ClientBoundChunkDataPacket.class);
     }
 
