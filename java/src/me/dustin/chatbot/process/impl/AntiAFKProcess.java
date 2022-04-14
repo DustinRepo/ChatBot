@@ -36,4 +36,8 @@ public class AntiAFKProcess extends ChatBotProcess {
 
     @Override
     public void stop() {}
+
+    public StopWatch getStopWatch() {
+        return stopWatch;
+    }
 }
