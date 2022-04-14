@@ -39,6 +39,13 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "ping"), ClientBoundPingPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "difficulty"), ClientBoundServerDifficultyPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "plugin"), ClientBoundCustomDataPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_destroy"), ClientBoundRemoveEntities.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_player"), ClientBoundSpawnPlayerPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_mob_spawn"), ClientBoundSpawnMobPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "teleport"), ClientBoundEntityTeleportPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "relative_move"), ClientBoundEntityPositionPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "movement_rotation"), ClientBoundEntityPositionPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "velocity"), ClientBoundEntityVelocityPacket.class);
         //playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "chunk"), ClientBoundChunkDataPacket.class);
     }
 
@@ -53,7 +60,6 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
             Class<? extends Packet.ClientBoundPacket> c = ChatBot.getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY ? playMap.get(packetId) : loginMap.get(packetId);
             if (c != null) {
                 Packet.ClientBoundPacket packet = c.getDeclaredConstructor(PacketByteBuf.class).newInstance(packetByteBuf);
-                packet.createPacket(packetByteBuf);
                 out.add(packet);
             }
             in.clear();

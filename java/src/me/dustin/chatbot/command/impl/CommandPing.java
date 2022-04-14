@@ -1,7 +1,7 @@
 package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.command.Command;
-import me.dustin.chatbot.network.player.OtherPlayer;
+import me.dustin.chatbot.entity.player.PlayerInfo;
 
 import java.util.UUID;
 
@@ -17,7 +17,7 @@ public class CommandPing extends Command {
                 sendChat("ChatBot error! Could not get your UUID!", sender);
                 return;
             }
-            OtherPlayer player = getClientConnection().getPlayerManager().get(sender);
+            PlayerInfo player = getClientConnection().getPlayerManager().get(sender);
             if (player == null) {
                 sendChat("Error! Couldn't find you in my player list :(", sender);
                 return;
@@ -28,7 +28,7 @@ public class CommandPing extends Command {
                 sendChat("Your ping is " + player.getPing() + "ms", sender);
         } else {
             String name = str.split(" ")[0];
-            OtherPlayer player = getClientConnection().getPlayerManager().get(name);
+            PlayerInfo player = getClientConnection().getPlayerManager().get(name);
             if (player == null) {
                 sendChat("Error! " + name + " not online!", sender);
                 return;

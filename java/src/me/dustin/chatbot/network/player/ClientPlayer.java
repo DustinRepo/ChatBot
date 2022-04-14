@@ -1,12 +1,11 @@
 package me.dustin.chatbot.network.player;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.entity.player.PlayerInfo;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.ProtocolHandler;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundPlayerOnGroundPacket;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundPlayerPositionPacket;
+import me.dustin.chatbot.network.packet.c2s.play.*;
 
 import java.util.UUID;
 
@@ -19,14 +18,15 @@ public class ClientPlayer {
     private int entityId;
     private double x,y,z;
     private float yaw, pitch;
+    private float lastYaw, lastPitch;
     private int ticks;
 
-    private OtherPlayer.GameMode gameMode = OtherPlayer.GameMode.SURVIVAL;
+    private PlayerInfo.GameMode gameMode = PlayerInfo.GameMode.SURVIVAL;
 
     private final StopWatch messageStopwatch = new StopWatch();
 
     private String lastMessage = "";
-    private boolean below1_9;
+    private final boolean below1_9;
     public ClientPlayer(String name, UUID uuid, ClientConnection clientConnection) {
         this.name = name;
         this.uuid = uuid;
@@ -36,13 +36,25 @@ public class ClientPlayer {
 
     public void tick() {
         if (below1_9) {
+
             if (ticks % 20 == 0) {
-                getClientConnection().sendPacket(new ServerBoundPlayerPositionPacket(getX(), getY(), getZ(), true));
+                if (lastYaw != yaw || lastPitch != pitch)
+                    getClientConnection().sendPacket(new ServerBoundPlayerPositionAndRotationPacket(getX(), getY(), getZ(), getYaw(), getPitch(),true));
+                else
+                    getClientConnection().sendPacket(new ServerBoundPlayerPositionPacket(getX(), getY(), getZ(), true));
             } else {
-                getClientConnection().sendPacket(new ServerBoundPlayerOnGroundPacket(true));
+                if (lastYaw != yaw || lastPitch != pitch)
+                    getClientConnection().sendPacket(new ServerBoundPlayerPositionAndRotationPacket(getX(), getY(), getZ(), getYaw(), getPitch(),true));
+                else
+                    getClientConnection().sendPacket(new ServerBoundPlayerOnGroundPacket(true));
             }
         } else if (ticks % 20 == 0) {
-            getClientConnection().sendPacket(new ServerBoundPlayerPositionPacket(getX(), getY(), getZ(), true));
+            if (lastYaw != yaw || lastPitch != pitch)
+                getClientConnection().sendPacket(new ServerBoundPlayerPositionAndRotationPacket(getX(), getY(), getZ(), getYaw(), getPitch(),true));
+            else
+                getClientConnection().sendPacket(new ServerBoundPlayerPositionPacket(getX(), getY(), getZ(), true));
+        } else if (lastYaw != yaw || lastPitch != pitch) {
+            getClientConnection().sendPacket(new ServerBoundPlayerRotationPacket(getYaw(), getPitch(), true));
         }
         ticks++;
     }
@@ -68,11 +80,11 @@ public class ClientPlayer {
         return name;
     }
 
-    public OtherPlayer.GameMode getGameMode() {
+    public PlayerInfo.GameMode getGameMode() {
         return gameMode;
     }
 
-    public void setGameMode(OtherPlayer.GameMode gameMode) {
+    public void setGameMode(PlayerInfo.GameMode gameMode) {
         this.gameMode = gameMode;
     }
 
@@ -117,6 +129,7 @@ public class ClientPlayer {
     }
 
     public void setYaw(float yaw) {
+        this.lastYaw = this.yaw;
         this.yaw = yaw;
     }
 
@@ -125,14 +138,25 @@ public class ClientPlayer {
     }
 
     public void setPitch(float pitch) {
+        this.lastPitch = this.pitch;
         this.pitch = pitch;
     }
 
+    public float getLastYaw() {
+        return lastYaw;
+    }
+
+    public float getLastPitch() {
+        return lastPitch;
+    }
+
     public void moveYaw(float yaw) {
+        this.lastYaw = this.yaw;
         this.yaw += yaw;
     }
 
     public void movePitch(float pitch) {
+        this.lastPitch = this.pitch;
         this.pitch += pitch;
     }
 

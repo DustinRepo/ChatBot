@@ -1,13 +1,17 @@
-package me.dustin.chatbot.network.world;
+package me.dustin.chatbot.world;
 
+import me.dustin.chatbot.entity.LivingEntity;
+import me.dustin.chatbot.entity.player.PlayerEntity;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.world.chunk.Chunk;
+import me.dustin.chatbot.world.chunk.Chunk;
 
 import java.util.ArrayList;
 
 public class World {
     private final ClientConnection clientConnection;
     private final ArrayList<Chunk> chunks = new ArrayList<>();
+    private final ArrayList<LivingEntity> livingEntities = new ArrayList<>();
+    private final ArrayList<PlayerEntity> playerEntities = new ArrayList<>();
 
     private Difficulty difficulty = Difficulty.PEACEFUL;
     private Dimension dimension;
@@ -47,6 +51,14 @@ public class World {
         }
     }
 
+    public LivingEntity getEntity(int id) {
+        for (LivingEntity livingEntity : livingEntities) {
+            if (livingEntity.getEntityId() == id)
+                return livingEntity;
+        }
+        return null;
+    }
+
     public Chunk getChunk(int x, int z) {
         for (Chunk chunk : chunks) {
             if (chunk.getChunkX() == x && chunk.getChunkZ() == z)
@@ -65,6 +77,14 @@ public class World {
 
     public void setDimension(Dimension dimension) {
         this.dimension = dimension;
+    }
+
+    public ArrayList<LivingEntity> getLivingEntities() {
+        return livingEntities;
+    }
+
+    public ArrayList<PlayerEntity> getPlayerEntities() {
+        return playerEntities;
     }
 
     public enum Difficulty {

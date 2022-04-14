@@ -1,7 +1,7 @@
 package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.command.Command;
-import me.dustin.chatbot.network.player.OtherPlayer;
+import me.dustin.chatbot.entity.player.PlayerInfo;
 
 import java.util.UUID;
 
@@ -18,9 +18,9 @@ public class CommandWorstPing extends Command {
             return;
         }
         int worst = -1;
-        OtherPlayer player = null;
+        PlayerInfo player = null;
 
-        for (OtherPlayer instancePlayer : getClientConnection().getPlayerManager().getPlayers()) {
+        for (PlayerInfo instancePlayer : getClientConnection().getPlayerManager().getPlayers()) {
             if (player == null || instancePlayer.getPing() > worst) {
                 player = instancePlayer;
                 worst = player.getPing();

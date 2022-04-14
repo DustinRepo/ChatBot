@@ -6,7 +6,7 @@ import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
-import me.dustin.chatbot.network.player.OtherPlayer;
+import me.dustin.chatbot.entity.player.PlayerInfo;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -16,7 +16,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
     public static final int ADD_PLAYER = 0, UPDATE_GAMEMODE = 1, UPDATE_PING = 2, UPDATE_DISPLAY_NAME = 3, REMOVE_PLAYER = 4;
 
     private final int action;
-    private final OtherPlayer[] players;
+    private final PlayerInfo[] players;
 
     public ClientBoundPlayerInfoPacket(PacketByteBuf packetByteBuf) {
         super(packetByteBuf);
@@ -27,26 +27,26 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
             action = online ? ADD_PLAYER : REMOVE_PLAYER;
             int ping = packetByteBuf.readShort();
 
-            players = new OtherPlayer[1];
-            players[0] = new OtherPlayer(playerName, MCAPIHelper.getUUIDFromName(playerName));
+            players = new PlayerInfo[1];
+            players[0] = new PlayerInfo(playerName, MCAPIHelper.getUUIDFromName(playerName));
             players[0].setPing(ping);
             return;
         }
 
         this.action = packetByteBuf.readVarInt();
         int playerNumbers = packetByteBuf.readVarInt();
-        this.players = new OtherPlayer[playerNumbers];
+        this.players = new PlayerInfo[playerNumbers];
 
         for (int i = 0; i < playerNumbers; i++) {
             UUID uuid = packetByteBuf.readUuid();
-            OtherPlayer player = getClientConnection().getPlayerManager().get(uuid);
+            PlayerInfo player = getClientConnection().getPlayerManager().get(uuid);
             if (player == null)
-                player = new OtherPlayer("", uuid);
+                player = new PlayerInfo("", uuid);
             switch (this.action) {
                 case ADD_PLAYER -> {
                     player.setName(packetByteBuf.readString());
                     int propertyListSize = packetByteBuf.readVarInt();
-                    ArrayList<OtherPlayer.PlayerProperty> properties = new ArrayList<>();
+                    ArrayList<PlayerInfo.PlayerProperty> properties = new ArrayList<>();
                     for (int ii = 0; ii < propertyListSize; ii++) {
                         String pName = packetByteBuf.readString();
                         String pValue = packetByteBuf.readString();
@@ -55,10 +55,10 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
                         if (isSigned) {
                             signature = packetByteBuf.readString();
                         }
-                        properties.add(new OtherPlayer.PlayerProperty(pName, pValue, isSigned, signature));
+                        properties.add(new PlayerInfo.PlayerProperty(pName, pValue, isSigned, signature));
                     }
                     player.getProperties().addAll(properties);
-                    player.setGameMode(OtherPlayer.GameMode.get(packetByteBuf.readVarInt()));
+                    player.setGameMode(PlayerInfo.GameMode.get(packetByteBuf.readVarInt()));
                     player.setPing(packetByteBuf.readVarInt());
                     boolean hasDisplayName = packetByteBuf.readBoolean();
                     if (hasDisplayName) {
@@ -66,7 +66,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
                     }
                 }
                 case UPDATE_GAMEMODE -> {
-                    player.setGameMode(OtherPlayer.GameMode.get(packetByteBuf.readVarInt()));
+                    player.setGameMode(PlayerInfo.GameMode.get(packetByteBuf.readVarInt()));
                 }
                 case UPDATE_PING -> {
                     player.setPing(packetByteBuf.readVarInt());
@@ -93,7 +93,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
         return action;
     }
 
-    public OtherPlayer[] getPlayers() {
+    public PlayerInfo[] getPlayers() {
         return players;
     }
 }

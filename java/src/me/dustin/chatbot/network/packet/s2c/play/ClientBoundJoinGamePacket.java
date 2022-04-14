@@ -6,14 +6,14 @@ import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
-import me.dustin.chatbot.network.player.OtherPlayer;
-import me.dustin.chatbot.network.world.World;
+import me.dustin.chatbot.entity.player.PlayerInfo;
+import me.dustin.chatbot.world.World;
 
 public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
     private final int entityId;
     private final boolean isHardcore;
-    private final OtherPlayer.GameMode gameMode;
-    private final OtherPlayer.GameMode previousGameMode;
+    private final PlayerInfo.GameMode gameMode;
+    private final PlayerInfo.GameMode previousGameMode;
     private final String[] dimNames;
     private final NbtCompound dimensionCodec;
     private final NbtCompound dimensionNBT;
@@ -33,7 +33,7 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
         super(packetByteBuf);
         this.entityId = packetByteBuf.readInt();
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.15.2").getProtocolVer()) {
-            this.gameMode = OtherPlayer.GameMode.get(packetByteBuf.readByte());
+            this.gameMode = PlayerInfo.GameMode.get(packetByteBuf.readByte());
             this.dimension = World.Dimension.get(ProtocolHandler.getCurrent().getProtocolVer() < ProtocolHandler.getVersionFromName("1.10.2").getProtocolVer() ? packetByteBuf.readByte() : packetByteBuf.readInt());
             if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.14").getProtocolVer())
                 this.hashedSeed = packetByteBuf.readLong();
@@ -68,8 +68,8 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
         }
 
         this.isHardcore = packetByteBuf.readBoolean();
-        this.gameMode = OtherPlayer.GameMode.get(packetByteBuf.readByte());
-        this.previousGameMode = OtherPlayer.GameMode.get(packetByteBuf.readByte());
+        this.gameMode = PlayerInfo.GameMode.get(packetByteBuf.readByte());
+        this.previousGameMode = PlayerInfo.GameMode.get(packetByteBuf.readByte());
         int worldCount = packetByteBuf.readVarInt();
         this.dimNames = new String[worldCount];
         for (int i = 0; i < worldCount; i++) {
@@ -104,11 +104,11 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
         return isHardcore;
     }
 
-    public OtherPlayer.GameMode getGameMode() {
+    public PlayerInfo.GameMode getGameMode() {
         return gameMode;
     }
 
-    public OtherPlayer.GameMode getPreviousGameMode() {
+    public PlayerInfo.GameMode getPreviousGameMode() {
         return previousGameMode;
     }
 

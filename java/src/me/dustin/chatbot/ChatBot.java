@@ -26,7 +26,6 @@ import me.dustin.chatbot.network.packet.c2s.query.ServerBoundQueryRequestPacket;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.*;
 import me.dustin.chatbot.network.packet.s2c.query.ClientBoundQueryResponsePacket;
-import me.dustin.chatbot.network.world.BlockState;
 import me.dustin.chatbot.process.impl.QuoteProcess;
 
 import javax.swing.*;

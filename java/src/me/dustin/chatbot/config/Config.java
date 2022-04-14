@@ -40,6 +40,7 @@ public class Config {
     private boolean quotes;
     private boolean numberCount;
     private boolean repeatMessages;
+    private boolean killAura;
 
     private int protocolVersion;
     private int proxySOCKS;
@@ -48,6 +49,9 @@ public class Config {
     private int announcementDelay;
     private int antiAFKDelay;
     private int skinBlinkDelay;
+
+    private double killAuraRange;
+    private double killAuraCPS;
 
     private File loginFile;
 
@@ -70,8 +74,6 @@ public class Config {
         loginCommand = parser.readString("loginCommand");
         passwordCreateCommand = parser.readString("passwordCreateCommand");
         clientVersion = parser.readString("clientVersion").replace("1.8", "1.8.9");
-        /*if (!clientVersion.equalsIgnoreCase("auto"))
-            protocolVersion = ProtocolHandler.getVersionFromName(clientVersion).getProtocolVer();*/
 
         commands = parser.readBoolean("commands");
         log = parser.readBoolean("log");
@@ -89,6 +91,7 @@ public class Config {
         quotes = parser.readBoolean("quotes");
         numberCount = parser.readBoolean("numberCount");
         repeatMessages = parser.readBoolean("repeatMessages");
+        killAura = parser.readBoolean("killAura");
 
         reconnectDelay = parser.readInt("reconnectDelay");
         messageDelay = parser.readInt("messageDelay");
@@ -96,6 +99,10 @@ public class Config {
         antiAFKDelay = parser.readInt("antiAFKDelay");
         skinBlinkDelay = parser.readInt("skinBlinkDelay");
         proxySOCKS = parser.readInt("socks");
+
+        killAuraRange = parser.readDouble("killAuraRange");
+        killAuraCPS = parser.readDouble("killAuraCPS");
+        System.out.println(killAuraCPS);
 
         String jarPath = new File("").getAbsolutePath();
         loginFile = new File(jarPath, parser.readString("loginFile"));
@@ -251,6 +258,18 @@ public class Config {
 
     public int getProxySOCKS() {
         return proxySOCKS;
+    }
+
+    public boolean isKillAura() {
+        return killAura;
+    }
+
+    public double getKillAuraRange() {
+        return killAuraRange;
+    }
+
+    public double getKillAuraCPS() {
+        return killAuraCPS;
     }
 
     public File getLoginFile() {

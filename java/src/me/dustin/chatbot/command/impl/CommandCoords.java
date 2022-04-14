@@ -1,8 +1,8 @@
 package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.command.Command;
+import me.dustin.chatbot.entity.player.PlayerInfo;
 import me.dustin.chatbot.network.player.ClientPlayer;
-import me.dustin.chatbot.network.player.OtherPlayer;
 
 import java.util.Random;
 import java.util.UUID;
@@ -20,12 +20,12 @@ public class CommandCoords extends Command {
             return;
         }
         String name = str.split(" ")[0];
-        OtherPlayer otherPlayer = getClientConnection().getPlayerManager().get(name);
-        if (otherPlayer == null) {
+        PlayerInfo playerInfo = getClientConnection().getPlayerManager().get(name);
+        if (playerInfo == null) {
             sendChat("Error! " + name + " is not online!", sender);
             return;
         }
         Random r = new Random();
-        sendChat(otherPlayer.getName() + "'s coords are X:" + (r.nextInt(2000000) - 1000000) + " Z:" + (r.nextInt(2000000) - 1000000), sender);
+        sendChat(playerInfo.getName() + "'s coords are X:" + (r.nextInt(2000000) - 1000000) + " Z:" + (r.nextInt(2000000) - 1000000), sender);
     }
 }

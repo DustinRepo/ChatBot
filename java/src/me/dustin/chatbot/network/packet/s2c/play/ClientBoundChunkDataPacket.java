@@ -5,10 +5,10 @@ import me.dustin.chatbot.nbt.NbtElement;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
-import me.dustin.chatbot.network.world.BlockEntity;
-import me.dustin.chatbot.network.world.chunk.Chunk;
-import me.dustin.chatbot.network.world.chunk.ChunkSection;
-import me.dustin.chatbot.network.world.chunk.Palette;
+import me.dustin.chatbot.world.BlockEntity;
+import me.dustin.chatbot.world.chunk.Chunk;
+import me.dustin.chatbot.world.chunk.ChunkSection;
+import me.dustin.chatbot.world.chunk.Palette;
 
 public class ClientBoundChunkDataPacket extends Packet.ClientBoundPacket {
     private final Chunk chunk;

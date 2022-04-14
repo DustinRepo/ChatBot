@@ -1,6 +1,6 @@
-package me.dustin.chatbot.network.world.chunk;
+package me.dustin.chatbot.world.chunk;
 
-import me.dustin.chatbot.network.world.BlockState;
+import me.dustin.chatbot.world.BlockState;
 
 public class ChunkSection {
     private final int blockCount;

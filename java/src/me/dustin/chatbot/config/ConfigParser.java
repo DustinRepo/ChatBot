@@ -44,6 +44,12 @@ public class ConfigParser {
         return Boolean.parseBoolean(configMap.get(name));
     }
 
+    public double readDouble(String name) {
+        if (configMap.get(name) == null)
+            error(name);
+        return Double.parseDouble(configMap.get(name));
+    }
+
     public ArrayList<String> readStringArray(String name) {
         if (configMap.get(name) == null)
             error(name);

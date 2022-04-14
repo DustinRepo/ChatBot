@@ -29,8 +29,8 @@ import me.dustin.chatbot.network.packet.pipeline.PacketEncryptor;
 import me.dustin.chatbot.network.packet.pipeline.PacketInflater;
 import me.dustin.chatbot.network.packet.s2c.play.ClientBoundJoinGamePacket;
 import me.dustin.chatbot.network.player.ClientPlayer;
-import me.dustin.chatbot.network.player.PlayerManager;
-import me.dustin.chatbot.network.world.World;
+import me.dustin.chatbot.entity.player.PlayerInfoManager;
+import me.dustin.chatbot.world.World;
 import me.dustin.chatbot.process.ProcessManager;
 import me.dustin.chatbot.process.impl.*;
 import me.dustin.events.EventManager;
@@ -49,7 +49,7 @@ public class ClientConnection {
     private final MinecraftServerAddress minecraftServerAddress;
 
     private final Session session;
-    private final PlayerManager playerManager;
+    private final PlayerInfoManager playerInfoManager;
     private final CommandManager commandManager;
     private final PacketCrypt packetCrypt;
     private final TPSHelper tpsHelper;
@@ -82,7 +82,7 @@ public class ClientConnection {
         this.processManager = new ProcessManager(this);
         this.packetCrypt = new PacketCrypt();
         this.tpsHelper = new TPSHelper();
-        this.playerManager = new PlayerManager();
+        this.playerInfoManager = new PlayerInfoManager();
         this.eventManager = new EventManager();
         updateTranslations();
         getEventManager().register(this);
@@ -105,6 +105,7 @@ public class ClientConnection {
     public void loadProcesses() {
         if (!getProcessManager().getProcesses().isEmpty())
             getProcessManager().stopAll();
+        getProcessManager().getProcesses().clear();
         if (ChatBot.getConfig().isAntiAFK())
             getProcessManager().addProcess(new AntiAFKProcess(this));
         if (ChatBot.getConfig().isCrackedLogin())
@@ -121,6 +122,8 @@ public class ClientConnection {
             getProcessManager().addProcess(new QuoteProcess(this));
         if (ChatBot.getConfig().isNumberCount())
             getProcessManager().addProcess(new NumberCountProcess(this));
+        if (ChatBot.getConfig().isKillAura())
+            getProcessManager().addProcess(new KillAuraProcess(this));
     }
 
     public void connect() {
@@ -182,12 +185,12 @@ public class ClientConnection {
     public void tick() {
         while (isConnected()) {
             if (tickWatch.hasPassed(50)) {//only tick 20 times per second, just like normal mc
+                if (isInGame())
+                    getClientPlayer().tick();
                 try {
                     getProcessManager().tick();
                 } catch (Exception e) {
                 }
-                if (isInGame())
-                    getClientPlayer().tick();
                 new EventTick().run(this);
                 tickWatch.reset();
             }
@@ -273,8 +276,8 @@ public class ClientConnection {
         return networkState;
     }
 
-    public PlayerManager getPlayerManager() {
-        return playerManager;
+    public PlayerInfoManager getPlayerManager() {
+        return playerInfoManager;
     }
 
     public void setNetworkState(NetworkState networkState) {

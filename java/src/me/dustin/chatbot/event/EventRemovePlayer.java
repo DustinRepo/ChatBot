@@ -1,17 +1,17 @@
 package me.dustin.chatbot.event;
 
-import me.dustin.chatbot.network.player.OtherPlayer;
+import me.dustin.chatbot.entity.player.PlayerInfo;
 import me.dustin.events.core.Event;
 
 public class EventRemovePlayer extends Event {
 
-    private final OtherPlayer player;
+    private final PlayerInfo player;
 
-    public EventRemovePlayer(OtherPlayer player) {
+    public EventRemovePlayer(PlayerInfo player) {
         this.player = player;
     }
 
-    public OtherPlayer getPlayer() {
+    public PlayerInfo getPlayer() {
         return player;
     }
 }

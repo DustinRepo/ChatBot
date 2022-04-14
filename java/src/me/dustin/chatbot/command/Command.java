@@ -1,7 +1,6 @@
 package me.dustin.chatbot.command;
 
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.player.PlayerManager;
 
 import java.util.ArrayList;
 import java.util.List;

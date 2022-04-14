@@ -2,6 +2,8 @@ package me.dustin.chatbot.network.packet.handler;
 
 import io.netty.buffer.Unpooled;
 import me.dustin.chatbot.chat.ChatMessage;
+import me.dustin.chatbot.entity.LivingEntity;
+import me.dustin.chatbot.entity.player.PlayerEntity;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventRemovePlayer;
@@ -12,8 +14,8 @@ import me.dustin.chatbot.network.packet.c2s.play.*;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.s2c.play.*;
 import me.dustin.chatbot.network.player.ClientPlayer;
-import me.dustin.chatbot.network.player.OtherPlayer;
-import me.dustin.chatbot.network.world.World;
+import me.dustin.chatbot.entity.player.PlayerInfo;
+import me.dustin.chatbot.world.World;
 
 import java.util.UUID;
 
@@ -66,7 +68,7 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
     }
 
     public void handlePlayerInfoPacket(ClientBoundPlayerInfoPacket clientBoundPlayerInfoPacket) {
-        for (OtherPlayer player : clientBoundPlayerInfoPacket.getPlayers()) {
+        for (PlayerInfo player : clientBoundPlayerInfoPacket.getPlayers()) {
             switch (clientBoundPlayerInfoPacket.getAction()) {
                 case ClientBoundPlayerInfoPacket.ADD_PLAYER -> {
                     if (getClientConnection().getPlayerManager().get(player.getName()) == null) {
@@ -111,6 +113,112 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
     }
 
     public void handleCustomDataPacket(ClientBoundCustomDataPacket clientBoundCustomDataPacket) {
+    }
+
+    public void handleRemoveEntitiesPacket(ClientBoundRemoveEntities clientBoundRemoveEntities) {
+        for (int entityId : clientBoundRemoveEntities.getEntityIds()) {
+            LivingEntity livingEntity = getClientConnection().getWorld().getEntity(entityId);
+            if (livingEntity == null)
+                return;
+            getClientConnection().getWorld().getLivingEntities().remove(livingEntity);
+            if (livingEntity instanceof PlayerEntity playerEntity)
+                getClientConnection().getWorld().getPlayerEntities().remove(playerEntity);
+        }
+    }
+
+    public void handleSpawnPlayerPacket(ClientBoundSpawnPlayerPacket clientBoundSpawnPlayerPacket) {
+        PlayerInfo playerInfo = getClientConnection().getPlayerManager().get(clientBoundSpawnPlayerPacket.getPlayerUUID());
+        if (playerInfo == null)
+            return;
+        float yaw = (float)(clientBoundSpawnPlayerPacket.getYaw() * 360) / 256.0f;
+        float pitch = (float)(clientBoundSpawnPlayerPacket.getPitch() * 360) / 256.0f;
+        PlayerEntity player = new PlayerEntity(clientBoundSpawnPlayerPacket.getEntityId(), clientBoundSpawnPlayerPacket.getX(), clientBoundSpawnPlayerPacket.getY(), clientBoundSpawnPlayerPacket.getZ(), yaw, pitch, playerInfo);
+        getClientConnection().getWorld().getPlayerEntities().add(player);
+        getClientConnection().getWorld().getLivingEntities().add(player);
+    }
+
+    public void handleSpawnMobPacket(ClientBoundSpawnMobPacket clientBoundSpawnMobPacket) {
+        float yaw = (float)(clientBoundSpawnMobPacket.getYaw() * 360) / 256.0f;
+        float pitch = (float)(clientBoundSpawnMobPacket.getPitch() * 360) / 256.0f;
+        LivingEntity livingEntity = new LivingEntity(clientBoundSpawnMobPacket.getEntityId(), clientBoundSpawnMobPacket.getX(), clientBoundSpawnMobPacket.getY(), clientBoundSpawnMobPacket.getZ(), yaw, pitch);
+        getClientConnection().getWorld().getLivingEntities().add(livingEntity);
+    }
+
+    public void handleEntityPositionPacket(ClientBoundEntityPositionPacket clientBoundEntityPositionPacket) {
+        int id = clientBoundEntityPositionPacket.getEntityId();
+        LivingEntity livingEntity = getClientConnection().getWorld().getEntity(id);
+        if (livingEntity != null) {
+            double x, y, z;
+            if (clientBoundEntityPositionPacket.getOldDeltaX() != -9999) {
+                double deltaX = clientBoundEntityPositionPacket.getOldDeltaX();
+                double deltaY = clientBoundEntityPositionPacket.getOldDeltaY();
+                double deltaZ = clientBoundEntityPositionPacket.getOldDeltaZ();
+                x = livingEntity.getX() + deltaX;
+                y = livingEntity.getY() + deltaY;
+                z = livingEntity.getZ() + deltaZ;
+            } else {
+                short deltaX = clientBoundEntityPositionPacket.getDeltaX();
+                short deltaY = clientBoundEntityPositionPacket.getDeltaY();
+                short deltaZ = clientBoundEntityPositionPacket.getDeltaZ();
+                x = deltaX == 0 ? livingEntity.getX() : ClientBoundEntityPositionPacket.decodePacketCoordinate(ClientBoundEntityPositionPacket.encodePacketCoordinate(livingEntity.getX()) + deltaX);
+                y = deltaY == 0 ? livingEntity.getY() : ClientBoundEntityPositionPacket.decodePacketCoordinate(ClientBoundEntityPositionPacket.encodePacketCoordinate(livingEntity.getY()) + deltaY);
+                z = deltaZ == 0 ? livingEntity.getZ() : ClientBoundEntityPositionPacket.decodePacketCoordinate(ClientBoundEntityPositionPacket.encodePacketCoordinate(livingEntity.getZ()) + deltaZ);
+            }
+            livingEntity.setX(x);
+            livingEntity.setY(y);
+            livingEntity.setZ(z);
+        }
+    }
+
+    public void handleEntityPositionAndRotationPacket(ClientBoundEntityPositionAndRotationPacket clientBoundEntityPositionAndRotationPacket) {
+        int id = clientBoundEntityPositionAndRotationPacket.getEntityId();
+        LivingEntity livingEntity = getClientConnection().getWorld().getEntity(id);
+        if (livingEntity != null) {
+            double x, y, z;
+            if (clientBoundEntityPositionAndRotationPacket.getOldDeltaX() != -9999) {
+                double deltaX = clientBoundEntityPositionAndRotationPacket.getOldDeltaX();
+                double deltaY = clientBoundEntityPositionAndRotationPacket.getOldDeltaY();
+                double deltaZ = clientBoundEntityPositionAndRotationPacket.getOldDeltaZ();
+                x = livingEntity.getX() + deltaX;
+                y = livingEntity.getY() + deltaY;
+                z = livingEntity.getZ() + deltaZ;
+            } else {
+                short deltaX = clientBoundEntityPositionAndRotationPacket.getDeltaX();
+                short deltaY = clientBoundEntityPositionAndRotationPacket.getDeltaY();
+                short deltaZ = clientBoundEntityPositionAndRotationPacket.getDeltaZ();
+                x = deltaX == 0 ? livingEntity.getX() : ClientBoundEntityPositionPacket.decodePacketCoordinate(ClientBoundEntityPositionPacket.encodePacketCoordinate(livingEntity.getX()) + deltaX);
+                y = deltaY == 0 ? livingEntity.getY() : ClientBoundEntityPositionPacket.decodePacketCoordinate(ClientBoundEntityPositionPacket.encodePacketCoordinate(livingEntity.getY()) + deltaY);
+                z = deltaZ == 0 ? livingEntity.getZ() : ClientBoundEntityPositionPacket.decodePacketCoordinate(ClientBoundEntityPositionPacket.encodePacketCoordinate(livingEntity.getZ()) + deltaZ);
+            }
+            livingEntity.setX(x);
+            livingEntity.setY(y);
+            livingEntity.setZ(z);
+        }
+    }
+
+    public void handleEntityVelocityPacket(ClientBoundEntityVelocityPacket clientBoundEntityVelocityPacket) {
+        int id = clientBoundEntityVelocityPacket.getEntityId();
+        LivingEntity livingEntity = getClientConnection().getWorld().getEntity(id);
+        if (livingEntity != null) {
+            double x = clientBoundEntityVelocityPacket.getVeloX() / 8000.D;
+            double y = clientBoundEntityVelocityPacket.getVeloY() / 8000.D;
+            double z = clientBoundEntityVelocityPacket.getVeloZ() / 8000.D;
+            livingEntity.setX(livingEntity.getX() + x);
+            livingEntity.setX(livingEntity.getX() + y);
+            livingEntity.setX(livingEntity.getX() + z);
+        }
+    }
+
+    public void handleEntityTeleportPacket(ClientBoundEntityTeleportPacket clientBoundEntityTeleportPacket) {
+        int id = clientBoundEntityTeleportPacket.getEntityId();
+        LivingEntity livingEntity = getClientConnection().getWorld().getEntity(id);
+        if (livingEntity != null) {
+            livingEntity.setX(clientBoundEntityTeleportPacket.getX());
+            livingEntity.setY(clientBoundEntityTeleportPacket.getY());
+            livingEntity.setZ(clientBoundEntityTeleportPacket.getZ());
+            livingEntity.setYaw((clientBoundEntityTeleportPacket.getYaw() * 360) / 256.f);
+            livingEntity.setPitch((clientBoundEntityTeleportPacket.getPitch() * 360) / 256.f);
+        }
     }
 
     public void handlePlayerPositionAndLookPacket(ClientBoundPlayerPositionAndLookPacket clientBoundPlayerPositionAndLookPacket) {

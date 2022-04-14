@@ -1,9 +1,9 @@
-package me.dustin.chatbot.network.player;
+package me.dustin.chatbot.entity.player;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class OtherPlayer {
+public class PlayerInfo {
 
     private String name;
     private UUID uuid;
@@ -13,7 +13,7 @@ public class OtherPlayer {
 
     private final ArrayList<PlayerProperty> properties = new ArrayList<>();
 
-    public OtherPlayer(String name, UUID uuid) {
+    public PlayerInfo(String name, UUID uuid) {
         this.name = name;
         this.uuid = uuid;
         displayName = "";

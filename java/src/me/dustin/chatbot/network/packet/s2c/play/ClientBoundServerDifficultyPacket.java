@@ -5,7 +5,7 @@ import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
-import me.dustin.chatbot.network.world.World;
+import me.dustin.chatbot.world.World;
 
 public class ClientBoundServerDifficultyPacket extends Packet.ClientBoundPacket {
     private final World.Difficulty difficulty;
