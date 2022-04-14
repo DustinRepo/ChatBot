@@ -3,7 +3,10 @@ package me.dustin.chatbot.network.player;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
+import me.dustin.chatbot.network.packet.c2s.play.ServerBoundPlayerOnGroundPacket;
+import me.dustin.chatbot.network.packet.c2s.play.ServerBoundPlayerPositionPacket;
 
 import java.util.UUID;
 
@@ -16,20 +19,32 @@ public class ClientPlayer {
     private int entityId;
     private double x,y,z;
     private float yaw, pitch;
+    private int ticks;
 
     private OtherPlayer.GameMode gameMode = OtherPlayer.GameMode.SURVIVAL;
 
     private final StopWatch messageStopwatch = new StopWatch();
 
     private String lastMessage = "";
-
+    private boolean below1_9;
     public ClientPlayer(String name, UUID uuid, ClientConnection clientConnection) {
         this.name = name;
         this.uuid = uuid;
         this.clientConnection = clientConnection;
+        below1_9 = ProtocolHandler.getCurrent().getProtocolVer() < ProtocolHandler.getVersionFromName("1.9").getProtocolVer();
     }
 
     public void tick() {
+        if (below1_9) {
+            if (ticks % 20 == 0) {
+                getClientConnection().sendPacket(new ServerBoundPlayerPositionPacket(getX(), getY(), getZ(), true));
+            } else {
+                getClientConnection().sendPacket(new ServerBoundPlayerOnGroundPacket(true));
+            }
+        } else if (ticks % 20 == 0) {
+            getClientConnection().sendPacket(new ServerBoundPlayerPositionPacket(getX(), getY(), getZ(), true));
+        }
+        ticks++;
     }
 
     public void chat(String message) {
