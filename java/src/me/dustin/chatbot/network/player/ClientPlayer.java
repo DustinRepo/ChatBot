@@ -5,7 +5,7 @@ import me.dustin.chatbot.entity.player.PlayerInfo;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.ProtocolHandler;
-import me.dustin.chatbot.network.packet.c2s.play.*;
+import me.dustin.chatbot.network.packet.impl.play.c2s.*;
 
 import java.util.UUID;
 

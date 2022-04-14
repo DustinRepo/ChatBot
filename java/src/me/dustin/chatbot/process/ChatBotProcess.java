@@ -1,9 +1,6 @@
 package me.dustin.chatbot.process;
 
-import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
 
 public abstract class ChatBotProcess {
 

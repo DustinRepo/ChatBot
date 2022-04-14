@@ -1,8 +1,8 @@
 package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.command.Command;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundTabCompletePacket;
-import me.dustin.chatbot.network.packet.s2c.play.ClientBoundTabCompletePacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundTabCompletePacket;
+import me.dustin.chatbot.network.packet.impl.play.s2c.ClientBoundTabCompletePacket;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 

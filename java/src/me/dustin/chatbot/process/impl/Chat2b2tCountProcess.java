@@ -7,7 +7,7 @@ import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.MCAPIHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.s2c.play.ClientBoundChatMessagePacket;
+import me.dustin.chatbot.network.packet.impl.play.s2c.ClientBoundChatMessagePacket;
 import me.dustin.chatbot.process.ChatBotProcess;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;

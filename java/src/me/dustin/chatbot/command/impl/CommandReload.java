@@ -2,7 +2,7 @@ package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.command.Command;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundClientSettingsPacket;
 
 import java.util.UUID;
 

@@ -3,8 +3,7 @@ package me.dustin.chatbot.network.packet.pipeline;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.network.packet.s2c.query.ClientBoundQueryResponsePacket;
+import me.dustin.chatbot.network.packet.impl.query.s2c.ClientBoundQueryResponsePacket;
 
 import java.util.List;
 

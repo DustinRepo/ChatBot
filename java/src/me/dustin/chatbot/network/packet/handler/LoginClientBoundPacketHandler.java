@@ -4,9 +4,9 @@ import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.event.EventLoginSuccess;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.login.ServerBoundEncryptionResponsePacket;
-import me.dustin.chatbot.network.packet.c2s.login.ServerBoundPluginResponsePacket;
-import me.dustin.chatbot.network.packet.s2c.login.*;
+import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundEncryptionResponsePacket;
+import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundPluginResponsePacket;
+import me.dustin.chatbot.network.packet.impl.login.s2c.*;
 
 import javax.crypto.SecretKey;
 import java.math.BigInteger;

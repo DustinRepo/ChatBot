@@ -3,8 +3,7 @@ package me.dustin.chatbot.process.impl;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundClientSettingsPacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundClientSettingsPacket;
 import me.dustin.chatbot.process.ChatBotProcess;
 
 import java.util.Random;

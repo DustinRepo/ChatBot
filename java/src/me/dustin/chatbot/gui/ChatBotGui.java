@@ -4,7 +4,7 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundChatPacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundChatPacket;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 

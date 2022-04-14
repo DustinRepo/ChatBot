@@ -20,12 +20,12 @@ import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.MinecraftServerAddress;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.ProtocolHandler;
-import me.dustin.chatbot.network.packet.c2s.handshake.ServerBoundHandshakePacket;
-import me.dustin.chatbot.network.packet.c2s.query.ServerBoundPingPacket;
-import me.dustin.chatbot.network.packet.c2s.query.ServerBoundQueryRequestPacket;
+import me.dustin.chatbot.network.packet.impl.handshake.ServerBoundHandshakePacket;
+import me.dustin.chatbot.network.packet.impl.query.c2s.ServerBoundPingPacket;
+import me.dustin.chatbot.network.packet.impl.query.c2s.ServerBoundQueryRequestPacket;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.*;
-import me.dustin.chatbot.network.packet.s2c.query.ClientBoundQueryResponsePacket;
+import me.dustin.chatbot.network.packet.impl.query.s2c.ClientBoundQueryResponsePacket;
 import me.dustin.chatbot.process.impl.QuoteProcess;
 
 import javax.swing.*;

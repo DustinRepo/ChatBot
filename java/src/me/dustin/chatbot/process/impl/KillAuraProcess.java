@@ -6,8 +6,8 @@ import me.dustin.chatbot.entity.player.PlayerEntity;
 import me.dustin.chatbot.entity.player.PlayerInfo;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundInteractEntityPacket;
-import me.dustin.chatbot.network.packet.c2s.play.ServerBoundPlayerSwingPacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundInteractEntityPacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundPlayerSwingPacket;
 import me.dustin.chatbot.network.player.ClientPlayer;
 import me.dustin.chatbot.process.ChatBotProcess;
 
