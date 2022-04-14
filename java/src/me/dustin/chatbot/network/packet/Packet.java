@@ -19,14 +19,12 @@ public class Packet {
     }
 
     public static abstract class ClientBoundPacket extends Packet {
-        protected final ClientBoundPacketHandler clientBoundPacketHandler;
 
-        public ClientBoundPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
+        public ClientBoundPacket(PacketByteBuf packetByteBuf) {
             super(0);
-            this.clientBoundPacketHandler = clientBoundPacketHandler;
         }
 
-        public abstract void apply();
+        public abstract void apply(ClientBoundPacketHandler clientBoundPacketHandler);
     }
 
     public ClientConnection getClientConnection() {

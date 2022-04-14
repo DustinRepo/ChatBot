@@ -6,20 +6,14 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
-
 public class ClientBoundUpdateHealthPacket extends Packet.ClientBoundPacket {
 
-    private float health;
-    private int food;
-    private float saturation;
+    private final float health;
+    private final int food;
+    private final float saturation;
 
-    public ClientBoundUpdateHealthPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundUpdateHealthPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.health = packetByteBuf.readFloat();
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
             this.food = packetByteBuf.readShort();
@@ -29,7 +23,7 @@ public class ClientBoundUpdateHealthPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleUpdateHealthPacket(this);
     }
 

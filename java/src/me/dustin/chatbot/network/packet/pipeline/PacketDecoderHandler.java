@@ -52,7 +52,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
             int packetId = packetByteBuf.readVarInt();
             Class<? extends Packet.ClientBoundPacket> c = ChatBot.getClientConnection().getNetworkState() == ClientConnection.NetworkState.PLAY ? playMap.get(packetId) : loginMap.get(packetId);
             if (c != null) {
-                Packet.ClientBoundPacket packet = c.getDeclaredConstructor(ClientBoundPacketHandler.class).newInstance(ChatBot.getClientConnection() == null ? (ClientBoundPacketHandler)null : ChatBot.getClientConnection().getClientBoundPacketHandler());
+                Packet.ClientBoundPacket packet = c.getDeclaredConstructor(PacketByteBuf.class).newInstance(packetByteBuf);
                 packet.createPacket(packetByteBuf);
                 out.add(packet);
             }

@@ -8,35 +8,34 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
-    public static int MESSAGE_TYPE_CHAT = 0, MESSAGE_TYPE_SYSTEM = 1, MESSAGE_TYPE_GAME_INFO = 2;
-    private ChatMessage message;
-    private byte type;
-    private UUID sender;
+    public final static int MESSAGE_TYPE_CHAT = 0, MESSAGE_TYPE_SYSTEM = 1, MESSAGE_TYPE_GAME_INFO = 2;
+    private final ChatMessage message;
+    private final byte type;
+    private final UUID sender;
 
-    public ClientBoundChatMessagePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundChatMessagePacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
+        UUID uuid = null;
         this.message = ChatMessage.of(packetByteBuf.readString());
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
             this.type = packetByteBuf.readByte();
+        else
+            this.type = MESSAGE_TYPE_CHAT;
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.15.1").getProtocolVer())
-            this.sender = packetByteBuf.readUuid();
+            uuid = packetByteBuf.readUuid();
         else if (!this.message.getSenderName().isEmpty()) {
-            this.sender = MCAPIHelper.getUUIDFromName(this.message.getSenderName());
+            uuid = MCAPIHelper.getUUIDFromName(this.message.getSenderName());
         }
-        if (sender != null && sender.toString().equalsIgnoreCase("00000000-0000-0000-0000-000000000000"))
-            sender = null;
+        if (uuid != null && uuid.toString().equalsIgnoreCase("00000000-0000-0000-0000-000000000000"))
+            uuid = null;
+        this.sender = uuid;
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleChatMessagePacket(this);
     }
 

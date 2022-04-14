@@ -5,16 +5,10 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
-
 public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
-    private int compressionThreshold;
-    public ClientBoundSetCompressionPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    private final int compressionThreshold;
+    public ClientBoundSetCompressionPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.compressionThreshold = packetByteBuf.readVarInt();
     }
 
@@ -23,7 +17,7 @@ public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((LoginClientBoundPacketHandler)clientBoundPacketHandler).handleCompressionPacket(this);
     }
 }

@@ -6,17 +6,12 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
-
 public class ClientBoundKeepAlivePacket extends Packet.ClientBoundPacket {
 
-    private long id;
-    public ClientBoundKeepAlivePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
+    private final long id;
 
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundKeepAlivePacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
             this.id = packetByteBuf.readInt();
         else if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.1").getProtocolVer())//in 1.12.1 and below keepalive id is an int, not a long
@@ -30,7 +25,7 @@ public class ClientBoundKeepAlivePacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleKeepAlivePacket(this);
     }
 }

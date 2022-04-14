@@ -8,7 +8,6 @@ import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.OtherPlayer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -16,16 +15,11 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
 
     public static final int ADD_PLAYER = 0, UPDATE_GAMEMODE = 1, UPDATE_PING = 2, UPDATE_DISPLAY_NAME = 3, REMOVE_PLAYER = 4;
 
-    private int action;
+    private final int action;
+    private final OtherPlayer[] players;
 
-    private OtherPlayer[] players;
-
-    public ClientBoundPlayerInfoPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundPlayerInfoPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         //1.7 versions of this packet are very different
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer()) {
             String playerName = packetByteBuf.readString();
@@ -91,7 +85,7 @@ public class ClientBoundPlayerInfoPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handlePlayerInfoPacket(this);
     }
 

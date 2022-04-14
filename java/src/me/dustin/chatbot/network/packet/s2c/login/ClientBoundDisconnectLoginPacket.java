@@ -5,22 +5,16 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
-
 public class ClientBoundDisconnectLoginPacket extends Packet.ClientBoundPacket {
-    private String reason;
+    private final String reason;
 
-    public ClientBoundDisconnectLoginPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundDisconnectLoginPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.reason = packetByteBuf.readString();
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((LoginClientBoundPacketHandler)clientBoundPacketHandler).handleDisconnectPacket(this);
     }
 

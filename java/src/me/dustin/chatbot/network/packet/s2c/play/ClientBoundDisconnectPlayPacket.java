@@ -8,14 +8,10 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import java.io.IOException;
 
 public class ClientBoundDisconnectPlayPacket extends Packet.ClientBoundPacket {
-    private String reason;
+    private final String reason;
 
-    public ClientBoundDisconnectPlayPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundDisconnectPlayPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.reason = packetByteBuf.readString();
     }
 
@@ -24,7 +20,7 @@ public class ClientBoundDisconnectPlayPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleDisconnectPacket(this);
     }
 }

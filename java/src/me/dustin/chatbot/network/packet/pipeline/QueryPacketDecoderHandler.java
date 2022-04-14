@@ -19,7 +19,7 @@ public class QueryPacketDecoderHandler extends ByteToMessageDecoder {
             PacketByteBuf packetByteBuf = new PacketByteBuf(in);
             int packetId = packetByteBuf.readVarInt();
             if (packetId == 0x00) {
-                ClientBoundQueryResponsePacket packet = new ClientBoundQueryResponsePacket(ChatBot.getClientConnection() == null ? null : ChatBot.getClientConnection().getClientBoundPacketHandler());
+                ClientBoundQueryResponsePacket packet = new ClientBoundQueryResponsePacket(packetByteBuf);
                 packet.createPacket(packetByteBuf);
                 out.add(packet);
             }

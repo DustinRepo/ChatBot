@@ -29,7 +29,7 @@ public class ClientBoundPacketHandler extends SimpleChannelInboundHandler<Packet
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Packet.ClientBoundPacket packet) {
         if (channel.isOpen() && packet != null) {
-            packet.apply();
+            packet.apply(getClientConnection().getClientBoundPacketHandler());
         }
     }
 

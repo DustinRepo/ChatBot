@@ -5,24 +5,19 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
-
 public class ClientBoundPluginRequestPacket extends Packet.ClientBoundPacket {
 
-    private int messageId;
-    private String identifier;
+    private final int messageId;
+    private final String identifier;
 
-    public ClientBoundPluginRequestPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundPluginRequestPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.messageId = packetByteBuf.readVarInt();
         this.identifier = packetByteBuf.readString();
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((LoginClientBoundPacketHandler)clientBoundPacketHandler).handlePluginRequestPacket(this);
     }
 

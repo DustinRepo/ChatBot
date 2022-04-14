@@ -7,29 +7,29 @@ import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.world.World;
 
-import java.io.IOException;
-
 public class ClientBoundServerDifficultyPacket extends Packet.ClientBoundPacket {
-    private World.Difficulty difficulty;
-    private boolean isLocked = false;
-    public ClientBoundServerDifficultyPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
+    private final World.Difficulty difficulty;
+    private final boolean isLocked;
 
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundServerDifficultyPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.difficulty = World.Difficulty.values()[packetByteBuf.readByte()];
         if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.14.2").getProtocolVer())
             this.isLocked = packetByteBuf.readBoolean();
-        super.createPacket(packetByteBuf);
+        else
+            this.isLocked = false;
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleServerDifficultyPacket(this);
     }
 
     public World.Difficulty getDifficulty() {
         return difficulty;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
     }
 }

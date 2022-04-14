@@ -6,32 +6,25 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
 
-    private int id;
-    private int start;
-    private int length;
     private final ArrayList<TabCompleteMatch> matches = new ArrayList<>();
 
-    public ClientBoundTabCompletePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundTabCompletePacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer()) {//1.12
             int size = packetByteBuf.readVarInt();
             for (int i = 0; i < size - 1; i++) {
                 this.matches.add(new TabCompleteMatch(packetByteBuf.readString(), false, ""));
             }
+
             return;
         }
-        this.id = packetByteBuf.readVarInt();
-        this.start = packetByteBuf.readVarInt();
-        this.length = packetByteBuf.readVarInt();
+        int id = packetByteBuf.readVarInt();
+        int start = packetByteBuf.readVarInt();
+        int length = packetByteBuf.readVarInt();
         int arraylength = packetByteBuf.readVarInt();
         for (int i = 0; i < arraylength; i++) {
             String m = packetByteBuf.readString();
@@ -44,20 +37,8 @@ public class ClientBoundTabCompletePacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleTabComplete(this);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    public int getLength() {
-        return length;
     }
 
     public ArrayList<TabCompleteMatch> getMatches() {

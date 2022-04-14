@@ -6,19 +6,14 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
-    private UUID uuid;
-    private String username;
+    private final UUID uuid;
+    private final String username;
 
-    public ClientBoundLoginSuccessPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundLoginSuccessPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.15.1").getProtocolVer()) {
             String s = packetByteBuf.readString();
             String s1 = packetByteBuf.readString();
@@ -32,7 +27,7 @@ public class ClientBoundLoginSuccessPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((LoginClientBoundPacketHandler)clientBoundPacketHandler).handleLoginSuccess(this);
     }
 

@@ -10,20 +10,12 @@ import me.dustin.chatbot.network.world.chunk.Chunk;
 import me.dustin.chatbot.network.world.chunk.ChunkSection;
 import me.dustin.chatbot.network.world.chunk.Palette;
 
-import java.io.IOException;
-
 public class ClientBoundChunkDataPacket extends Packet.ClientBoundPacket {
-
-    private Chunk chunk;
-
-    public ClientBoundChunkDataPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
+    private final Chunk chunk;
 
     //packet not finished
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        //create a new chunk with the x and z given
+    public ClientBoundChunkDataPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);//create a new chunk with the x and z given
         Chunk chunk = new Chunk(packetByteBuf.readInt(), packetByteBuf.readInt());
         //read the heightmap - in NBT, Notch's custom data format that you MUST read properly to get to the next section
         NbtElement heightmap = packetByteBuf.readNbt();
@@ -60,13 +52,12 @@ public class ClientBoundChunkDataPacket extends Packet.ClientBoundPacket {
             BlockEntity blockEntity = new BlockEntity(x, y, z, type, nbt);
             chunk.addBlockEntity(blockEntity);
         }
-        getClientConnection().getWorld().addChunk(chunk);
         //then in 1.18 there's light data but who gives a shit
-        super.createPacket(packetByteBuf);
+        this.chunk = chunk;
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         //((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleChunkDataPacket(this);
     }
 

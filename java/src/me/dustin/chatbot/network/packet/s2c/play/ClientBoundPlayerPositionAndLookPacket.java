@@ -6,21 +6,15 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 
-import java.io.IOException;
-
 public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPacket {
-    private double x, y, z;
-    private float yaw, pitch;
-    private byte flags;
+    private final double x, y, z;
+    private final float yaw, pitch;
+    private final byte flags;
     private int teleportId;
     private boolean dismount;
 
-    public ClientBoundPlayerPositionAndLookPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundPlayerPositionAndLookPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         x = packetByteBuf.readDouble();
         y = packetByteBuf.readDouble();
         z = packetByteBuf.readDouble();
@@ -34,7 +28,7 @@ public class ClientBoundPlayerPositionAndLookPacket extends Packet.ClientBoundPa
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handlePlayerPositionAndLookPacket(this);
     }
 

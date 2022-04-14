@@ -4,23 +4,17 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
-import java.io.IOException;
-
 public class ClientBoundQueryResponsePacket extends Packet.ClientBoundPacket {
 
-    private String jsonData;
+    private final String jsonData;
 
-    public ClientBoundQueryResponsePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundQueryResponsePacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.jsonData = packetByteBuf.readString(32767);
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
 
     }
 

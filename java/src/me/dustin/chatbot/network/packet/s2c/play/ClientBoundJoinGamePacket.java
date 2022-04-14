@@ -9,41 +9,36 @@ import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.player.OtherPlayer;
 import me.dustin.chatbot.network.world.World;
 
-import java.io.IOException;
-
 public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
-    private int entityId;
-    private boolean isHardcore;
-    private OtherPlayer.GameMode gameMode;
-    private OtherPlayer.GameMode previousGameMode;
-    private String[] dimNames;
-    private NbtCompound dimensionCodec;
-    private NbtCompound dimensionNBT;
-    private World.Dimension dimension;
-    private long hashedSeed;
-    private int maxPlayers;
-    private int viewDistance;
-    private int simulationDistance;
-    private boolean reducedDebugInfo;
-    private boolean enabledRespawnScreen = true;
-    private boolean isDebug;
-    private boolean isFlat;
+    private final int entityId;
+    private final boolean isHardcore;
+    private final OtherPlayer.GameMode gameMode;
+    private final OtherPlayer.GameMode previousGameMode;
+    private final String[] dimNames;
+    private final NbtCompound dimensionCodec;
+    private final NbtCompound dimensionNBT;
+    private final World.Dimension dimension;
+    private final long hashedSeed;
+    private final int maxPlayers;
+    private final int viewDistance;
+    private final int simulationDistance;
+    private final boolean reducedDebugInfo;
+    private final boolean enabledRespawnScreen;
+    private final boolean isDebug;
+    private final boolean isFlat;
 
     private World.Difficulty difficulty;
 
-    public ClientBoundJoinGamePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
-
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundJoinGamePacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.entityId = packetByteBuf.readInt();
-
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.15.2").getProtocolVer()) {
             this.gameMode = OtherPlayer.GameMode.get(packetByteBuf.readByte());
             this.dimension = World.Dimension.get(ProtocolHandler.getCurrent().getProtocolVer() < ProtocolHandler.getVersionFromName("1.10.2").getProtocolVer() ? packetByteBuf.readByte() : packetByteBuf.readInt());
             if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.14").getProtocolVer())
                 this.hashedSeed = packetByteBuf.readLong();
+            else
+                this.hashedSeed = -1;
             if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.13").getProtocolVer())
                 this.difficulty = World.Difficulty.values()[packetByteBuf.readByte()];//difficulty on 1.13 or below
             this.maxPlayers = packetByteBuf.readByte();
@@ -51,11 +46,24 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
             if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.13.2").getProtocolVer()) {
                 this.viewDistance = packetByteBuf.readVarInt();
                 this.simulationDistance = this.viewDistance - 1;
+            } else {
+                this.viewDistance = 8;
+                this.simulationDistance = 7;
             }
             if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer())
                 this.reducedDebugInfo = packetByteBuf.readBoolean();
+            else
+                this.reducedDebugInfo = false;
             if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.14").getProtocolVer())
                 this.enabledRespawnScreen = packetByteBuf.readBoolean();
+            else
+                this.enabledRespawnScreen = true;
+            this.isDebug = false;
+            this.isHardcore = false;
+            this.previousGameMode = this.gameMode;
+            this.dimNames = new String[0];
+            this.dimensionCodec = new NbtCompound();
+            this.dimensionNBT = new NbtCompound();
             return;
         }
 
@@ -84,7 +92,7 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleJoinGamePacket(this);
     }
 

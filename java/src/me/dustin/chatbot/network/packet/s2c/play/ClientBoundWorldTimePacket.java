@@ -5,23 +5,18 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
-
 public class ClientBoundWorldTimePacket extends Packet.ClientBoundPacket {
     private long worldAge;
     private long timeOfDay;
-    public ClientBoundWorldTimePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
 
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundWorldTimePacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.worldAge = packetByteBuf.readLong();
         this.timeOfDay = packetByteBuf.readLong();
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleWorldTimePacket(this);
     }
 

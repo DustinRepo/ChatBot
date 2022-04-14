@@ -5,22 +5,16 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
-import java.io.IOException;
-
 public class ClientBoundPingPacket extends Packet.ClientBoundPacket {
-    private int id;
-    public ClientBoundPingPacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        super(clientBoundPacketHandler);
-    }
+    private final int id;
 
-    @Override
-    public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+    public ClientBoundPingPacket(PacketByteBuf packetByteBuf) {
+        super(packetByteBuf);
         this.id = packetByteBuf.readInt();
-        super.createPacket(packetByteBuf);
     }
 
     @Override
-    public void apply() {
+    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handlePingPacket(this);
     }
 
