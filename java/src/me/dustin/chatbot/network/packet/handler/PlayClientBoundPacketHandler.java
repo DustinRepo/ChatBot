@@ -256,9 +256,8 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         else
             clientPlayer.setPitch(clientBoundPlayerPositionAndLookPacket.getPitch());
 
-        Packet packet = new ServerBoundConfirmTeleportPacket(clientBoundPlayerPositionAndLookPacket.getTeleportId());
-        if (packet.getPacketId() == -1)
-            packet = new ServerBoundPlayerPositionAndRotationPacket(clientPlayer.getX(), clientPlayer.getY(), clientPlayer.getZ(), clientPlayer.getYaw(), clientPlayer.getPitch(), true);
-        getClientConnection().sendPacket(packet);
+        getClientConnection().sendPacket(new ServerBoundConfirmTeleportPacket(clientBoundPlayerPositionAndLookPacket.getTeleportId()));
+        getClientConnection().sendPacket(new ServerBoundPlayerPositionAndRotationPacket(clientPlayer.getX(), clientPlayer.getY(), clientPlayer.getZ(), clientPlayer.getYaw(), clientPlayer.getPitch(), true));
+
     }
 }
