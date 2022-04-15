@@ -55,6 +55,14 @@ Returns a link to a random picture of coffee
 Tries to get the server plugins and returns them
 ###### roast
 Have the bot roast you
+###### fuck
+FUCK
+###### swear
+Watch your mouth!
+###### yes
+Yes.
+###### no
+No.
 ###### boobs
 Get a titty pic from the bot
 ###### cock / pp

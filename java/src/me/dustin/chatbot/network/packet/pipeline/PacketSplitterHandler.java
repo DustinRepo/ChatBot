@@ -21,18 +21,18 @@ public class PacketSplitterHandler extends ByteToMessageDecoder {
             if (bs[i] >= 0) {
                 PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.wrappedBuffer(bs));
                 try {
-                    int j = packetByteBuf.readVarInt();
-                    if (buf.readableBytes() < j) {
+                    int dataSize = packetByteBuf.readVarInt();
+                    if (buf.readableBytes() < dataSize) {
                         buf.resetReaderIndex();
                         return;
                     }
-                    objects.add(buf.readBytes(j));
+                    objects.add(buf.readBytes(dataSize));
                 } finally {
                     packetByteBuf.release();
                 }
                 return;
             }
         }
-        throw new CorruptedFrameException("length wider than 21-bit");
+        throw new CorruptedFrameException("Failed seperating packet");
     }
 }

@@ -71,6 +71,44 @@
   },
   {
     "names": [
+      "yes"
+    ],
+    "responses": [
+      "YES",
+      "FUCK YEA"
+    ]
+  },
+  {
+    "names": [
+      "no"
+    ],
+    "responses": [
+      "NO",
+      "HELL NO"
+    ]
+  },
+  {
+    "names": [
+      "fuck"
+    ],
+    "responses": [
+      "FUCK"
+    ]
+  },
+  {
+    "names": [
+      "swear"
+    ],
+    "responses": [
+      "SHIT FUCK ASS",
+      "I FUCKING HATE IT HERE",
+      "EAT SHIT YOU FUCKING PISSYBABY",
+      "ASSHOLE",
+      "EAT MY SHITTER YOU DUMB FUCKING WHORE"
+    ]
+  },
+  {
+    "names": [
       "amogus",
       "amongus"
     ],
