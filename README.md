@@ -9,6 +9,7 @@ Multiple versions: All versions from 1.7.2 - 1.18.2 supported
 Custom commands: Use custom.json to create custom commands
 Auto-Reconnect: Automatically reconnect to the server if you get disconnected
 Cracked server support: Lots of options in config.cfg that should allow the bot to get past any cracked server login
+TheAltening: Supports the ability to login using a free token from TheAltening
 Anti-AFK: Prevent the bot from getting AFK kicked
 KillAura: Attack any mob/player that gets too close
 SkinBlink: Randomly toggles the extra layers of the bot's player skin (just for fun)
@@ -20,6 +21,7 @@ Customizable prefix: Customize the prefix in the config.cfg file
 ```
 1. Put your login info file in the same directory as the jar (default login.txt)
 2. Make sure your login info is set to email on the first line, password on the second (Or just username in first line for cracked)
+2.a If you are using TheAltening, just put the token in the first line
 3. Set the account type in config.cfg. (MSA for Microsoft and MOJ for Mojang/Cracked)
 ```
 ###### No gui

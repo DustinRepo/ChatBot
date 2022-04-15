@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public class ClientPlayer {
 
-    private final UUID uuid;
-    private final String name;
+    private UUID uuid;
+    private String name;
     private final ClientConnection clientConnection;
 
     private int entityId;
@@ -86,6 +86,14 @@ public class ClientPlayer {
 
     public void setGameMode(PlayerInfo.GameMode gameMode) {
         this.gameMode = gameMode;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getX() {

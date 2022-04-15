@@ -112,6 +112,7 @@ public class ChatBot {
         switch (config.getAccountType()) {
             case "MSA" -> minecraftAccount = new MinecraftAccount.MicrosoftAccount(loginInfo[0], loginInfo[1]);
             case "MOJ" -> minecraftAccount = loginInfo.length > 1 ? new MinecraftAccount.MojangAccount(loginInfo[0], loginInfo[1]) : new MinecraftAccount.MojangAccount(loginInfo[0]);
+            case "ALT" -> minecraftAccount = new MinecraftAccount.TheAlteningAccount(loginInfo[0]);
             default -> {
                 GeneralHelper.print("ERROR: Unknown account type in config!", ChatMessage.TextColor.RED);
                 return;

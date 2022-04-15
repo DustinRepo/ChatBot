@@ -17,7 +17,8 @@ public class Session {
     public enum AccountType {
         LEGACY("legacy"),
         MOJANG("mojang"),
-        MICROSOFT("msa");
+        MICROSOFT("msa"),
+        ALTENING("altening");
 
         public final String name;
 

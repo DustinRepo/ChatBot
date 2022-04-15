@@ -98,6 +98,10 @@ public class GeneralHelper {
         return s.replace("-", "").equalsIgnoreCase(s1.replace("-", ""));
     }
 
+    public static boolean matchUUIDs(UUID s, UUID s1) {
+        return matchUUIDs(s.toString(), s1.toString());
+    }
+
     public static String getCurrentTimeStamp() {
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
         Date now = new Date();

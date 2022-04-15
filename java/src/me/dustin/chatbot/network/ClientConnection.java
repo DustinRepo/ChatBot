@@ -142,13 +142,20 @@ public class ClientConnection {
         Map<String, String> header = new HashMap<>();
         header.put("Content-Type", "application/json");
 
-        GeneralHelper.HttpResponse resp = GeneralHelper.httpRequest("https://sessionserver.mojang.com/session/minecraft/join", request.toString(), header, "GET");
-        if (resp.responseCode() != 204) {//Mojang decided our request to the auth servers wasn't good
+        GeneralHelper.HttpResponse resp = GeneralHelper.httpRequest(getAuthServersUrl() + "/session/minecraft/join", request.toString(), header, "GET");
+        if (resp.responseCode() != 204) {
             this.minecraftAccount.setLoginAgain(true);
             close();
             return false;
         }
         return true;
+    }
+
+    private String getAuthServersUrl() {
+        if (getSession().getAccountType() == Session.AccountType.ALTENING)
+            return "http://sessionserver.thealtening.com";
+        else
+            return "https://sessionserver.mojang.com";
     }
 
     public void activateEncryption() {

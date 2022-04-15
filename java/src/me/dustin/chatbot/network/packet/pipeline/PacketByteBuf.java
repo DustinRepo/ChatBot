@@ -1,6 +1,7 @@
 package me.dustin.chatbot.network.packet.pipeline;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -320,6 +321,19 @@ public class PacketByteBuf extends ByteBuf {
             this.writeBytes(bs);
             return this;
         }
+    }
+
+    public <T> List<T> readList(Function<PacketByteBuf, T> entryParser) {
+        return this.readCollection(Lists::newArrayListWithCapacity, entryParser);
+    }
+
+    public <T, C extends Collection<T>> C readCollection(IntFunction<C> collectionFactory, Function<PacketByteBuf, T> entryParser) {
+        int i = this.readVarInt();
+        Collection<T> collection = collectionFactory.apply(i);
+        for (int j = 0; j < i; ++j) {
+            collection.add(entryParser.apply(this));
+        }
+        return (C)collection;
     }
 
     public Date readDate() {

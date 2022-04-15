@@ -25,18 +25,18 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
 
             String serverHash = new BigInteger(getClientConnection().getPacketCrypt().hash(encryptionStartPacket.getServerID().getBytes("ISO_8859_1"), getClientConnection().getPacketCrypt().getSecretKey().getEncoded(), getClientConnection().getPacketCrypt().getPublicKey().getEncoded())).toString(16);
             GeneralHelper.print("Contacting Auth Servers...", ChatMessage.TextColor.GREEN);
-            if (getClientConnection().contactAuthServers(serverHash)) {
-                byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
-                byte[] encryptedVerify = getClientConnection().getPacketCrypt().encrypt(encryptionStartPacket.getVerifyToken());
-
-                ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
-
-                getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
-                GeneralHelper.print("Encrypting connection...", ChatMessage.TextColor.GREEN);
-                getClientConnection().activateEncryption();
-            } else {
+            if (!getClientConnection().contactAuthServers(serverHash)) {
                 GeneralHelper.print("Error! Could not verify with auth servers", ChatMessage.TextColor.DARK_RED);
+                return;
             }
+            byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
+            byte[] encryptedVerify = getClientConnection().getPacketCrypt().encrypt(encryptionStartPacket.getVerifyToken());
+
+            ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
+
+            getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
+            GeneralHelper.print("Encrypting connection...", ChatMessage.TextColor.GREEN);
+            getClientConnection().activateEncryption();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,6 +57,8 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
         getClientConnection().setNetworkState(ClientConnection.NetworkState.PLAY);
         getClientConnection().setClientBoundPacketHandler(new PlayClientBoundPacketHandler());
         getClientConnection().getTpsHelper().clear();
+        getClientConnection().getClientPlayer().setName(clientBoundLoginSuccessPacket.getUsername());
+        getClientConnection().getClientPlayer().setUuid(clientBoundLoginSuccessPacket.getUuid());
         GeneralHelper.print("Login Success Packet. You are connected.", ChatMessage.TextColor.GREEN);
         GeneralHelper.print("Username: " + clientBoundLoginSuccessPacket.getUsername(), ChatMessage.TextColor.GOLD);
         new EventLoginSuccess().run(getClientConnection());
