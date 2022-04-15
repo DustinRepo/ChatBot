@@ -34,8 +34,8 @@ public class KillAuraProcess extends ChatBotProcess {
                 clientPlayer.setYaw(rotations[0]);
                 clientPlayer.setPitch(rotations[1]);
                 if (stopWatch.hasPassed(delay)) {
-                    ChatBot.getClientConnection().sendPacket(new ServerBoundPlayerSwingPacket(ServerBoundPlayerSwingPacket.MAIN_HAND));
                     ChatBot.getClientConnection().sendPacket(new ServerBoundInteractEntityPacket(livingEntity, ServerBoundInteractEntityPacket.ATTACK));
+                    ChatBot.getClientConnection().sendPacket(new ServerBoundPlayerSwingPacket(ServerBoundPlayerSwingPacket.MAIN_HAND));
                     stopWatch.reset();
                     AntiAFKProcess antiAFKProcess = getClientConnection().getProcessManager().get(AntiAFKProcess.class);
                     if (antiAFKProcess != null)
