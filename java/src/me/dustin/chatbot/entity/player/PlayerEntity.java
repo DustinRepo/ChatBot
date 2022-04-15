@@ -7,7 +7,7 @@ import java.util.UUID;
 public class PlayerEntity extends LivingEntity {
     private final PlayerInfo playerInfo;
     public PlayerEntity(int entityId, double x, double y, double z, float yaw, float pitch, PlayerInfo playerInfo) {
-        super(entityId, x, y, z, yaw, pitch);
+        super(entityId, "entity.minecraft.player", x, y, z, yaw, pitch);
         this.playerInfo = playerInfo;
     }
 

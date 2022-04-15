@@ -1,4 +1,4 @@
-package me.dustin.chatbot.network.player;
+package me.dustin.chatbot.entity.player;
 
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.entity.player.PlayerInfo;

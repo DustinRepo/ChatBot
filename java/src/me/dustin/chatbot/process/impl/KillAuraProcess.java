@@ -8,7 +8,7 @@ import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundInteractEntityPacket;
 import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundPlayerSwingPacket;
-import me.dustin.chatbot.network.player.ClientPlayer;
+import me.dustin.chatbot.entity.player.ClientPlayer;
 import me.dustin.chatbot.process.ChatBotProcess;
 
 public class KillAuraProcess extends ChatBotProcess {

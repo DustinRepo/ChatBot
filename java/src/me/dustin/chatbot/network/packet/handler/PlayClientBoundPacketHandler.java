@@ -8,12 +8,11 @@ import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.impl.play.c2s.*;
 import me.dustin.chatbot.network.packet.impl.play.s2c.*;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
-import me.dustin.chatbot.network.player.ClientPlayer;
+import me.dustin.chatbot.entity.player.ClientPlayer;
 import me.dustin.chatbot.entity.player.PlayerInfo;
 import me.dustin.chatbot.world.World;
 
@@ -137,11 +136,15 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         getClientConnection().getWorld().getLivingEntities().add(player);
     }
 
+    //in 1.19 they deleted the SpawnMob packet and just use the standard spawn entity packet, so now we have to filter non-living entities just to make sure we don't get kicked for attacking an item with KillAura
     public void handleSpawnMobPacket(ClientBoundSpawnMobPacket clientBoundSpawnMobPacket) {
         float yaw = (float)(clientBoundSpawnMobPacket.getYaw() * 360) / 256.0f;
         float pitch = (float)(clientBoundSpawnMobPacket.getPitch() * 360) / 256.0f;
-        LivingEntity livingEntity = new LivingEntity(clientBoundSpawnMobPacket.getEntityId(), clientBoundSpawnMobPacket.getX(), clientBoundSpawnMobPacket.getY(), clientBoundSpawnMobPacket.getZ(), yaw, pitch);
-        getClientConnection().getWorld().getLivingEntities().add(livingEntity);
+        String typeName = LivingEntity.getTypeName(clientBoundSpawnMobPacket.getType());
+        if (LivingEntity.isLiving(typeName)) {
+            LivingEntity livingEntity = new LivingEntity(clientBoundSpawnMobPacket.getEntityId(), typeName, clientBoundSpawnMobPacket.getX(), clientBoundSpawnMobPacket.getY(), clientBoundSpawnMobPacket.getZ(), yaw, pitch);
+            getClientConnection().getWorld().getLivingEntities().add(livingEntity);
+        }
     }
 
     public void handleEntityPositionPacket(ClientBoundEntityPositionPacket clientBoundEntityPositionPacket) {

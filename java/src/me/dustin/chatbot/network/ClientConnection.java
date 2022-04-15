@@ -28,7 +28,7 @@ import me.dustin.chatbot.network.packet.pipeline.PacketDeflater;
 import me.dustin.chatbot.network.packet.pipeline.PacketEncryptor;
 import me.dustin.chatbot.network.packet.pipeline.PacketInflater;
 import me.dustin.chatbot.network.packet.impl.play.s2c.ClientBoundJoinGamePacket;
-import me.dustin.chatbot.network.player.ClientPlayer;
+import me.dustin.chatbot.entity.player.ClientPlayer;
 import me.dustin.chatbot.entity.player.PlayerInfoManager;
 import me.dustin.chatbot.world.World;
 import me.dustin.chatbot.process.ProcessManager;

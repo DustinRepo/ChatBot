@@ -2,7 +2,7 @@ package me.dustin.chatbot.command.impl;
 
 import me.dustin.chatbot.command.Command;
 import me.dustin.chatbot.entity.player.PlayerInfo;
-import me.dustin.chatbot.network.player.ClientPlayer;
+import me.dustin.chatbot.entity.player.ClientPlayer;
 
 import java.util.Random;
 import java.util.UUID;

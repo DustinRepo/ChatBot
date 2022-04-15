@@ -20,7 +20,10 @@ public class ClientBoundSpawnMobPacket extends Packet.ClientBoundPacket {
     public ClientBoundSpawnMobPacket(PacketByteBuf packetByteBuf) {
         super(packetByteBuf);
         this.entityId = packetByteBuf.readVarInt();
-        this.uuid = packetByteBuf.readUuid();
+        if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.9").getProtocolVer())
+            this.uuid = packetByteBuf.readUuid();
+        else
+            this.uuid = UUID.randomUUID();
         this.type = ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.10.2").getProtocolVer() ? packetByteBuf.readByte() : packetByteBuf.readVarInt();
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer()) {
             this.x = (packetByteBuf.readInt() / 32.D);

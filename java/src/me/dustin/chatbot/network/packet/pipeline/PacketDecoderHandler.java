@@ -40,7 +40,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "plugin"), ClientBoundCustomDataPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_destroy"), ClientBoundRemoveEntities.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_player"), ClientBoundSpawnPlayerPacket.class);
-        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_mob_spawn"), ClientBoundSpawnMobPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_mob_spawn", "entity_object_spawn"), ClientBoundSpawnMobPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "teleport"), ClientBoundEntityTeleportPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "relative_move"), ClientBoundEntityPositionPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "movement_rotation"), ClientBoundEntityPositionPacket.class);
