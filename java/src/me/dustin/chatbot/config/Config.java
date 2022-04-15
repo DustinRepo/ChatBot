@@ -102,7 +102,6 @@ public class Config {
 
         killAuraRange = parser.readDouble("killAuraRange");
         killAuraCPS = parser.readDouble("killAuraCPS");
-        System.out.println(killAuraCPS);
 
         String jarPath = new File("").getAbsolutePath();
         loginFile = new File(jarPath, parser.readString("loginFile"));
