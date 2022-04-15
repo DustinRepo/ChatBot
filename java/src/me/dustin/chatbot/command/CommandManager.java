@@ -37,7 +37,6 @@ public class CommandManager {
             try {
                 @SuppressWarnings("deprecation")
                 Command instance = (Command) clazz.newInstance();
-                instance.setClientConnection(clientConnection);
                 getCommands().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();

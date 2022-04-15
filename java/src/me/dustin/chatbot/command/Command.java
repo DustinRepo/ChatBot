@@ -1,5 +1,6 @@
 package me.dustin.chatbot.command;
 
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.ClientConnection;
 
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ public abstract class Command {
 
     private final String name;
     private final List<String> alias = new ArrayList<>();
-    private ClientConnection clientConnection;
 
     private boolean directMessage;
 
@@ -29,11 +29,7 @@ public abstract class Command {
     }
 
     public ClientConnection getClientConnection() {
-        return clientConnection;
-    }
-
-    public void setClientConnection(ClientConnection clientConnection) {
-        this.clientConnection = clientConnection;
+        return ChatBot.getClientConnection();
     }
 
     public void setDirectMessage(boolean directMessage) {
