@@ -31,7 +31,7 @@ public class ClientPlayer {
         this.name = name;
         this.uuid = uuid;
         this.clientConnection = clientConnection;
-        below1_9 = ProtocolHandler.getCurrent().getProtocolVer() < ProtocolHandler.getVersionFromName("1.9").getProtocolVer();
+        below1_9 = ProtocolHandler.getCurrent().getProtocolVer() < ProtocolHandler.getVersionFromName("1.9.1-pre1").getProtocolVer();
     }
 
     public void tick() {

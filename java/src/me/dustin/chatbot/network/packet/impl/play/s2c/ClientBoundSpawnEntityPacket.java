@@ -8,23 +8,23 @@ import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.util.UUID;
 
-public class ClientBoundSpawnMobPacket extends Packet.ClientBoundPacket {
+public class ClientBoundSpawnEntityPacket extends Packet.ClientBoundPacket {
     private final int entityId;
     private final UUID uuid;
     private final int type;
     private final double x, y, z;
     private final byte yaw, pitch;
-    private final byte headYaw;
+    private final int data;
     private final short velocityX, velocityY, velocityZ;
 
-    public ClientBoundSpawnMobPacket(PacketByteBuf packetByteBuf) {
+    public ClientBoundSpawnEntityPacket(PacketByteBuf packetByteBuf) {
         super(packetByteBuf);
         this.entityId = packetByteBuf.readVarInt();
         if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.9.1-pre1").getProtocolVer())
             this.uuid = packetByteBuf.readUuid();
         else
             this.uuid = UUID.randomUUID();
-        this.type = ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.10.2").getProtocolVer() ? packetByteBuf.readByte() : packetByteBuf.readVarInt();
+        this.type = ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.13.2").getProtocolVer() ? packetByteBuf.readByte() : packetByteBuf.readVarInt();
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer()) {
             this.x = (packetByteBuf.readInt() / 32.D);
             this.y = (packetByteBuf.readInt() / 32.D);
@@ -36,15 +36,32 @@ public class ClientBoundSpawnMobPacket extends Packet.ClientBoundPacket {
         }
         this.yaw = packetByteBuf.readByte();
         this.pitch = packetByteBuf.readByte();
-        this.headYaw = packetByteBuf.readByte();
-        this.velocityX = packetByteBuf.readShort();
-        this.velocityY = packetByteBuf.readShort();
-        this.velocityZ = packetByteBuf.readShort();
+        this.data = ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer() ? packetByteBuf.readVarInt() : packetByteBuf.readInt();
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer()) {
+            if (data != 0) {
+                this.velocityX = packetByteBuf.readShort();
+                this.velocityY = packetByteBuf.readShort();
+                this.velocityZ = packetByteBuf.readShort();
+            } else {
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.velocityZ = 0;
+            }
+        } else {
+            this.velocityX = packetByteBuf.readShort();
+            this.velocityY = packetByteBuf.readShort();
+            this.velocityZ = packetByteBuf.readShort();
+        }
     }
 
     @Override
     public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
-        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleSpawnMobPacket(this);
+        //pre 1.13 minecraft hardcoded the entity type value for non-living entities into the packet handling, and I am not going through all that bs
+        //I don't even use non-living entities anyway so it's not a big deal
+        //this class only exists because in 1.19 snapshots they merged the SpawnMob packet into this
+        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer())
+            return;
+        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleSpawnEntityPacket(this);
     }
 
     public int getEntityId() {
@@ -79,8 +96,8 @@ public class ClientBoundSpawnMobPacket extends Packet.ClientBoundPacket {
         return pitch;
     }
 
-    public byte getHeadYaw() {
-        return headYaw;
+    public int getData() {
+        return data;
     }
 
     public short getVelocityX() {

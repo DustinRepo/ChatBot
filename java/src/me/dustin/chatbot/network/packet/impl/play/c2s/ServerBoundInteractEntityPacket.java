@@ -27,7 +27,7 @@ public class ServerBoundInteractEntityPacket extends Packet {
             packetByteBuf.writeFloat((float)livingEntity.getX());
             packetByteBuf.writeFloat((float)livingEntity.getY());
             packetByteBuf.writeFloat((float)livingEntity.getZ());
-            if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.9").getProtocolVer())
+            if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.9.1-pre1").getProtocolVer())
                 packetByteBuf.writeVarInt(0);//hand - 0 is main
         }
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.15.2").getProtocolVer())

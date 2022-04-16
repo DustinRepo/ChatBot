@@ -1,6 +1,7 @@
 package me.dustin.chatbot.process.impl;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.entity.Entity;
 import me.dustin.chatbot.entity.LivingEntity;
 import me.dustin.chatbot.entity.player.PlayerEntity;
 import me.dustin.chatbot.entity.player.PlayerInfo;
@@ -25,7 +26,9 @@ public class KillAuraProcess extends ChatBotProcess {
     @Override
     public void tick() {
         long delay = (long) (1000L / ChatBot.getConfig().getKillAuraCPS());
-        for (LivingEntity livingEntity : getClientConnection().getWorld().getLivingEntities()) {
+        for (Entity entity : getClientConnection().getWorld().getEntities()) {
+            if (!(entity instanceof LivingEntity livingEntity))
+                continue;
             if (livingEntity instanceof PlayerEntity player && (player.getGameMode() == PlayerInfo.GameMode.CREATIVE || player.getGameMode() == PlayerInfo.GameMode.SPECTATOR))
                 continue;
             if (livingEntity.distanceToBot() <= ChatBot.getConfig().getKillAuraRange()) {
