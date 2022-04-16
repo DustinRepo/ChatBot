@@ -26,30 +26,43 @@ public class KillAuraProcess extends ChatBotProcess {
     @Override
     public void tick() {
         long delay = (long) (1000L / ChatBot.getConfig().getKillAuraCPS());
-        for (Entity entity : getClientConnection().getWorld().getEntities()) {
-            if (!(entity instanceof LivingEntity livingEntity))
-                continue;
-            if (livingEntity instanceof PlayerEntity player && (player.getGameMode() == PlayerInfo.GameMode.CREATIVE || player.getGameMode() == PlayerInfo.GameMode.SPECTATOR))
-                continue;
-            if (livingEntity.distanceToBot() <= ChatBot.getConfig().getKillAuraRange()) {
-                float[] rotations = rotateTo(livingEntity);
-                ClientPlayer clientPlayer = getClientConnection().getClientPlayer();
-                clientPlayer.setYaw(rotations[0]);
-                clientPlayer.setPitch(rotations[1]);
-                if (stopWatch.hasPassed(delay)) {
-                    ChatBot.getClientConnection().sendPacket(new ServerBoundInteractEntityPacket(livingEntity, ServerBoundInteractEntityPacket.ATTACK));
-                    ChatBot.getClientConnection().sendPacket(new ServerBoundPlayerSwingPacket(ServerBoundPlayerSwingPacket.MAIN_HAND));
-                    stopWatch.reset();
-                    AntiAFKProcess antiAFKProcess = getClientConnection().getProcessManager().get(AntiAFKProcess.class);
-                    if (antiAFKProcess != null)
-                        antiAFKProcess.getStopWatch().reset();
-                }
-                break;
-            }
+        LivingEntity livingEntity = getClosest();
+        if (livingEntity == null)
+            return;
+        float[] rotations = rotateTo(livingEntity);
+        ClientPlayer clientPlayer = getClientConnection().getClientPlayer();
+        clientPlayer.setYaw(rotations[0]);
+        clientPlayer.setPitch(rotations[1]);
+        if (stopWatch.hasPassed(delay)) {
+            ChatBot.getClientConnection().sendPacket(new ServerBoundInteractEntityPacket(livingEntity, ServerBoundInteractEntityPacket.ATTACK));
+            ChatBot.getClientConnection().sendPacket(new ServerBoundPlayerSwingPacket(ServerBoundPlayerSwingPacket.MAIN_HAND));
+            stopWatch.reset();
+            AntiAFKProcess antiAFKProcess = getClientConnection().getProcessManager().get(AntiAFKProcess.class);
+            if (antiAFKProcess != null)
+                antiAFKProcess.getStopWatch().reset();
         }
     }
 
-    float[] rotateTo(LivingEntity livingEntity) {
+    private LivingEntity getClosest() {
+        LivingEntity living = null;
+        double distance = 7;
+        for (Entity entity : getClientConnection().getWorld().getEntities()) {
+            if (entity instanceof LivingEntity livingEntity) {
+                if (livingEntity instanceof PlayerEntity player && (player.getGameMode() == PlayerInfo.GameMode.CREATIVE || player.getGameMode() == PlayerInfo.GameMode.SPECTATOR))
+                    continue;
+                double distanceToBot = livingEntity.distanceToBot();
+                if (distanceToBot > ChatBot.getConfig().getKillAuraRange())
+                    continue;
+                if (living == null || distanceToBot < distance) {
+                    living = livingEntity;
+                    distance = distanceToBot;
+                }
+            }
+        }
+        return living;
+    }
+
+    private float[] rotateTo(LivingEntity livingEntity) {
         double xDif = livingEntity.getX() - getClientConnection().getClientPlayer().getX();
         double zDif = livingEntity.getZ() - getClientConnection().getClientPlayer().getZ();
         double yDif = (livingEntity.getY() + (livingEntity instanceof PlayerEntity ? 1.65 : 1)) - (getClientConnection().getClientPlayer().getY() + 1.65);
