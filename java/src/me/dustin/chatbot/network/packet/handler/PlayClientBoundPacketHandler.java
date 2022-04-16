@@ -243,6 +243,10 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         }
     }
 
+    public void handleChunkDataPacket(ClientBoundChunkDataPacket clientBoundChunkDataPacket) {
+        System.out.println("chunk: " + clientBoundChunkDataPacket.getChunk().getChunkX() + " " + clientBoundChunkDataPacket.getChunk().getChunkZ());
+    }
+
     public void handlePlayerPositionAndLookPacket(ClientBoundPlayerPositionAndLookPacket clientBoundPlayerPositionAndLookPacket) {
         byte flags = clientBoundPlayerPositionAndLookPacket.getFlags();
         boolean xRelative = (flags & 0x01) == 0x01;

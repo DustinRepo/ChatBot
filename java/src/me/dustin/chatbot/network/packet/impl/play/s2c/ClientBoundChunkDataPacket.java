@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import me.dustin.chatbot.nbt.NbtElement;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.world.BlockEntity;
 import me.dustin.chatbot.world.chunk.Chunk;
@@ -26,16 +27,26 @@ public class ClientBoundChunkDataPacket extends Packet.ClientBoundPacket {
 
         byte[] sectionsData = new byte[sectionsDataSize];
         packetByteBuf.readBytes(sectionsData);
+        PacketByteBuf chunkSectionsByteBuf = new PacketByteBuf(Unpooled.wrappedBuffer(sectionsData));
 
         //find all blocks and add them in the chunk
-        PacketByteBuf chunkSectionsByteBuf = new PacketByteBuf(Unpooled.wrappedBuffer(sectionsData));
-        for (int i = 0; i < 20; i++) {//i < vertical chunk sections in the world, don't know how to get that yet
+        for (int i = 0; i < 19; i++) {//i < vertical chunk sections in the world, don't know how to get that yet
             int nonEmptyBlockCount = chunkSectionsByteBuf.readShort();
             if (nonEmptyBlockCount < 0)
                 continue;
             byte blockStateContainerBits = chunkSectionsByteBuf.readByte();
             Palette palette = Palette.choosePalette(blockStateContainerBits);
-            palette.read(chunkSectionsByteBuf);
+            palette.fromPacket(chunkSectionsByteBuf);
+            long[] data;
+            if (blockStateContainerBits > 0) {
+                int elementsPerLong = (char)(64 / blockStateContainerBits);
+                int containerSize = 1 << 4 * 3;
+                int j = (containerSize + elementsPerLong - 1) / elementsPerLong;
+                data = new long[j];
+            } else {
+                data = new long[0];
+            }
+            chunkSectionsByteBuf.readLongArray(data);
             ChunkSection chunkSection = new ChunkSection(nonEmptyBlockCount, palette);
             chunk.addChunkSection(chunkSection);
         }
@@ -58,7 +69,7 @@ public class ClientBoundChunkDataPacket extends Packet.ClientBoundPacket {
 
     @Override
     public void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        //((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleChunkDataPacket(this);
+        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleChunkDataPacket(this);
     }
 
     public Chunk getChunk() {

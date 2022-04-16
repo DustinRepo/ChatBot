@@ -68,6 +68,10 @@ public class BlockState {
         }
     }
 
+    public static ArrayList<BlockState> getBlockStates() {
+        return blockStates;
+    }
+
     public static class BlockStateData {
         private final int stateId;
         private final boolean hasCollision;

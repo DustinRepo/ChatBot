@@ -3,33 +3,31 @@ package me.dustin.chatbot.world.chunk;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.world.BlockState;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public interface Palette {
 
     byte getBitsPerBlock();
-    void read(PacketByteBuf packetByteBuf);
     int computeIndex(int x, int y, int z);
-    int idForState(BlockState state);
-    BlockState stateForId(int id);
     Object get(int index);
+    void fromPacket(PacketByteBuf packetByteBuf);
 
     static Palette choosePalette(byte bitsPerBlock) {
         if (bitsPerBlock == 0) {
             return new SingleValuePalette(bitsPerBlock);
         } else if (bitsPerBlock <= 4) {
-            return new IndirectPalette((byte) 4);
+            return new ArrayPalette((byte) 4);
         } else if (bitsPerBlock <= 8) {
-            return new IndirectPalette(bitsPerBlock);
+            return new MapPalette(bitsPerBlock);
         } else {
-            return new DirectPalette();
+            return new ListPalette();
         }
     }
 
     class SingleValuePalette implements Palette {
         private final byte bitsPerBlock;
+        private BlockState blockState;
         public SingleValuePalette(byte bitsPerBlock) {
             this.bitsPerBlock = bitsPerBlock;
         }
@@ -39,72 +37,49 @@ public interface Palette {
         }
 
         @Override
-        public void read(PacketByteBuf packetByteBuf) {
-            int value = packetByteBuf.readVarInt();
-        }
-
-        @Override
         public int computeIndex(int x, int y, int z)  {
-            return (y << this.getBitsPerBlock() | z) << this.getBitsPerBlock() | x;
-        }
-
-        @Override
-        public int idForState(BlockState state) {
-            return state.getBlockStateData().get(0).getStateId();
-        }
-
-        @Override
-        public BlockState stateForId(int id) {
-            return BlockState.get(id);
+            return (y << 4 | z) << 4 | x;
         }
 
         @Override
         public Object get(int index) {
-            return null;
+            return blockState;
+        }
+
+        @Override
+        public void fromPacket(PacketByteBuf packetByteBuf) {
+            this.blockState = BlockState.get(packetByteBuf.readVarInt());
         }
     }
 
-    class IndirectPalette implements Palette {
-        private final ArrayList<BlockState> states = new ArrayList<>();
-        private final Map<Integer, BlockState> idToState = new HashMap<>();
-        private final Map<BlockState, Integer> stateToId = new HashMap<>();
+    class ArrayPalette implements Palette {
+        private int size;
+        private BlockState[] blockStates;
         private final byte bitsPerBlock;
 
-        public IndirectPalette(byte bitsPerBlock) {
+        public ArrayPalette(byte bitsPerBlock) {
             this.bitsPerBlock = bitsPerBlock;
-        }
-
-        public void read(PacketByteBuf byteBuf) {
-            int length = byteBuf.readVarInt();
-            for (int id = 0; id < length; id++) {
-                int stateId = byteBuf.readVarInt();
-                BlockState blockState = BlockState.get(stateId);
-                if (blockState != null) {
-                    idToState.put(stateId, blockState);
-                    stateToId.put(blockState, stateId);
-                    states.add(blockState);
-                }
-            }
         }
 
         @Override
         public int computeIndex(int x, int y, int z)  {
-            return (y << this.getBitsPerBlock() | z) << this.getBitsPerBlock() | x;
-        }
-
-        @Override
-        public int idForState(BlockState state) {
-            return stateToId.get(state);
-        }
-
-        @Override
-        public BlockState stateForId(int id) {
-            return idToState.get(id);
+            return (y << 4 | z) << 4 | x;
         }
 
         @Override
         public Object get(int index) {
-            return states.get(index);
+            if (index >= 0 && index < this.size) {
+                return this.blockStates[index];
+            }
+            return null;
+        }
+
+        @Override
+        public void fromPacket(PacketByteBuf packetByteBuf) {
+            size = packetByteBuf.readVarInt();
+            blockStates = new BlockState[size];
+            for (int i = 0; i < size; i++)
+                blockStates[i] = BlockState.get(packetByteBuf.readVarInt());
         }
 
         @Override
@@ -113,36 +88,79 @@ public interface Palette {
         }
     }
 
-    class DirectPalette implements Palette {
+    class MapPalette implements Palette {
+        private final Map<Integer, BlockState> map = new HashMap<>();
+        private final byte bitsPerBlock;
+
+        public MapPalette(byte bitsPerBlock) {
+            this.bitsPerBlock = bitsPerBlock;
+        }
 
         @Override
         public int computeIndex(int x, int y, int z)  {
-            return (y << this.getBitsPerBlock() | z) << this.getBitsPerBlock() | x;
+            return (y << 4 | z) << 4 | x;
         }
 
         @Override
         public byte getBitsPerBlock() {
-            return 15;//Ceil(Log2(BlockState.TotalNumberOfStates));
-        }
-
-        @Override
-        public void read(PacketByteBuf packetByteBuf) {
-
-        }
-
-        @Override
-        public int idForState(BlockState state) {
-            return state.getBlockStateData().get(0).getStateId();
-        }
-
-        @Override
-        public BlockState stateForId(int id) {
-            return BlockState.get(id);
+            return bitsPerBlock;
         }
 
         @Override
         public Object get(int index) {
-            return null;
+            return map.get(index);
+        }
+
+        @Override
+        public void fromPacket(PacketByteBuf packetByteBuf) {
+            map.clear();
+            int size = packetByteBuf.readVarInt();
+            for (int i = 0; i < size; i++) {
+                this.map.put(i, BlockState.get(packetByteBuf.readVarInt()));
+            }
+        }
+    }
+
+    class ListPalette implements Palette{
+
+        @Override
+        public byte getBitsPerBlock() {
+            return (byte) ceilLog2(BlockState.totalNumber());
+        }
+
+        @Override
+        public int computeIndex(int x, int y, int z) {
+            return 0;
+        }
+
+        @Override
+        public Object get(int index) {
+            return BlockState.get(index);
+        }
+
+        @Override
+        public void fromPacket(PacketByteBuf packetByteBuf) {
+
+        }
+
+        private final int[] MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
+        private int ceilLog2(int value) {
+            value = isPowerOfTwo(value) ? value : smallestEncompassingPowerOfTwo(value);
+            return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int)((long)value * 125613361L >> 27) & 0x1F];
+        }
+
+        private int smallestEncompassingPowerOfTwo(int value) {
+            int i = value - 1;
+            i |= i >> 1;
+            i |= i >> 2;
+            i |= i >> 4;
+            i |= i >> 8;
+            i |= i >> 16;
+            return i + 1;
+        }
+
+        private boolean isPowerOfTwo(int value) {
+            return value != 0 && (value & value - 1) == 0;
         }
     }
 }
