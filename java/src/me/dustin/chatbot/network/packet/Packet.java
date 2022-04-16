@@ -24,7 +24,7 @@ public class Packet {
             super(0);
         }
 
-        public abstract void apply(ClientBoundPacketHandler clientBoundPacketHandler);
+        public abstract void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler);
     }
 
     public ClientConnection getClientConnection() {

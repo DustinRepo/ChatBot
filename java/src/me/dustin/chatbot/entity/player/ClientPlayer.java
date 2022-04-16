@@ -1,10 +1,9 @@
 package me.dustin.chatbot.entity.player;
 
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.entity.player.PlayerInfo;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.impl.play.c2s.*;
 
 import java.util.UUID;
@@ -21,6 +20,8 @@ public class ClientPlayer {
     private float lastYaw, lastPitch;
     private int ticks;
 
+    private boolean hasSetPos;
+
     private PlayerInfo.GameMode gameMode = PlayerInfo.GameMode.SURVIVAL;
 
     private final StopWatch messageStopwatch = new StopWatch();
@@ -31,12 +32,13 @@ public class ClientPlayer {
         this.name = name;
         this.uuid = uuid;
         this.clientConnection = clientConnection;
-        below1_9 = ProtocolHandler.getCurrent().getProtocolVer() < ProtocolHandler.getVersionFromName("1.9.1-pre1").getProtocolVer();
+        below1_9 = ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer();
     }
 
     public void tick() {
+        if (!hasSetPos)
+            return;
         if (below1_9) {
-
             if (ticks % 20 == 0) {
                 if (lastYaw != yaw || lastPitch != pitch)
                     getClientConnection().sendPacket(new ServerBoundPlayerPositionAndRotationPacket(getX(), getY(), getZ(), getYaw(), getPitch(),true));
@@ -94,6 +96,10 @@ public class ClientPlayer {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setHasSetPos(boolean hasSetPos) {
+        this.hasSetPos = hasSetPos;
     }
 
     public double getX() {

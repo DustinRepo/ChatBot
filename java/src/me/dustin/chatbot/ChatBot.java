@@ -19,7 +19,7 @@ import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.MinecraftServerAddress;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.impl.handshake.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.impl.query.c2s.ServerBoundPingPacket;
 import me.dustin.chatbot.network.packet.impl.query.c2s.ServerBoundQueryRequestPacket;

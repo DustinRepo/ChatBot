@@ -6,17 +6,16 @@ import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.io.IOException;
 
-public class ServerBoundConfirmTeleportPacket extends Packet {
+public class ServerBoundSetHotbarSlotPacket extends Packet {
+    private final short slot;
 
-    private final int id;
-
-    public ServerBoundConfirmTeleportPacket(int id) {
-        super(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.SERVERBOUND, "confirm_teleport"));
-        this.id = id;
+    public ServerBoundSetHotbarSlotPacket(short slot) {
+        super(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.SERVERBOUND, "hotbar_slot"));
+        this.slot = slot;
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeVarInt(id);
+        packetByteBuf.writeShort(slot);
     }
 }

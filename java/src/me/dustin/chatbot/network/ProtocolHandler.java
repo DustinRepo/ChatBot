@@ -1,14 +1,12 @@
-package me.dustin.chatbot.network.packet;
+package me.dustin.chatbot.network;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
-import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.helper.GeneralHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 public class ProtocolHandler {
@@ -155,7 +153,7 @@ public class ProtocolHandler {
         }
     }
 
-    public static enum NetworkSide {
+    public enum NetworkSide {
         CLIENTBOUND, SERVERBOUND
     }
 }

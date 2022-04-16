@@ -1,7 +1,7 @@
 package me.dustin.chatbot.network.packet.impl.play.s2c;
 
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
@@ -17,8 +17,8 @@ public class ClientBoundEntityPositionPacket extends Packet.ClientBoundPacket {
     private final boolean onGround;
     public ClientBoundEntityPositionPacket(PacketByteBuf packetByteBuf) {
         super(packetByteBuf);
-        this.entityId = packetByteBuf.readVarInt();
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.8.9").getProtocolVer()) {
+            this.entityId = packetByteBuf.readInt();
             this.oldDeltaX = packetByteBuf.readByte() / 32.D;
             this.oldDeltaY = packetByteBuf.readByte() / 32.D;
             this.oldDeltaZ = packetByteBuf.readByte() / 32.D;
@@ -28,6 +28,7 @@ public class ClientBoundEntityPositionPacket extends Packet.ClientBoundPacket {
             this.onGround = true;
             return;
         }
+        this.entityId = packetByteBuf.readVarInt();
         this.deltaX = packetByteBuf.readShort();
         this.deltaY = packetByteBuf.readShort();
         this.deltaZ = packetByteBuf.readShort();
@@ -38,7 +39,7 @@ public class ClientBoundEntityPositionPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
+    public void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleEntityPositionPacket(this);
     }
 

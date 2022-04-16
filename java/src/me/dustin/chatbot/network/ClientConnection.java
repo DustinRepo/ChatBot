@@ -16,11 +16,9 @@ import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.helper.TPSHelper;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
 import me.dustin.chatbot.network.packet.impl.handshake.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundLoginStartPacket;
 import me.dustin.chatbot.network.crypt.PacketCrypt;
-import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundClientSettingsPacket;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketDecryptor;
@@ -98,8 +96,6 @@ public class ClientConnection {
             return;
         isInGame = true;
         loadProcesses();
-        sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
-        GeneralHelper.print("Received Join Game. Sending ClientSettings packet and loading processes.", ChatMessage.TextColor.GOLD);
     });
 
     public void loadProcesses() {

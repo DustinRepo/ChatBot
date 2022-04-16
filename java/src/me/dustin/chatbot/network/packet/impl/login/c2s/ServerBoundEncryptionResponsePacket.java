@@ -1,7 +1,7 @@
 package me.dustin.chatbot.network.packet.impl.login.c2s;
 
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import javax.crypto.KeyGenerator;

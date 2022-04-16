@@ -6,7 +6,7 @@ import me.dustin.chatbot.command.Command;
 import me.dustin.chatbot.event.EventTick;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.network.MinecraftServerAddress;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.impl.handshake.ServerBoundHandshakePacket;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;

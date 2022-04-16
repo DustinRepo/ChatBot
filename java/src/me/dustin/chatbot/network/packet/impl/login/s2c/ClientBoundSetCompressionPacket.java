@@ -17,7 +17,7 @@ public class ClientBoundSetCompressionPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
+    public void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((LoginClientBoundPacketHandler)clientBoundPacketHandler).handleCompressionPacket(this);
     }
 }

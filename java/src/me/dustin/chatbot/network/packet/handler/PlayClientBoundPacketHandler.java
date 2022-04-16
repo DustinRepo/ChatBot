@@ -1,6 +1,7 @@
 package me.dustin.chatbot.network.packet.handler;
 
 import io.netty.buffer.Unpooled;
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.entity.Entity;
 import me.dustin.chatbot.entity.LivingEntity;
@@ -9,7 +10,7 @@ import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.impl.play.c2s.*;
 import me.dustin.chatbot.network.packet.impl.play.s2c.*;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
@@ -36,23 +37,25 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
     }
 
     public void handleJoinGamePacket(ClientBoundJoinGamePacket clientBoundJoinGamePacket) {
-        getClientConnection().getClientPlayer().setEntityId(clientBoundJoinGamePacket.getEntityId());
-        getClientConnection().getEventManager().run(clientBoundJoinGamePacket);
-
         //setup stuff from packet
         ClientPlayer clientPlayer = getClientConnection().getClientPlayer();
-        World world = getClientConnection().getWorld();
+        clientPlayer.setEntityId(clientBoundJoinGamePacket.getEntityId());
+        clientPlayer.setGameMode(clientBoundJoinGamePacket.getGameMode());
 
+        World world = getClientConnection().getWorld();
         world.setDimension(clientBoundJoinGamePacket.getDimension());
         if (clientBoundJoinGamePacket.getDifficulty() != null)
             world.setDifficulty(clientBoundJoinGamePacket.getDifficulty());
-        clientPlayer.setGameMode(clientBoundJoinGamePacket.getGameMode());
-
+        //send settings
+        getClientConnection().sendPacket(new ServerBoundClientSettingsPacket(ChatBot.getConfig().getLocale(), ChatBot.getConfig().isAllowServerListing(), ServerBoundClientSettingsPacket.SkinPart.all()));
         //send brand data
         String channel = "minecraft:brand";
         if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.2").getProtocolVer())
             channel = "MC|Brand";
         getClientConnection().sendPacket(new ServerBoundCustomDataPacket(channel, new PacketByteBuf(Unpooled.buffer()).writeString("vanilla")));
+
+        GeneralHelper.print("Received Join Game. Loading processes.", ChatMessage.TextColor.GOLD);
+        getClientConnection().getEventManager().run(clientBoundJoinGamePacket);
     }
 
     public void handleTabComplete(ClientBoundTabCompletePacket clientBoundTabCompletePacket) {
@@ -106,14 +109,17 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         getClientConnection().getTpsHelper().worldTime();
     }
 
+    public void handleSetHotbarSlotPacket(ClientBoundSetHotbarSlotPacket clientBoundSetHotbarSlotPacket) {
+        getClientConnection().sendPacket(new ServerBoundSetHotbarSlotPacket(clientBoundSetHotbarSlotPacket.getSlot()));
+    }
+
     public void handleUpdateHealthPacket(ClientBoundUpdateHealthPacket clientBoundUpdateHealthPacket) {
         if (clientBoundUpdateHealthPacket.getHealth() <= 0) {
             getClientConnection().sendPacket(new ServerBoundClientStatusPacket(ServerBoundClientStatusPacket.RESPAWN));
         }
     }
 
-    public void handleCustomDataPacket(ClientBoundCustomDataPacket clientBoundCustomDataPacket) {
-    }
+    public void handleCustomDataPacket(ClientBoundCustomDataPacket clientBoundCustomDataPacket) {}
 
     public void handleRemoveEntitiesPacket(ClientBoundRemoveEntities clientBoundRemoveEntities) {
         for (int entityId : clientBoundRemoveEntities.getEntityIds()) {
@@ -271,7 +277,7 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
             clientPlayer.movePitch(clientBoundPlayerPositionAndLookPacket.getPitch());
         else
             clientPlayer.setPitch(clientBoundPlayerPositionAndLookPacket.getPitch());
-
+        clientPlayer.setHasSetPos(true);
         getClientConnection().sendPacket(new ServerBoundConfirmTeleportPacket(clientBoundPlayerPositionAndLookPacket.getTeleportId()));
         getClientConnection().sendPacket(new ServerBoundPlayerPositionAndRotationPacket(clientPlayer.getX(), clientPlayer.getY(), clientPlayer.getZ(), clientPlayer.getYaw(), clientPlayer.getPitch(), true));
 

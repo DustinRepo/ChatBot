@@ -6,7 +6,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.impl.login.s2c.*;
 import me.dustin.chatbot.network.packet.impl.play.s2c.*;
 
@@ -38,6 +38,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "ping"), ClientBoundPingPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "difficulty"), ClientBoundServerDifficultyPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "plugin"), ClientBoundCustomDataPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "hotbar_slot"), ClientBoundSetHotbarSlotPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_destroy"), ClientBoundRemoveEntities.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_player"), ClientBoundSpawnPlayerPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "entity_object_spawn"), ClientBoundSpawnEntityPacket.class);

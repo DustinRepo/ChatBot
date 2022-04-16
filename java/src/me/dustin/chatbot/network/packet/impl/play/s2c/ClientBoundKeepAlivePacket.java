@@ -1,6 +1,6 @@
 package me.dustin.chatbot.network.packet.impl.play.s2c;
 
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
@@ -25,7 +25,7 @@ public class ClientBoundKeepAlivePacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
+    public void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleKeepAlivePacket(this);
     }
 }

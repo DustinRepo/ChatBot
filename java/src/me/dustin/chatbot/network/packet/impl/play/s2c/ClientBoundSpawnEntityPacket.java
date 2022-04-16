@@ -1,7 +1,7 @@
 package me.dustin.chatbot.network.packet.impl.play.s2c;
 
 import me.dustin.chatbot.network.packet.Packet;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
@@ -55,7 +55,7 @@ public class ClientBoundSpawnEntityPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
+    public void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         //pre 1.13 minecraft hardcoded the entity type value for non-living entities into the packet handling, and I am not going through all that bs
         //I don't even use non-living entities anyway so it's not a big deal
         //this class only exists because in 1.19 snapshots they merged the SpawnMob packet into this

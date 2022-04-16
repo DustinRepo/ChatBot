@@ -17,6 +17,7 @@ public class ClientBoundPacketHandler extends SimpleChannelInboundHandler<Packet
         this.getClientConnection().setChannel(ctx.channel());
         this.channelHandlerContext = ctx;
         this.channel = ctx.channel();
+        this.channel.config().setAutoRead(true);
         super.channelActive(ctx);
     }
 
@@ -29,7 +30,7 @@ public class ClientBoundPacketHandler extends SimpleChannelInboundHandler<Packet
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Packet.ClientBoundPacket packet) {
         if (channel.isOpen() && packet != null) {
-            packet.apply(getClientConnection().getClientBoundPacketHandler());
+            packet.handlePacket(getClientConnection().getClientBoundPacketHandler());
         }
     }
 

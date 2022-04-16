@@ -2,12 +2,7 @@ package me.dustin.chatbot.chat;
 
 import com.google.gson.JsonObject;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import me.dustin.chatbot.network.ProtocolHandler;
 
 public class Translator {
 

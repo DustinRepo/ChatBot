@@ -1,12 +1,11 @@
 package me.dustin.chatbot.network.packet.impl.login.s2c;
 
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 
-import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
@@ -44,7 +43,7 @@ public class ClientBoundEncryptionStartPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
+    public void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         ((LoginClientBoundPacketHandler)clientBoundPacketHandler).handleEncryptionRequest(this);
     }
 

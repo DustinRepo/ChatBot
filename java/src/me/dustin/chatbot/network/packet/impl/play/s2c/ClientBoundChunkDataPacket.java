@@ -57,7 +57,7 @@ public class ClientBoundChunkDataPacket extends Packet.ClientBoundPacket {
     }
 
     @Override
-    public void apply(ClientBoundPacketHandler clientBoundPacketHandler) {
+    public void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
         //((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleChunkDataPacket(this);
     }
 

@@ -5,20 +5,19 @@ import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
-public class ClientBoundPingPacket extends Packet.ClientBoundPacket {
-    private final int id;
-
-    public ClientBoundPingPacket(PacketByteBuf packetByteBuf) {
+public class ClientBoundSetHotbarSlotPacket extends Packet.ClientBoundPacket {
+    private final byte slot;
+    public ClientBoundSetHotbarSlotPacket(PacketByteBuf packetByteBuf) {
         super(packetByteBuf);
-        this.id = packetByteBuf.readInt();
+        this.slot = packetByteBuf.readByte();
     }
 
     @Override
     public void handlePacket(ClientBoundPacketHandler clientBoundPacketHandler) {
-        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handlePingPacket(this);
+        ((PlayClientBoundPacketHandler)clientBoundPacketHandler).handleSetHotbarSlotPacket(this);
     }
 
-    public int getId() {
-        return id;
+    public byte getSlot() {
+        return slot;
     }
 }

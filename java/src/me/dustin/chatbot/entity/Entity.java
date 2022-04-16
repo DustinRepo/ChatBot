@@ -2,7 +2,7 @@ package me.dustin.chatbot.entity;
 
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.GeneralHelper;
-import me.dustin.chatbot.network.packet.ProtocolHandler;
+import me.dustin.chatbot.network.ProtocolHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
