@@ -102,6 +102,10 @@ public class ClientPlayer {
         this.hasSetPos = hasSetPos;
     }
 
+    public boolean hasSetPos() {
+        return hasSetPos;
+    }
+
     public double getX() {
         return x;
     }

@@ -96,7 +96,7 @@ public class MinecraftAccount {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("agent", "Minecraft");
             jsonObject.addProperty("username", email);
-            jsonObject.addProperty("password", "JexClient");
+            jsonObject.addProperty("password", "ChatBot");
             jsonObject.addProperty("requestUser", true);
             Map<String, String> header = new HashMap<>();
             header.put("Content-Type", "application/json");

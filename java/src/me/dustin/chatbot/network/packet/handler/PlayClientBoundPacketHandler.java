@@ -54,7 +54,10 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
             channel = "MC|Brand";
         getClientConnection().sendPacket(new ServerBoundCustomDataPacket(channel, new PacketByteBuf(Unpooled.buffer()).writeString("vanilla")));
 
-        GeneralHelper.print("Received Join Game. Loading processes.", ChatMessage.TextColor.GOLD);
+        //fix for servers that pass you through proxy servers spamming the console
+        if (!getClientConnection().isInGame()) {
+            GeneralHelper.print("Received Join Game. Loading processes.", ChatMessage.TextColor.GOLD);
+        }
         getClientConnection().getEventManager().run(clientBoundJoinGamePacket);
     }
 
@@ -64,6 +67,7 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public void handleResourcePackPacket(ClientBoundResourcePackSendPacket clientBoundResourcePackSendPacket) {
         if (clientBoundResourcePackSendPacket.isForced()) {
+            GeneralHelper.print("Server is forcing resource pack, telling server we have it...", ChatMessage.TextColor.GREEN);
             //tell the server we have the resource pack if it forces one
             getClientConnection().sendPacket(new ServerBoundResourcePackStatusPacket(ServerBoundResourcePackStatusPacket.ACCEPTED));
             getClientConnection().sendPacket(new ServerBoundResourcePackStatusPacket(ServerBoundResourcePackStatusPacket.SUCCESSFULLY_LOADED));
@@ -281,9 +285,12 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
             clientPlayer.movePitch(clientBoundPlayerPositionAndLookPacket.getPitch());
         else
             clientPlayer.setPitch(clientBoundPlayerPositionAndLookPacket.getPitch());
-        clientPlayer.setHasSetPos(true);
         getClientConnection().sendPacket(new ServerBoundConfirmTeleportPacket(clientBoundPlayerPositionAndLookPacket.getTeleportId()));
         getClientConnection().sendPacket(new ServerBoundPlayerPositionAndRotationPacket(clientPlayer.getX(), clientPlayer.getY(), clientPlayer.getZ(), clientPlayer.getYaw(), clientPlayer.getPitch(), true));
-
+        //supposedly the vanilla client sends a RESPAWN as it loads the world up
+        if (!clientPlayer.hasSetPos()) {
+            getClientConnection().sendPacket(new ServerBoundClientStatusPacket(ServerBoundClientStatusPacket.RESPAWN));
+        }
+        clientPlayer.setHasSetPos(true);
     }
 }
