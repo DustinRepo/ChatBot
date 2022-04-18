@@ -6,7 +6,7 @@ import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.PlayClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
-import me.dustin.chatbot.world.BlockEntity;
+import me.dustin.chatbot.block.BlockEntity;
 import me.dustin.chatbot.world.chunk.Chunk;
 import me.dustin.chatbot.world.chunk.ChunkSection;
 import me.dustin.chatbot.world.chunk.Palette;

@@ -1,4 +1,4 @@
-package me.dustin.chatbot.world;
+package me.dustin.chatbot.block;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

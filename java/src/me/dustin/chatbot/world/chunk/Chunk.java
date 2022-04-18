@@ -1,6 +1,6 @@
 package me.dustin.chatbot.world.chunk;
 
-import me.dustin.chatbot.world.BlockEntity;
+import me.dustin.chatbot.block.BlockEntity;
 
 import java.util.ArrayList;
 

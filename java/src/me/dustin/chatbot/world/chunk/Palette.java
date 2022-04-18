@@ -1,7 +1,7 @@
 package me.dustin.chatbot.world.chunk;
 
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
-import me.dustin.chatbot.world.BlockState;
+import me.dustin.chatbot.block.BlockState;
 
 import java.util.HashMap;
 import java.util.Map;

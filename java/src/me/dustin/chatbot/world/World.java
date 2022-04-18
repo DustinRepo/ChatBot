@@ -1,7 +1,7 @@
 package me.dustin.chatbot.world;
 
+import me.dustin.chatbot.block.BlockState;
 import me.dustin.chatbot.entity.Entity;
-import me.dustin.chatbot.entity.LivingEntity;
 import me.dustin.chatbot.entity.player.PlayerEntity;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.world.chunk.Chunk;

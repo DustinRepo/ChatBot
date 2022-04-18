@@ -1,4 +1,4 @@
-package me.dustin.chatbot.world;
+package me.dustin.chatbot.block;
 
 import me.dustin.chatbot.nbt.NbtElement;
 
