@@ -95,7 +95,7 @@ public class MinecraftAccount {
             GeneralHelper.print("Logging in to TheAltening account...", ChatMessage.TextColor.YELLOW);
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("agent", "Minecraft");
-            jsonObject.addProperty("username", email);
+            jsonObject.addProperty("username", this.email);
             jsonObject.addProperty("password", "ChatBot");
             jsonObject.addProperty("requestUser", true);
             Map<String, String> header = new HashMap<>();
