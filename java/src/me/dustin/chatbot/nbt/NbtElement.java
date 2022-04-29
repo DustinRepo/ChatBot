@@ -1,22 +1,23 @@
 package me.dustin.chatbot.nbt;
 
 import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 
-public abstract class NbtElement {
-    private static final int END_TYPE = 0;
-    private static final int BYTE_TYPE = 1;
-    private static final int SHORT_TYPE = 2;
-    private static final int INT_TYPE = 3;
-    private static final int LONG_TYPE = 4;
-    private static final int FLOAT_TYPE = 5;
-    private static final int DOUBLE_TYPE = 6;
-    private static final int BYTE_ARRAY_TYPE = 7;
-    private static final int STRING_TYPE = 8;
-    private static final int LIST_TYPE = 9;
-    private static final int COMPOUND_TYPE = 10;
-    private static final int INT_ARRAY_TYPE = 11;
-    private static final int LONG_ARRAY_TYPE = 12;
+public interface NbtElement {
+    public static final int END_TYPE = 0;
+    public static final int BYTE_TYPE = 1;
+    public static final int SHORT_TYPE = 2;
+    public static final int INT_TYPE = 3;
+    public static final int LONG_TYPE = 4;
+    public static final int FLOAT_TYPE = 5;
+    public static final int DOUBLE_TYPE = 6;
+    public static final int BYTE_ARRAY_TYPE = 7;
+    public static final int STRING_TYPE = 8;
+    public static final int LIST_TYPE = 9;
+    public static final int COMPOUND_TYPE = 10;
+    public static final int INT_ARRAY_TYPE = 11;
+    public static final int LONG_ARRAY_TYPE = 12;
 
     public static NbtElement read(int type, DataInput input, int depth) {
         try {
@@ -67,5 +68,40 @@ public abstract class NbtElement {
         return null;
     }
 
-    public abstract Object getValue();
+    public default int getType() {
+        if (this instanceof NbtEnd)
+            return END_TYPE;
+        if (this instanceof NbtByte)
+            return BYTE_TYPE;
+        if (this instanceof NbtShort)
+            return SHORT_TYPE;
+        if (this instanceof NbtInt)
+            return INT_TYPE;
+        if (this instanceof NbtLong)
+            return LONG_TYPE;
+        if (this instanceof NbtFloat)
+            return FLOAT_TYPE;
+        if (this instanceof NbtDouble)
+            return DOUBLE_TYPE;
+        if (this instanceof NbtByteArray)
+            return BYTE_ARRAY_TYPE;
+        if (this instanceof NbtString)
+            return STRING_TYPE;
+        if (this instanceof NbtList)
+            return LIST_TYPE;
+        if (this instanceof NbtCompound)
+            return COMPOUND_TYPE;
+        if (this instanceof NbtIntArray)
+            return INT_ARRAY_TYPE;
+        if (this instanceof NbtLongArray)
+            return LONG_ARRAY_TYPE;
+        return 0;
+    }
+
+    void write(DataOutput dataOutput) throws IOException;
+    Object getValue();
+
+    public default String asString() {
+        return toString();
+    }
 }

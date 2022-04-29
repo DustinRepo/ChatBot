@@ -66,7 +66,7 @@ public class CommandManager {
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
         boolean directMessage = false;
         ClientBoundChatMessagePacket clientBoundChatMessagePacket = event.getChatMessagePacket();
-        UUID sender = clientBoundChatMessagePacket.getSender();
+        UUID sender = clientBoundChatMessagePacket.getSender().uuid();
         String string = GeneralHelper.strip(event.getChatMessagePacket().getMessage().getBody());
         String[] sA = string.split(" ");
         if (sA.length > 2 && sA[1].equalsIgnoreCase("whispers:")) {

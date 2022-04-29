@@ -25,7 +25,7 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
 
             String serverHash = new BigInteger(getClientConnection().getPacketCrypt().hash(encryptionStartPacket.getServerID().getBytes("ISO_8859_1"), getClientConnection().getPacketCrypt().getSecretKey().getEncoded(), getClientConnection().getPacketCrypt().getPublicKey().getEncoded())).toString(16);
             GeneralHelper.print("Contacting Auth Servers...", ChatMessage.TextColor.GREEN);
-            if (!getClientConnection().contactAuthServers(serverHash)) {
+            if (!getClientConnection().contactSessionServers(serverHash)) {
                 GeneralHelper.print("Error! Could not verify with auth servers", ChatMessage.TextColor.DARK_RED);
                 return;
             }

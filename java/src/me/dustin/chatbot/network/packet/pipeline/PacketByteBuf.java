@@ -5,17 +5,17 @@ import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
+import me.dustin.chatbot.nbt.NbtCompound;
 import me.dustin.chatbot.nbt.NbtElement;
 import me.dustin.chatbot.nbt.NbtEnd;
+import me.dustin.chatbot.nbt.NbtIo;
 
 import javax.annotation.Nullable;
-import java.io.DataInput;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -90,7 +90,22 @@ public class PacketByteBuf extends ByteBuf {
         } else {
             this.writeBoolean(false);
         }
+    }
 
+
+
+    public PacketByteBuf writeNbt(@Nullable NbtCompound compound) {
+        if (compound == null) {
+            this.writeByte(0);
+        } else {
+            try {
+                NbtIo.write(compound, new ByteBufOutputStream(this));
+            }
+            catch (IOException iOException) {
+                throw new EncoderException(iOException);
+            }
+        }
+        return this;
     }
 
     public <T> Optional<T> readOptional(Function<PacketByteBuf, T> parser) {

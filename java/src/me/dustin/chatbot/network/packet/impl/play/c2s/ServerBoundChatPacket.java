@@ -1,14 +1,18 @@
 package me.dustin.chatbot.network.packet.impl.play.c2s;
 
+import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.pipeline.PacketByteBuf;
 
 import java.io.IOException;
+import java.time.Instant;
 
 public class ServerBoundChatPacket extends Packet {
-    String message;
-    public ServerBoundChatPacket(String message) {
+    private final String message;
+    private final Instant instant;
+    private final SaltAndSig saltAndSig;
+    public ServerBoundChatPacket(String message, Instant instant, SaltAndSig saltAndSig) {
         super(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.SERVERBOUND, "chat_message"));
         if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.11").getProtocolVer()) {
             if (message.length() > 256) {
@@ -20,10 +24,18 @@ public class ServerBoundChatPacket extends Packet {
             }
         }
         this.message = message;
+        this.instant = instant;
+        this.saltAndSig = saltAndSig;
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeString(message);
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
+            packetByteBuf.writeLong(instant.getEpochSecond());
+            packetByteBuf.writeString(message);
+            packetByteBuf.writeLong(saltAndSig.salt());
+            packetByteBuf.writeByteArray(saltAndSig.signature());
+        } else
+            packetByteBuf.writeString(message);
     }
 }

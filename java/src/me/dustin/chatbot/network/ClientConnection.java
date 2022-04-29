@@ -13,14 +13,17 @@ import me.dustin.chatbot.chat.Translator;
 import me.dustin.chatbot.command.CommandManager;
 import me.dustin.chatbot.event.EventTick;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.helper.TPSHelper;
+import me.dustin.chatbot.network.key.KeyContainer;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.impl.handshake.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundLoginStartPacket;
 import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundChatPacket;
 import me.dustin.chatbot.network.packet.pipeline.PacketDecryptor;
 import me.dustin.chatbot.network.packet.pipeline.PacketDeflater;
 import me.dustin.chatbot.network.packet.pipeline.PacketEncryptor;
@@ -56,6 +59,7 @@ public class ClientConnection {
 
     private ClientBoundPacketHandler clientBoundPacketHandler;
     private NetworkState networkState = NetworkState.LOGIN;
+    private final KeyContainer keyContainer;
     private int compressionThreshold;
     private boolean isConnected;
     private boolean isEncrypted;
@@ -82,6 +86,10 @@ public class ClientConnection {
         this.tpsHelper = new TPSHelper();
         this.playerInfoManager = new PlayerInfoManager();
         this.eventManager = new EventManager();
+        if (minecraftAccount instanceof MinecraftAccount.MicrosoftAccount || minecraftAccount instanceof MinecraftAccount.MojangAccount mojangAccount && !mojangAccount.isCracked())
+            this.keyContainer = KeyHelper.getKeyContainer(KeyHelper.getKeyPairResponse(session.getAccessToken()));
+        else
+            this.keyContainer = null;
         updateTranslations();
         getEventManager().register(this);
         if (ChatBot.getGui() != null)
@@ -127,10 +135,10 @@ public class ClientConnection {
         GeneralHelper.print("Setting client version to " + ProtocolHandler.getCurrent().getName() + " (" + ProtocolHandler.getCurrent().getProtocolVer() + ")", ChatMessage.TextColor.AQUA);
         GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColor.GREEN);
         sendPacket(new ServerBoundHandshakePacket(ProtocolHandler.getCurrent().getProtocolVer(), getMinecraftServerAddress().getIp(), getMinecraftServerAddress().getPort(), ServerBoundHandshakePacket.LOGIN_STATE));
-        sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername()));
+        sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername(), keyContainer == null ? null : keyContainer.publicKey()));
     }
 
-    public boolean contactAuthServers(String serverHash) {
+    public boolean contactSessionServers(String serverHash) {
         JsonObject request = new JsonObject();
         request.addProperty("accessToken", getSession().getAccessToken());
         request.addProperty("selectedProfile", getSession().getUuid());
@@ -138,7 +146,7 @@ public class ClientConnection {
         Map<String, String> header = new HashMap<>();
         header.put("Content-Type", "application/json");
 
-        GeneralHelper.HttpResponse resp = GeneralHelper.httpRequest(getAuthServersUrl() + "/session/minecraft/join", request.toString(), header, "GET");
+        GeneralHelper.HttpResponse resp = GeneralHelper.httpRequest(getAuthServersUrl() + "/session/minecraft/join", request.toString(), header, "POST");
         if (resp.responseCode() != 204) {
             this.minecraftAccount.setLoginAgain(true);
             close();
@@ -301,6 +309,10 @@ public class ClientConnection {
 
     public boolean isInGame() {
         return isInGame;
+    }
+
+    public KeyContainer getKeyContainer() {
+        return keyContainer;
     }
 
     public void setCompressionThreshold(int compressionThreshold) {

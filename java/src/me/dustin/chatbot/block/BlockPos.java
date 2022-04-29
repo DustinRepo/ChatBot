@@ -1,7 +1,5 @@
 package me.dustin.chatbot.block;
 
-import java.util.Objects;
-
 public class BlockPos {
     private int x, y, z;
 

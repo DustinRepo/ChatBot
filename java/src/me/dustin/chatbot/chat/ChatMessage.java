@@ -24,22 +24,23 @@ public class ChatMessage {
         this.body = body;
     }
 
-    public String getMessage() {
-        if (senderName.isEmpty())
-            return body;
-        return senderName + " " + body;
-    }
-
-    public String getSenderName() {
-        return senderName;
-    }
-
-    public String getBody() {
-        return body;
+    public static ChatMessage of(String jsonData) {
+        parsingMessage.senderName = "";
+        parsingMessage.body = "";
+        parsingMessage.body = parse(GeneralHelper.gson.fromJson(jsonData, JsonObject.class));
+        String body = parsingMessage.body;
+        if (body.startsWith("<") && body.contains("> ") && parsingMessage.senderName.isEmpty()) {//crude way to move player name to actual name field if the text is set up weird
+            String s = body.split("<")[1].split(">")[0];
+            parsingMessage.senderName = s;
+            parsingMessage.body = body.replace("<" + s + "> ", "");
+        }
+        return parsingMessage;
     }
 
     public static String parse(JsonElement element) {
         StringJoiner sj = new StringJoiner(" ");
+        if (element == null)
+            return "";
         if (element.isJsonPrimitive())
             return element.getAsString();
         if (!element.isJsonObject()) {
@@ -90,20 +91,6 @@ public class ChatMessage {
         }
     }
 
-    public static ChatMessage of(String jsonData) {
-        parsingMessage.senderName = "";
-        parsingMessage.body = "";
-        JsonObject jsonObject = GeneralHelper.gson.fromJson(jsonData, JsonObject.class);
-        parsingMessage.body = parse(jsonObject);
-        String body = parsingMessage.body;
-        if (body.startsWith("<") && body.contains("> ") && parsingMessage.senderName.toString().isEmpty()) {//crude way to move player name to actual name field if the text is set up weird
-            String s = body.split("<")[1].split(">")[0];
-            parsingMessage.senderName = s;
-            parsingMessage.body = body.replace("<" + s + "> ", "");
-        }
-        return parsingMessage;
-    }
-
     private static String getExtra(JsonObject jsonObject) {
         StringBuilder s = new StringBuilder();
         JsonArray extra = jsonObject.getAsJsonArray("extra");
@@ -145,6 +132,24 @@ public class ChatMessage {
 
     private static String removeFormatCodes(String s) {
         return s.replace("§k", "").replace("§l", "").replace("§m", "").replace("§n", "").replace("§o", "").replace("§r", "");
+    }
+
+    public String getMessage() {
+        if (senderName.isEmpty())
+            return body;
+        return senderName + " " + body;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
     public enum TextColor {

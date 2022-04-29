@@ -1,11 +1,14 @@
 package me.dustin.chatbot.entity.player;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.network.ProtocolHandler;
+import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.impl.play.c2s.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class ClientPlayer {
@@ -65,7 +68,9 @@ public class ClientPlayer {
         if ((!ChatBot.getConfig().isRepeatMessages() && lastMessage.equalsIgnoreCase(message)) || !messageStopwatch.hasPassed(ChatBot.getConfig().getMessageDelay())) {
             return;
         }
-        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message));
+        Instant instant = Instant.now();
+        SaltAndSig saltAndSig = getClientConnection().getKeyContainer() == null ? null : KeyHelper.sigForMessage(instant, message, getClientConnection().getKeyContainer().privateKey(), getUuid());
+        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message, instant, saltAndSig));
         messageStopwatch.reset();
         lastMessage = message;
     }

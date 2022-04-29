@@ -25,7 +25,7 @@ public class NumberCountProcess extends ChatBotProcess {
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
         if (event.getChatMessagePacket().getSender() == null || GeneralHelper.matchUUIDs(event.getChatMessagePacket().getSender().toString(), getClientConnection().getSession().getUuid()))
             return;
-        String senderName = MCAPIHelper.getNameFromUUID(event.getChatMessagePacket().getSender());
+        String senderName = MCAPIHelper.getNameFromUUID(event.getChatMessagePacket().getSender().uuid());
         String[] split = event.getChatMessagePacket().getMessage().getBody().split(" ");
 
         if (senderName.isEmpty())

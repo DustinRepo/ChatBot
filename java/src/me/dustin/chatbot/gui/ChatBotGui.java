@@ -3,7 +3,9 @@ package me.dustin.chatbot.gui;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventRemovePlayer;
+import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundChatPacket;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -13,6 +15,7 @@ import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.time.Instant;
 
 public class ChatBotGui extends JFrame {
     private final  CustomTextPane output;
@@ -60,15 +63,23 @@ public class ChatBotGui extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//they pressed enter
-                    if (ChatBot.getClientConnection() != null)
-                        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(input.getText()));
+                    if (ChatBot.getClientConnection() != null) {
+                        Instant instant = Instant.now();
+                        String message = input.getText();
+                        SaltAndSig saltAndSig = ChatBot.getClientConnection().getKeyContainer() == null ? null : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid());
+                        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, saltAndSig));
+                    }
                     input.setText("");
                 }
             }
         });
         sendButton.addActionListener(actionEvent -> {
-            if (ChatBot.getClientConnection() != null)
-                ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(input.getText()));
+            if (ChatBot.getClientConnection() != null) {
+                Instant instant = Instant.now();
+                String message = input.getText();
+                SaltAndSig saltAndSig = ChatBot.getClientConnection().getKeyContainer() == null ? null : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid());
+                ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, saltAndSig));
+            }
             this.input.setText("");
         });
         this.addWindowListener(new java.awt.event.WindowAdapter() {

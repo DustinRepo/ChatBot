@@ -24,8 +24,9 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         loginMap.put(0x02, ClientBoundLoginSuccessPacket.class);
         loginMap.put(0x03, ClientBoundSetCompressionPacket.class);
         loginMap.put(0x04, ClientBoundPluginRequestPacket.class);
-        
+
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "chat_message"), ClientBoundChatMessagePacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "game_message"), ClientBoundGameMessagePacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "kick"), ClientBoundDisconnectPlayPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "heartbeat"), ClientBoundKeepAlivePacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "tab_list", "legacy_tab_list"), ClientBoundPlayerInfoPacket.class);

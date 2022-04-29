@@ -15,7 +15,7 @@ public class ProtocolHandler {
     private static final ArrayList<ProtocolVersion> versions = new ArrayList<>();
 
     public static void downloadData() {
-        String data = GeneralHelper.httpRequest("https://gitlab.bixilon.de/bixilon/minosoft/-/raw/master/src/main/resources/assets/minosoft/mapping/versions.json", null, null, "GET").data();
+        String data = GeneralHelper.httpRequest("https://raw.githubusercontent.com/DustinRepo/ChatBot/master/versions/protocol_versions.json", null, null, "GET").data();
         JsonObject jsonObject = GeneralHelper.prettyGson.fromJson(data, JsonObject.class);
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             int redirectId = -1;

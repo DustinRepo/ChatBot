@@ -18,6 +18,7 @@ import me.dustin.chatbot.entity.player.ClientPlayer;
 import me.dustin.chatbot.entity.player.PlayerInfo;
 import me.dustin.chatbot.world.World;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
@@ -34,6 +35,10 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
     public void handleChatMessagePacket(ClientBoundChatMessagePacket clientBoundChatMessagePacket) {
         new EventReceiveChatMessage(clientBoundChatMessagePacket).run(getClientConnection());
         GeneralHelper.printChat(clientBoundChatMessagePacket.getMessage());
+    }
+
+    public void handleGameMessagePacket(ClientBoundGameMessagePacket clientBoundGameMessagePacket) {
+        GeneralHelper.printChat(clientBoundGameMessagePacket.getMessage());
     }
 
     public void handleJoinGamePacket(ClientBoundJoinGamePacket clientBoundJoinGamePacket) {
