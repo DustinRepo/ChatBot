@@ -38,7 +38,7 @@ public class CommandWordCount extends Command {
             return;
         }
         int count = 0;
-        ArrayList<String> quotes = quoteProcess.quotes.get(uuid.toString().replace("-", ""));
+        ArrayList<String> quotes = QuoteProcess.quotes.get(uuid.toString().replace("-", ""));
         for (String quote : quotes) {
             count += GeneralHelper.countMatches(quote, phrase);
         }

@@ -37,14 +37,14 @@ public class Chat2b2tCountProcess extends ChatBotProcess {
     @EventPointer
     private final EventListener<EventReceiveChatMessage> eventReceiveChatMessageEventListener = new EventListener<>(event -> {
         ClientBoundChatMessagePacket packet = event.getChatMessagePacket();
-        if (packet.getSender() == null)
+        if (packet.getSender().uuid() == null)
             return;
         String m = GeneralHelper.strip(packet.getMessage().getBody());
         if (handleCommand(m)) {
             event.cancel();
             return;
         }
-        String uuid = packet.getSender().toString().replace("-","");
+        String uuid = packet.getSender().uuid().toString().replace("-","");
         if (GeneralHelper.matchUUIDs(uuid, getClientConnection().getSession().getUuid()))
             return;
         int matches = GeneralHelper.countMatches(m.toLowerCase(), "2b2t") + GeneralHelper.countMatches(m.toLowerCase(), "2builders2tools") + GeneralHelper.countMatches(m.toLowerCase(), "oldest anarchy server in minecraft");
