@@ -92,7 +92,15 @@ public class PacketByteBuf extends ByteBuf {
         }
     }
 
-
+    public PacketByteBuf writeOptionalNBT(@Nullable NbtCompound compound) {
+        if (compound == null) {
+            this.writeBoolean(false);
+        } else {
+            this.writeBoolean(true);
+            this.writeNbt(compound);
+        }
+        return this;
+    }
 
     public PacketByteBuf writeNbt(@Nullable NbtCompound compound) {
         if (compound == null) {
@@ -106,10 +114,6 @@ public class PacketByteBuf extends ByteBuf {
             }
         }
         return this;
-    }
-
-    public <T> Optional<T> readOptional(Function<PacketByteBuf, T> parser) {
-        return this.readBoolean() ? Optional.of(parser.apply(this)) : Optional.empty();
     }
 
     public byte[] readByteArray() {

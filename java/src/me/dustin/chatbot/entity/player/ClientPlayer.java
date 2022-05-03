@@ -9,6 +9,7 @@ import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.impl.play.c2s.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class ClientPlayer {
@@ -16,21 +17,20 @@ public class ClientPlayer {
     private UUID uuid;
     private String name;
     private final ClientConnection clientConnection;
+    private final ArrayList<PlayerInfo.PlayerProperty> properties = new ArrayList<>();
 
     private int entityId;
     private double x,y,z;
     private float yaw, pitch;
     private float lastYaw, lastPitch;
     private int ticks;
-
-    private boolean hasSetPos;
-
     private PlayerInfo.GameMode gameMode = PlayerInfo.GameMode.SURVIVAL;
 
+    private boolean hasSetPos;
     private final StopWatch messageStopwatch = new StopWatch();
-
     private String lastMessage = "";
     private final boolean below1_9;
+
     public ClientPlayer(String name, UUID uuid, ClientConnection clientConnection) {
         this.name = name;
         this.uuid = uuid;
@@ -145,6 +145,10 @@ public class ClientPlayer {
 
     public void moveZ(double z) {
         this.z += z;
+    }
+
+    public ArrayList<PlayerInfo.PlayerProperty> getProperties() {
+        return properties;
     }
 
     public float getYaw() {

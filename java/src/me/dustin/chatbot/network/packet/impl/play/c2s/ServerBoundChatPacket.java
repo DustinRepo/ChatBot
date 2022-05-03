@@ -33,8 +33,7 @@ public class ServerBoundChatPacket extends Packet {
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
             packetByteBuf.writeLong(instant.getEpochSecond());
             packetByteBuf.writeString(message);
-            packetByteBuf.writeLong(saltAndSig.salt());
-            packetByteBuf.writeByteArray(saltAndSig.signature());
+            saltAndSig.write(packetByteBuf);
         } else
             packetByteBuf.writeString(message);
     }

@@ -11,28 +11,24 @@ import java.io.IOException;
 
 public class ServerBoundLoginStartPacket extends Packet {
     private final String name;
-    private final PublicKeyContainer publicKeyContainer;
+    private final NbtCompound publicKeyNbt;
     public ServerBoundLoginStartPacket(String name, PublicKeyContainer publicKeyContainer) {
         super(0x00);
         this.name = name;
-        this.publicKeyContainer = publicKeyContainer;
+        if (publicKeyContainer != null) {
+            publicKeyNbt = new NbtCompound();
+            publicKeyNbt.put("expires_at", new NbtString(publicKeyContainer.expiresAt().toString()));
+            publicKeyNbt.put("key", new NbtString(publicKeyContainer.keyString()));
+            publicKeyNbt.put("signature", new NbtString(publicKeyContainer.signature()));
+        } else {
+            publicKeyNbt = null;
+        }
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         packetByteBuf.writeString(name);
-        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
-            if (publicKeyContainer != null) {
-                packetByteBuf.writeBoolean(true);
-                NbtCompound nbtCompound = new NbtCompound();
-                nbtCompound.put("expires_at", new NbtString(publicKeyContainer.expiresAt().toString()));
-                nbtCompound.put("key", new NbtString(publicKeyContainer.keyString()));
-                nbtCompound.put("signature", new NbtString(publicKeyContainer.signature()));
-
-                packetByteBuf.writeNbt(nbtCompound);
-            } else {
-                packetByteBuf.writeBoolean(false);
-            }
-        }
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer())
+            packetByteBuf.writeOptionalNBT(publicKeyNbt);
     }
 }

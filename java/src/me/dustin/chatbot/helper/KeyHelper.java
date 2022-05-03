@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class KeyHelper {
-
+    private static final SecureRandom secureRandom = new SecureRandom();
     public static KeyPairResponse getKeyPairResponse(String accessToken) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json; charset=utf-8");
@@ -33,7 +34,7 @@ public class KeyHelper {
         try {
             Signature signature = getSignature(privateKey);
             if (signature != null) {
-                long l = new SecureRandom().nextLong();
+                long l = nextLong();
                 updateSig(signature, l, uuid, instant, string);
                 return new SaltAndSig(l, signature.sign());
             }
@@ -61,7 +62,17 @@ public class KeyHelper {
         return new KeyContainer(getPrivateKey(keyPairResponse.getPrivateKey()), new PublicKeyContainer(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
 
-    private static Signature getSignature(PrivateKey privateKey) throws GeneralSecurityException {
+    public static Signature genSignatureInstance(PublicKey publicKey) throws GeneralSecurityException {
+        if (publicKey == null) {
+            return null;
+        } else {
+            Signature signature = Signature.getInstance("SHA1withRSA");
+            signature.initVerify(publicKey);
+            return signature;
+        }
+    }
+
+    public static Signature getSignature(PrivateKey privateKey) throws GeneralSecurityException {
         if (privateKey == null) {
             return null;
         } else {
@@ -69,6 +80,10 @@ public class KeyHelper {
             signature.initSign(privateKey);
             return signature;
         }
+    }
+
+    public static PublicKey getPublicKey(String s) {
+       return decodePublicKey(s);
     }
 
     public static PrivateKey getPrivateKey(String s) {
@@ -86,6 +101,17 @@ public class KeyHelper {
         return null;
     }
 
+    private static PublicKey createPublicKey(byte[] bs) {
+        try {
+            X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bs);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePublic(encodedKeySpec);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private static PrivateKey decodePrivateKey(String string) {
         int i = string.indexOf("-----BEGIN RSA PRIVATE KEY-----");
         if (i != -1) {
@@ -97,15 +123,17 @@ public class KeyHelper {
         return createKey(Base64.getMimeDecoder().decode(string));
     }
 
-    public static String decodePublicKey(String string) {
+    private static PublicKey decodePublicKey(String string) {
         int i = string.indexOf("-----BEGIN RSA PUBLIC KEY-----");
         if (i != -1) {
-            i += "-----BEGIN RSA PUBLIC KEY-----".length();
-            int j = string.indexOf("-----END RSA PUBLIC KEY-----", i);
+            int j = string.indexOf("-----END RSA PUBLIC KEY-----", i += "-----BEGIN RSA PUBLIC KEY-----".length());
             string = string.substring(i, j + 1);
         }
+        return createPublicKey(Base64.getMimeDecoder().decode(string));
+    }
 
-        return string;
+    public static long nextLong() {
+        return secureRandom.nextLong();
     }
 
 }

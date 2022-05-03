@@ -1,15 +1,20 @@
 package me.dustin.chatbot.network.packet.handler;
 
+import com.google.common.primitives.Longs;
 import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.event.EventLoginSuccess;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundEncryptionResponsePacket;
 import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundPluginResponsePacket;
 import me.dustin.chatbot.network.packet.impl.login.s2c.*;
 
 import javax.crypto.SecretKey;
 import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.security.Signature;
 
 public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
 
@@ -32,7 +37,17 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
             byte[] encryptedSecret = getClientConnection().getPacketCrypt().encrypt(secretKey.getEncoded());
             byte[] encryptedVerify = getClientConnection().getPacketCrypt().encrypt(encryptionStartPacket.getVerifyToken());
 
+
             ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
+            if (getClientConnection().getKeyContainer() != null) {
+                Signature signature = KeyHelper.getSignature(getClientConnection().getKeyContainer().privateKey());
+                if (signature != null) {
+                    long l = KeyHelper.nextLong();
+                    signature.update(encryptionStartPacket.getVerifyToken());
+                    signature.update(Longs.toByteArray(l));
+                    serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, new SaltAndSig(l, signature.sign()));
+                }
+            }
 
             getClientConnection().sendPacket(serverBoundEncryptionResponsePacket);
             GeneralHelper.print("Encrypting connection...", ChatMessage.TextColor.GREEN);

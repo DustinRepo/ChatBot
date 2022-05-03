@@ -6,4 +6,9 @@ public record SaltAndSig(long salt, byte[] signature){
     public static SaltAndSig from(PacketByteBuf buf) {
         return new SaltAndSig(buf.readLong(), buf.readByteArray());
     }
+
+    public void write(PacketByteBuf packetByteBuf) {
+        packetByteBuf.writeLong(this.salt());
+        packetByteBuf.writeByteArray(this.signature());
+    }
 }
