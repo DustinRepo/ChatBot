@@ -6,6 +6,7 @@ import me.dustin.chatbot.event.EventLoginSuccess;
 import me.dustin.chatbot.helper.GeneralHelper;
 import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundEncryptionResponsePacket;
 import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundPluginResponsePacket;
@@ -39,7 +40,7 @@ public class LoginClientBoundPacketHandler extends ClientBoundPacketHandler {
 
 
             ServerBoundEncryptionResponsePacket serverBoundEncryptionResponsePacket = new ServerBoundEncryptionResponsePacket(encryptedSecret, encryptedVerify);
-            if (getClientConnection().getKeyContainer() != null) {
+            if (getClientConnection().getKeyContainer() != null && ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
                 Signature signature = KeyHelper.getSignature(getClientConnection().getKeyContainer().privateKey());
                 if (signature != null) {
                     long l = KeyHelper.nextLong();
