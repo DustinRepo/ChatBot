@@ -1,6 +1,7 @@
 package me.dustin.chatbot.helper;
 
 import com.google.common.primitives.Longs;
+import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.network.key.KeyContainer;
 import me.dustin.chatbot.network.key.KeyPairResponse;
 import me.dustin.chatbot.network.key.PublicKeyContainer;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 public class KeyHelper {
     private static final SecureRandom secureRandom = new SecureRandom();
+
     public static KeyPairResponse getKeyPairResponse(String accessToken) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json; charset=utf-8");
@@ -58,18 +60,12 @@ public class KeyHelper {
         return byteBuffer.array();
     }
 
-    public static KeyContainer getKeyContainer(KeyPairResponse keyPairResponse) {
-        return new KeyContainer(getPrivateKey(keyPairResponse.getPrivateKey()), new PublicKeyContainer(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), Instant.parse(keyPairResponse.getRefreshedAfter()));
+    public static SaltAndSig generateSaltAndSig(Instant instant, String message) {
+        return ChatBot.getClientConnection().getKeyContainer() == null ? SaltAndSig.EMPTY : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid());
     }
 
-    public static Signature genSignatureInstance(PublicKey publicKey) throws GeneralSecurityException {
-        if (publicKey == null) {
-            return null;
-        } else {
-            Signature signature = Signature.getInstance("SHA1withRSA");
-            signature.initVerify(publicKey);
-            return signature;
-        }
+    public static KeyContainer getKeyContainer(KeyPairResponse keyPairResponse) {
+        return new KeyContainer(getPrivateKey(keyPairResponse.getPrivateKey()), new PublicKeyContainer(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
 
     public static Signature getSignature(PrivateKey privateKey) throws GeneralSecurityException {

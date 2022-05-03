@@ -69,8 +69,7 @@ public class ClientPlayer {
             return;
         }
         Instant instant = Instant.now();
-        SaltAndSig saltAndSig = getClientConnection().getKeyContainer() == null ? null : KeyHelper.sigForMessage(instant, message, getClientConnection().getKeyContainer().privateKey(), getUuid());
-        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message, instant, saltAndSig));
+        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message, instant, KeyHelper.generateSaltAndSig(instant, message)));
         messageStopwatch.reset();
         lastMessage = message;
     }

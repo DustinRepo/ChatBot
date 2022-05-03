@@ -66,8 +66,7 @@ public class ChatBotGui extends JFrame {
                     if (ChatBot.getClientConnection() != null) {
                         Instant instant = Instant.now();
                         String message = input.getText();
-                        SaltAndSig saltAndSig = ChatBot.getClientConnection().getKeyContainer() == null ? null : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid());
-                        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, saltAndSig));
+                        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
                     }
                     input.setText("");
                 }
@@ -77,8 +76,7 @@ public class ChatBotGui extends JFrame {
             if (ChatBot.getClientConnection() != null) {
                 Instant instant = Instant.now();
                 String message = input.getText();
-                SaltAndSig saltAndSig = ChatBot.getClientConnection().getKeyContainer() == null ? null : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid());
-                ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, saltAndSig));
+                ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
             }
             this.input.setText("");
         });

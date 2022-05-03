@@ -30,8 +30,7 @@ public class CrackedLoginProcess extends ChatBotProcess {
             if (chatMessage.getBody().contains(s)) {
                 String message = ChatBot.getConfig().getPasswordCreateCommand() + " " + ChatBot.getConfig().getCrackedLoginPassword() + (ChatBot.getConfig().isPasswordCreateUseTwice() ? " " + ChatBot.getConfig().getCrackedLoginPassword() : "");
                 Instant instant = Instant.now();
-                SaltAndSig saltAndSig = getClientConnection().getKeyContainer() == null ? null : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid());
-                getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, saltAndSig));
+                getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
                 stop();
                 return;
             }
@@ -40,8 +39,7 @@ public class CrackedLoginProcess extends ChatBotProcess {
             if (chatMessage.getBody().contains(s)) {
                 String message = ChatBot.getConfig().getLoginCommand() + " " + ChatBot.getConfig().getCrackedLoginPassword();
                 Instant instant = Instant.now();
-                SaltAndSig saltAndSig = getClientConnection().getKeyContainer() == null ? null : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid());
-                getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, saltAndSig));
+                getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
                 stop();
                 return;
             }
