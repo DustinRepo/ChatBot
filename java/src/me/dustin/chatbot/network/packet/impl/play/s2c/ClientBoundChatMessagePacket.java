@@ -31,6 +31,7 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
     private final ChatSender sender;
     private final Instant expiresAt;
     private final SaltAndSig saltAndSig;
+    private final ChatMessage teamName;
 
     public ClientBoundChatMessagePacket(PacketByteBuf packetByteBuf) {
         super(packetByteBuf);
@@ -52,11 +53,17 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
             name = ChatMessage.parse(GeneralHelper.gson.fromJson(packetByteBuf.readString(), JsonObject.class));
             this.message.setSenderName(name);
+            boolean isTeam = packetByteBuf.readBoolean();
+            if (isTeam)
+                this.teamName = ChatMessage.of(packetByteBuf.readString());
+            else
+                teamName = null;
             this.expiresAt = Instant.ofEpochSecond(packetByteBuf.readLong());
             this.saltAndSig = SaltAndSig.from(packetByteBuf);
         } else {
             expiresAt = Instant.now();
             saltAndSig = new SaltAndSig(0L, new byte[0]);
+            teamName = null;
         }
         this.sender = new ChatSender(uuid, name);
     }

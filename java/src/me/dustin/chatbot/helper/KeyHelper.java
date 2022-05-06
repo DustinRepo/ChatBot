@@ -37,7 +37,7 @@ public class KeyHelper {
             Signature signature = getSignature(privateKey);
             if (signature != null) {
                 long l = nextLong();
-                updateSig(signature, l, uuid, instant, string);
+                updateSig(signature, l, uuid, instant, String.format("{\"text\":\"%s\"}", string));
                 return new SaltAndSig(l, signature.sign());
             }
         } catch (GeneralSecurityException var6) {
@@ -72,7 +72,7 @@ public class KeyHelper {
         if (privateKey == null) {
             return null;
         } else {
-            Signature signature = Signature.getInstance("SHA1withRSA");
+            Signature signature = Signature.getInstance("SHA256withRSA");
             signature.initSign(privateKey);
             return signature;
         }
@@ -88,7 +88,7 @@ public class KeyHelper {
 
     private static PrivateKey createKey(byte[] bs) {
         try {
-            EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(bs);
+            PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(bs);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePrivate(encodedKeySpec);
         } catch (Exception e) {

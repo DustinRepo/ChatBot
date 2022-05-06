@@ -17,6 +17,7 @@ import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.helper.TPSHelper;
 import me.dustin.chatbot.network.key.KeyContainer;
+import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.impl.handshake.ServerBoundHandshakePacket;
 import me.dustin.chatbot.network.packet.impl.login.c2s.ServerBoundLoginStartPacket;
@@ -24,6 +25,7 @@ import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundChatPacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundCommandPacket;
 import me.dustin.chatbot.network.packet.pipeline.PacketDecryptor;
 import me.dustin.chatbot.network.packet.pipeline.PacketDeflater;
 import me.dustin.chatbot.network.packet.pipeline.PacketEncryptor;
@@ -39,6 +41,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -191,6 +194,16 @@ public class ClientConnection {
 
     public void updateTranslations() {
         Translator.setTranslation(ChatBot.getConfig().getLocale());
+    }
+
+    public void sendChat(String message) {
+        Instant instant = Instant.now();
+        if (message.startsWith("/") && ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
+            SaltAndSig.SaltAndSigs saltAndSigs = SaltAndSig.SaltAndSigs.EMPTY;
+            sendPacket(new ServerBoundCommandPacket(message.substring(1), instant, saltAndSigs));
+            return;
+        }
+        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
     }
 
     public void tick() {

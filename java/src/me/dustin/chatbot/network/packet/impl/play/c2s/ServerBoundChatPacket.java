@@ -30,11 +30,10 @@ public class ServerBoundChatPacket extends Packet {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
+        packetByteBuf.writeString(message);
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
             packetByteBuf.writeLong(instant.getEpochSecond());
-            packetByteBuf.writeString(message);
             saltAndSig.write(packetByteBuf);
-        } else
-            packetByteBuf.writeString(message);
+        }
     }
 }

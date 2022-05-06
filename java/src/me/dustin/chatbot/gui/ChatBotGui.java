@@ -64,9 +64,7 @@ public class ChatBotGui extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//they pressed enter
                     if (ChatBot.getClientConnection() != null) {
-                        Instant instant = Instant.now();
-                        String message = input.getText();
-                        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
+                        ChatBot.getClientConnection().sendChat(input.getText());
                     }
                     input.setText("");
                 }
@@ -74,9 +72,7 @@ public class ChatBotGui extends JFrame {
         });
         sendButton.addActionListener(actionEvent -> {
             if (ChatBot.getClientConnection() != null) {
-                Instant instant = Instant.now();
-                String message = input.getText();
-                ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
+                ChatBot.getClientConnection().sendChat(input.getText());
             }
             this.input.setText("");
         });

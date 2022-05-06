@@ -68,8 +68,7 @@ public class ClientPlayer {
         if ((!ChatBot.getConfig().isRepeatMessages() && lastMessage.equalsIgnoreCase(message)) || !messageStopwatch.hasPassed(ChatBot.getConfig().getMessageDelay())) {
             return;
         }
-        Instant instant = Instant.now();
-        getClientConnection().sendPacket(new ServerBoundChatPacket((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message, instant, KeyHelper.generateSaltAndSig(instant, message)));
+        getClientConnection().sendChat((ChatBot.getConfig().isGreenText() && !message.startsWith("/") ? ">" : "") + message);
         messageStopwatch.reset();
         lastMessage = message;
     }

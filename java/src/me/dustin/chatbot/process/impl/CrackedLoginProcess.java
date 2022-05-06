@@ -29,8 +29,7 @@ public class CrackedLoginProcess extends ChatBotProcess {
         for (String s : ChatBot.getConfig().getPasswordKeywords()) {
             if (chatMessage.getBody().contains(s)) {
                 String message = ChatBot.getConfig().getPasswordCreateCommand() + " " + ChatBot.getConfig().getCrackedLoginPassword() + (ChatBot.getConfig().isPasswordCreateUseTwice() ? " " + ChatBot.getConfig().getCrackedLoginPassword() : "");
-                Instant instant = Instant.now();
-                getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
+                ChatBot.getClientConnection().sendChat(message);
                 stop();
                 return;
             }
@@ -38,8 +37,7 @@ public class CrackedLoginProcess extends ChatBotProcess {
         for (String s : ChatBot.getConfig().getLoginKeywords()) {
             if (chatMessage.getBody().contains(s)) {
                 String message = ChatBot.getConfig().getLoginCommand() + " " + ChatBot.getConfig().getCrackedLoginPassword();
-                Instant instant = Instant.now();
-                getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
+                ChatBot.getClientConnection().sendChat(message);
                 stop();
                 return;
             }
