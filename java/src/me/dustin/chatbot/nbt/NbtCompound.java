@@ -1,5 +1,10 @@
 package me.dustin.chatbot.nbt;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -52,17 +57,34 @@ public class NbtCompound implements NbtElement {
 
     @Override
     public String toString() {
-        return "NbtCompound{" +
-                "elements=" + elements +
-                '}';
+        Gson prettyGson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        return "NbtCompound: " + prettyGson.toJson(toJson());
     }
 
     public Map<String, NbtElement> getElements() {
         return elements;
     }
 
+    public boolean has(String element) {
+        return getElements().containsKey(element);
+    }
+
     @Override
     public Object getValue() {
         return elements;
+    }
+
+    public NbtElement get(String element) {
+        return getElements().get(element);
+    }
+
+    @Override
+    public JsonElement toJson() {
+        JsonObject o = new JsonObject();
+        for (String s1 : elements.keySet()) {
+            NbtElement nbtElement = elements.get(s1);
+            o.add(s1, nbtElement.toJson());
+        }
+        return o;
     }
 }

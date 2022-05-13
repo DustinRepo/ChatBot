@@ -1,5 +1,7 @@
 package me.dustin.chatbot.nbt;
 
+import com.google.gson.JsonElement;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -100,8 +102,5 @@ public interface NbtElement {
 
     void write(DataOutput dataOutput) throws IOException;
     Object getValue();
-
-    public default String asString() {
-        return toString();
-    }
+    JsonElement toJson();
 }

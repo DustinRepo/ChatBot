@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class ServerBoundKeepAlivePacket extends Packet {
 
-    private long id;
+    private final long id;
 
     public ServerBoundKeepAlivePacket(long id) {
         super(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.SERVERBOUND, "heartbeat"));
@@ -17,9 +17,10 @@ public class ServerBoundKeepAlivePacket extends Packet {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.1").getProtocolVer())//in 1.12.1 and below keepalive id is an int, not a long
-            packetByteBuf.writeVarInt((int) id);
-        else
-            packetByteBuf.writeLong(id);
+        packetByteBuf.writeEitherOr(ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.12.1").getProtocolVer(), packetByteBuf1 ->
+            packetByteBuf1.writeVarInt((int) id)
+        ,packetByteBuf1 ->
+            packetByteBuf1.writeLong(id)
+        );
     }
 }

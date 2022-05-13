@@ -1,5 +1,6 @@
 package me.dustin.chatbot.world;
 
+import me.dustin.chatbot.block.BlockPos;
 import me.dustin.chatbot.block.BlockState;
 import me.dustin.chatbot.entity.Entity;
 import me.dustin.chatbot.entity.player.PlayerEntity;
@@ -7,6 +8,8 @@ import me.dustin.chatbot.network.ClientConnection;
 import me.dustin.chatbot.world.chunk.Chunk;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class World {
     private final ClientConnection clientConnection;
@@ -33,23 +36,11 @@ public class World {
         return clientConnection;
     }
 
-    public BlockState getBlockState(int x, int y, int z) {
-        int sectionCoord = y >> 4;
-        int bottomSectionCoord = -64 >> 4;//TODO: find a way to determine bottom of world without hard-coding it
-        int sectionIndex = sectionCoord - bottomSectionCoord;
-        int chunkX = (int)(x / 16);
-        int chunkZ = (int)(z / 16);
+    public BlockState getBlockState(BlockPos blockPos) {
+        int chunkX = getSectionCoord(blockPos.getX());
+        int chunkZ = getSectionCoord(blockPos.getZ());
         Chunk chunk = getChunk(chunkX, chunkZ);
-        if (chunk == null)
-            return null;
-        if (sectionIndex < 0 || sectionIndex > chunk.getChunkSections().size()) {
-            System.out.println("Invalid section index! " + sectionIndex);
-        }
-        try {
-            return chunk.getChunkSections().get(sectionIndex).getBlockState(x & 0xF, y & 0xF, z & 0xF);
-        } catch (Exception e) {
-            return null;
-        }
+        return chunk.getBlockState(blockPos);
     }
 
     public Entity getEntity(int id) {
@@ -88,6 +79,42 @@ public class World {
         return playerEntities;
     }
 
+    public int getMinY() {
+        if (getDimension() == null)
+            return 0;
+        return getDimension().getMinY();
+    }
+
+    public void setMinY(Dimension dimension, int minY) {
+        if (dimension == null)
+            return;
+        dimension.setMinY(minY);
+    }
+
+    public int getWorldHeight() {
+        if (getDimension() == null)
+            return 256;
+        return getDimension().getWorldHeight();
+    }
+
+    public void setWorldHeight(Dimension dimension, int worldHeight) {
+        if (dimension == null)
+            return;
+        dimension.setWorldHeight(worldHeight);
+    }
+
+    public int countVerticalSections() {
+        Dimension dimension = getDimension();
+        int topY = dimension.getWorldHeight() - dimension.getMinY();
+        int topSectionY = getSectionCoord(topY - 1) + 1;
+        int bottomSectionY = getSectionCoord(dimension.getMinY());
+        return topSectionY - bottomSectionY;
+    }
+
+    public int getSectionCoord(int coord) {
+        return coord >> 4;
+    }
+
     public enum Difficulty {
         PEACEFUL(0, "Peaceful"),
         EASY(1, "Easy"),
@@ -119,6 +146,9 @@ public class World {
         private String name;
         private final int id;
 
+        private int min_y = 0;
+        private int world_height = 256;
+
         Dimension(String name, int id) {
             this.name = name;
             this.id = id;
@@ -148,6 +178,21 @@ public class World {
                     return value;
             }
             return CUSTOM;
+        }
+        public int getMinY() {
+            return min_y;
+        }
+
+        public void setMinY(int minY) {
+            this.min_y = minY;
+        }
+
+        public int getWorldHeight() {
+            return world_height;
+        }
+
+        public void setWorldHeight(int worldHeight) {
+            this.world_height = worldHeight;
         }
     }
 }

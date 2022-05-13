@@ -44,25 +44,16 @@ public class ServerBoundEncryptionResponsePacket extends Packet {
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
             packetByteBuf.writeByteArray(encryptedSecret);
-            if (saltAndSig == null) {
-                packetByteBuf.writeBoolean(true);
-                packetByteBuf.writeByteArray(encryptedVerify);
-            } else {
-                packetByteBuf.writeBoolean(false);
-                saltAndSig.write(packetByteBuf);
-            }
+            packetByteBuf.writeEitherOrWithBoolean(saltAndSig == null, packetByteBuf1 -> packetByteBuf1.writeByteArray(encryptedVerify), saltAndSig::write);
             return;
         }
-        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
-            packetByteBuf.writeShort(encryptedSecret.length);
-        else
-            packetByteBuf.writeVarInt(encryptedSecret.length);
+        assert encryptedVerify != null;
+        boolean oneSeven = ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer();
+        int sLength = encryptedSecret.length;
+        int vLength = encryptedVerify.length;
+        packetByteBuf.writeEitherOr(oneSeven, packetByteBuf1 -> packetByteBuf1.writeShort(sLength), packetByteBuf1 -> packetByteBuf1.writeVarInt(sLength));
         packetByteBuf.writeBytes(encryptedSecret);
-
-        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
-            packetByteBuf.writeShort(encryptedVerify.length);
-        else
-            packetByteBuf.writeVarInt(encryptedVerify.length);
+        packetByteBuf.writeEitherOr(oneSeven, packetByteBuf1 -> packetByteBuf1.writeShort(vLength), packetByteBuf1 -> packetByteBuf1.writeVarInt(vLength));
         packetByteBuf.writeBytes(encryptedVerify);
     }
 }

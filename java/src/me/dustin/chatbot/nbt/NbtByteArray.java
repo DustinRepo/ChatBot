@@ -1,5 +1,8 @@
 package me.dustin.chatbot.nbt;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -16,6 +19,15 @@ public class NbtByteArray extends AbstractNbtList<NbtByte> {
     @Override
     public Object getValue() {
         return bs;
+    }
+
+    @Override
+    public JsonElement toJson() {
+        JsonArray jsonArray = new JsonArray();
+        for (byte b : bs) {
+            jsonArray.add(new NbtByte(b).toJson());
+        }
+        return jsonArray;
     }
 
     public static NbtByteArray read(DataInput input, int depth) throws IOException {

@@ -1,5 +1,8 @@
 package me.dustin.chatbot.nbt;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -31,6 +34,15 @@ public class NbtLongArray extends AbstractNbtList<NbtLong> {
     @Override
     public Object getValue() {
         return ls;
+    }
+
+    @Override
+    public JsonElement toJson() {
+        JsonArray jsonArray = new JsonArray();
+        for (long l : ls) {
+            jsonArray.add(new NbtLong(l).toJson());
+        }
+        return jsonArray;
     }
 
     @Override

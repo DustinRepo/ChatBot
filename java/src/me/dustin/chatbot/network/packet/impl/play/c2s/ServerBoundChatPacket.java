@@ -32,8 +32,9 @@ public class ServerBoundChatPacket extends Packet {
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
         packetByteBuf.writeString(message);
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
-            packetByteBuf.writeLong(instant.getEpochSecond());
+            packetByteBuf.writeLong(instant.toEpochMilli());
             saltAndSig.write(packetByteBuf);
+            packetByteBuf.writeBoolean(false);//whether we want a preview or not
         }
     }
 }

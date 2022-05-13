@@ -30,7 +30,8 @@ public class ClientBoundChunkDataPacket extends Packet.ClientBoundPacket {
         PacketByteBuf chunkSectionsByteBuf = new PacketByteBuf(Unpooled.wrappedBuffer(sectionsData));
 
         //find all blocks and add them in the chunk
-        for (int i = 0; i < 19; i++) {//i < vertical chunk sections in the world, don't know how to get that yet
+        int vSections = getClientConnection().getWorld().countVerticalSections();
+        for (int i = 0; i < vSections; i++) {
             int nonEmptyBlockCount = chunkSectionsByteBuf.readShort();
             if (nonEmptyBlockCount < 0)
                 continue;

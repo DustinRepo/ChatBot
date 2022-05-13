@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.helper.GeneralHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -15,6 +16,13 @@ public class ProtocolHandler {
     private static final ArrayList<ProtocolVersion> versions = new ArrayList<>();
 
     public static void downloadData() {
+        /*File f = new File(System.getProperty("java.class.path"));
+        File dir = f.getAbsoluteFile().getParentFile();
+        String jarPath = dir.toString();
+        if (jarPath.contains(":"))
+            jarPath = new File("").getAbsolutePath();
+
+        String data = GeneralHelper.readFile(new File(jarPath, "versions" + File.separator + "protocol_versions.json"));*/
         String data = GeneralHelper.httpRequest("https://raw.githubusercontent.com/DustinRepo/ChatBot/master/versions/protocol_versions.json", null, null, "GET").data();
         JsonObject jsonObject = GeneralHelper.prettyGson.fromJson(data, JsonObject.class);
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {

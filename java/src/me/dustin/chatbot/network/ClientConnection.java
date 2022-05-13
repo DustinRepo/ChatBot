@@ -17,6 +17,7 @@ import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.helper.TPSHelper;
 import me.dustin.chatbot.network.key.KeyContainer;
+import me.dustin.chatbot.network.key.PublicKeyContainer;
 import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.Packet;
 import me.dustin.chatbot.network.packet.impl.handshake.ServerBoundHandshakePacket;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 
 public class ClientConnection {
@@ -137,8 +139,9 @@ public class ClientConnection {
         this.commandManager.init();
         GeneralHelper.print("Setting client version to " + ProtocolHandler.getCurrent().getName() + " (" + ProtocolHandler.getCurrent().getProtocolVer() + ")", ChatMessage.TextColor.AQUA);
         GeneralHelper.print("Sending Handshake and LoginStart packets...", ChatMessage.TextColor.GREEN);
+        Optional<PublicKeyContainer> publicKeyContainer = keyContainer == null ? Optional.empty() : Optional.of(keyContainer.publicKey());
         sendPacket(new ServerBoundHandshakePacket(ProtocolHandler.getCurrent().getProtocolVer(), getMinecraftServerAddress().getIp(), getMinecraftServerAddress().getPort(), ServerBoundHandshakePacket.LOGIN_STATE));
-        sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername(), keyContainer == null ? null : keyContainer.publicKey()));
+        sendPacket(new ServerBoundLoginStartPacket(getSession().getUsername(), publicKeyContainer));
     }
 
     public boolean contactSessionServers(String serverHash) {

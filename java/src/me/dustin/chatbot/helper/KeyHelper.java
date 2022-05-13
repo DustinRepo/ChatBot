@@ -65,6 +65,8 @@ public class KeyHelper {
     }
 
     public static KeyContainer getKeyContainer(KeyPairResponse keyPairResponse) {
+        if (keyPairResponse == null)
+            return null;
         return new KeyContainer(getPrivateKey(keyPairResponse.getPrivateKey()), new PublicKeyContainer(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
 

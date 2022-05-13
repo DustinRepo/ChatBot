@@ -1,6 +1,8 @@
 package me.dustin.chatbot.entity.player;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.block.BlockPos;
+import me.dustin.chatbot.block.BlockState;
 import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.helper.StopWatch;
 import me.dustin.chatbot.network.ClientConnection;

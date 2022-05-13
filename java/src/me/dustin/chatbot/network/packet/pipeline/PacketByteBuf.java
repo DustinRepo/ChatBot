@@ -83,26 +83,38 @@ public class PacketByteBuf extends ByteBuf {
 
     }
 
-    public <T> void writeOptional(Optional<T> value, BiConsumer<PacketByteBuf, T> serializer) {
-        if (value.isPresent()) {
+    public void writeEitherOrWithBoolean(boolean first, Consumer<PacketByteBuf> firstConsumer, Consumer<PacketByteBuf> secondConsumer) {
+        this.writeBoolean(first);
+        writeEitherOr(first, firstConsumer, secondConsumer);
+    }
+
+    public void writeEitherOr(boolean first, Consumer<PacketByteBuf> firstConsumer, Consumer<PacketByteBuf> secondConsumer) {
+        if (first) {
+            firstConsumer.accept(this);
+        } else {
+            secondConsumer.accept(this);
+        }
+    }
+
+    public <T> void writeOptional(Optional<T> optional, BiConsumer<PacketByteBuf, T> consumer) {
+        if (optional.isPresent()) {
             this.writeBoolean(true);
-            serializer.accept(this, value.get());
+            consumer.accept(this, optional.get());
         } else {
             this.writeBoolean(false);
         }
     }
 
-    public PacketByteBuf writeOptionalNBT(@Nullable NbtCompound compound) {
-        if (compound == null) {
-            this.writeBoolean(false);
-        } else {
+    public <T> void writeOptional(Optional<T> optional, Consumer<PacketByteBuf> consumer) {
+        if (optional.isPresent()) {
             this.writeBoolean(true);
-            this.writeNbt(compound);
+            consumer.accept(this);
+        } else {
+            this.writeBoolean(false);
         }
-        return this;
     }
 
-    public PacketByteBuf writeNbt(@Nullable NbtCompound compound) {
+    public void writeNbt(@Nullable NbtCompound compound) {
         if (compound == null) {
             this.writeByte(0);
         } else {
@@ -113,7 +125,6 @@ public class PacketByteBuf extends ByteBuf {
                 throw new EncoderException(iOException);
             }
         }
-        return this;
     }
 
     public byte[] readByteArray() {

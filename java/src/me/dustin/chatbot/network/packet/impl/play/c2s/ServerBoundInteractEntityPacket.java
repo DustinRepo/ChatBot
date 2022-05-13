@@ -19,15 +19,16 @@ public class ServerBoundInteractEntityPacket extends Packet {
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer() && useType == INTERACT_AT)
+        boolean oneSeven = ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer();
+        if (oneSeven && useType == INTERACT_AT)
             return;
-        if (ProtocolHandler.getCurrent().getProtocolVer() <= ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer()) {
-            packetByteBuf.writeInt(livingEntity.getEntityId());
-            packetByteBuf.writeByte(useType);
-        } else {
+        packetByteBuf.writeEitherOr(oneSeven, packetByteBuf1 -> {
+            packetByteBuf1.writeInt(livingEntity.getEntityId());
+            packetByteBuf1.writeByte(useType);
+        }, packetByteBuf1 -> {
             packetByteBuf.writeVarInt(livingEntity.getEntityId());
             packetByteBuf.writeVarInt(useType);
-        }
+        });
         if (useType == INTERACT_AT) {
             packetByteBuf.writeFloat((float)livingEntity.getX());
             packetByteBuf.writeFloat((float)livingEntity.getY());

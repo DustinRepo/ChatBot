@@ -27,6 +27,7 @@ import java.util.UUID;
 public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
     public final static int MESSAGE_TYPE_CHAT = 0, MESSAGE_TYPE_SYSTEM = 1, MESSAGE_TYPE_GAME_INFO = 2;
     private final ChatMessage message;
+    private final ChatMessage unsigned;
     private final byte type;
     private final ChatSender sender;
     private final Instant expiresAt;
@@ -39,6 +40,16 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
         String name;
         this.message = ChatMessage.of(packetByteBuf.readString());
         name = this.message.getSenderName();
+
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
+            boolean hasUnsigned = packetByteBuf.readBoolean();
+            if (hasUnsigned)
+                unsigned = ChatMessage.of(packetByteBuf.readString());
+            else
+                unsigned = null;
+        } else
+            unsigned = null;
+
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.7.10").getProtocolVer())
             this.type = packetByteBuf.readByte();
         else
@@ -81,12 +92,20 @@ public class ClientBoundChatMessagePacket extends Packet.ClientBoundPacket {
         return message;
     }
 
+    public ChatMessage getUnsigned() {
+        return unsigned;
+    }
+
     public byte getType() {
         return type;
     }
 
     public ChatSender getSender() {
         return sender;
+    }
+
+    public ChatMessage getTeamName() {
+        return teamName;
     }
 
     public Instant getExpiresAt() {

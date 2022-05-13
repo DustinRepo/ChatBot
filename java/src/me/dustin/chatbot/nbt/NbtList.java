@@ -1,6 +1,8 @@
 package me.dustin.chatbot.nbt;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -23,8 +25,17 @@ public class NbtList implements NbtElement {
     }
 
     @Override
-    public Object getValue() {
+    public List<NbtElement>  getValue() {
         return elements;
+    }
+
+    @Override
+    public JsonElement toJson() {
+        JsonArray jsonArray = new JsonArray();
+        for (NbtElement nbtElement : elements) {
+            jsonArray.add(nbtElement.toJson());
+        }
+        return jsonArray;
     }
 
     @Override

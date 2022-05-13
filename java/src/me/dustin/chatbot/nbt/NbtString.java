@@ -1,5 +1,8 @@
 package me.dustin.chatbot.nbt;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -14,6 +17,11 @@ public class NbtString implements NbtElement {
     @Override
     public void write(DataOutput dataOutput) throws IOException {
         dataOutput.writeUTF(this.string);
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return new JsonPrimitive(string);
     }
 
     @Override

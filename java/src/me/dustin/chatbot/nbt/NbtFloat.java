@@ -1,5 +1,8 @@
 package me.dustin.chatbot.nbt;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -14,6 +17,11 @@ public class NbtFloat extends AbstractNbtNumber {
     @Override
     public Object getValue() {
         return f;
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return new JsonPrimitive(f);
     }
 
     public static NbtFloat read(DataInput input, int depth) throws IOException {

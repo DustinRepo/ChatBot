@@ -1,5 +1,8 @@
 package me.dustin.chatbot.nbt;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -24,6 +27,12 @@ public class NbtShort extends AbstractNbtNumber {
     public void write(DataOutput output) throws IOException {
         output.writeShort(this.s);
     }
+
+    @Override
+    public JsonElement toJson() {
+        return new JsonPrimitive(s);
+    }
+
 
     @Override
     public long longValue() {

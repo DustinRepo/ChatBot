@@ -76,7 +76,11 @@ public class ClientBoundJoinGamePacket extends Packet.ClientBoundPacket {
             this.dimNames[i] = packetByteBuf.readString();
         }
         this.dimensionCodec = (NbtCompound) packetByteBuf.readNbt();
-        this.dimensionNBT = (NbtCompound) packetByteBuf.readNbt();
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
+            this.dimensionNBT = null;
+            String dim = packetByteBuf.readString();
+        } else
+            this.dimensionNBT = (NbtCompound) packetByteBuf.readNbt();
         this.dimension = World.Dimension.get(packetByteBuf.readString());
         this.hashedSeed = packetByteBuf.readLong();
         this.maxPlayers = packetByteBuf.readVarInt();

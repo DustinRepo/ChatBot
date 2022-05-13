@@ -21,7 +21,7 @@ public class ServerBoundCommandPacket extends Packet {
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) {
         packetByteBuf.writeString(command);
-        packetByteBuf.writeLong(timestamp.getEpochSecond());
+        packetByteBuf.writeLong(timestamp.toEpochMilli());
         saltAndSigs.write(packetByteBuf);
     }
 }

@@ -10,6 +10,9 @@ import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.nbt.NbtCompound;
+import me.dustin.chatbot.nbt.NbtElement;
+import me.dustin.chatbot.nbt.NbtList;
 import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.packet.impl.play.c2s.*;
 import me.dustin.chatbot.network.packet.impl.play.s2c.*;
@@ -46,9 +49,29 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         ClientPlayer clientPlayer = getClientConnection().getClientPlayer();
         clientPlayer.setEntityId(clientBoundJoinGamePacket.getEntityId());
         clientPlayer.setGameMode(clientBoundJoinGamePacket.getGameMode());
-
+        //world
         World world = getClientConnection().getWorld();
         world.setDimension(clientBoundJoinGamePacket.getDimension());
+        NbtCompound dimCompound = clientBoundJoinGamePacket.getDimensionNbt();
+        if (dimCompound != null) {
+            if (dimCompound.has("min_y"))
+                world.setMinY(clientBoundJoinGamePacket.getDimension(), (int) dimCompound.get("min_y").getValue());
+            if (dimCompound.has("height"))
+                world.setWorldHeight(clientBoundJoinGamePacket.getDimension(), (int) dimCompound.get("height").getValue());
+        } else {
+            dimCompound = (NbtCompound)clientBoundJoinGamePacket.getDimensionCodec().get("minecraft:dimension_type");
+            NbtList list = (NbtList) dimCompound.get("value");
+            for (NbtElement element : list.getValue()) {
+                NbtCompound compound = (NbtCompound)element;
+                String name = (String)compound.get("name").getValue();
+                World.Dimension dim = World.Dimension.get(name);
+                NbtCompound data = (NbtCompound)compound.get("element");
+                if (data.has("min_y"))
+                    world.setMinY(dim, (int) data.get("min_y").getValue());
+                if (data.has("height"))
+                    world.setWorldHeight(dim, (int) data.get("height").getValue());
+            }
+        }
         if (clientBoundJoinGamePacket.getDifficulty() != null)
             world.setDifficulty(clientBoundJoinGamePacket.getDifficulty());
         //send settings
@@ -59,8 +82,7 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
             channel = "MC|Brand";
         getClientConnection().sendPacket(new ServerBoundCustomDataPacket(channel, new PacketByteBuf(Unpooled.buffer()).writeString("vanilla")));
 
-        //fix for servers that pass you through proxy servers spamming the console
-        if (!getClientConnection().isInGame()) {
+        if (!getClientConnection().isInGame()) {//fix for servers that pass you through proxy servers spamming the console
             GeneralHelper.print("Received Join Game. Loading processes.", ChatMessage.TextColor.GOLD);
         }
         getClientConnection().getEventManager().run(clientBoundJoinGamePacket);

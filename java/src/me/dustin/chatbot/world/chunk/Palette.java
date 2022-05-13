@@ -54,10 +54,11 @@ public interface Palette {
 
     class ArrayPalette implements Palette {
         private int size;
-        private BlockState[] blockStates;
+        private final BlockState[] blockStates;
         private final byte bitsPerBlock;
 
         public ArrayPalette(byte bitsPerBlock) {
+            blockStates = new BlockState[1 << bitsPerBlock];
             this.bitsPerBlock = bitsPerBlock;
         }
 
@@ -77,7 +78,6 @@ public interface Palette {
         @Override
         public void fromPacket(PacketByteBuf packetByteBuf) {
             size = packetByteBuf.readVarInt();
-            blockStates = new BlockState[size];
             for (int i = 0; i < size; i++)
                 blockStates[i] = BlockState.get(packetByteBuf.readVarInt());
         }

@@ -1,5 +1,7 @@
 package me.dustin.chatbot.nbt;
 
+import com.google.gson.JsonElement;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -19,6 +21,11 @@ public class NbtEnd implements NbtElement {
 
     @Override
     public Object getValue() {
+        return null;
+    }
+
+    @Override
+    public JsonElement toJson() {
         return null;
     }
 }
