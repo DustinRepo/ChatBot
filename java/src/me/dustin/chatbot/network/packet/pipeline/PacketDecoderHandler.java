@@ -26,6 +26,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         loginMap.put(0x04, ClientBoundPluginRequestPacket.class);
 
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "chat_message"), ClientBoundChatMessagePacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "chat_preview"), ClientBoundChatPreviewPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "game_message"), ClientBoundGameMessagePacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "kick"), ClientBoundDisconnectPlayPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "heartbeat"), ClientBoundKeepAlivePacket.class);
@@ -48,6 +49,7 @@ public class PacketDecoderHandler extends ByteToMessageDecoder {
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "relative_move"), ClientBoundEntityPositionPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "movement_rotation"), ClientBoundEntityPositionPacket.class);
         playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "velocity"), ClientBoundEntityVelocityPacket.class);
+        playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "server_data"), ClientBoundServerDataPacket.class);
         //playMap.put(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.CLIENTBOUND, "chunk"), ClientBoundChunkDataPacket.class);
     }
 

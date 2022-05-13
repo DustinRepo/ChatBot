@@ -10,6 +10,7 @@ import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventReceiveChatMessage;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.GeneralHelper;
+import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.nbt.NbtCompound;
 import me.dustin.chatbot.nbt.NbtElement;
 import me.dustin.chatbot.nbt.NbtList;
@@ -40,8 +41,16 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
         GeneralHelper.printChat(clientBoundChatMessagePacket.getMessage());
     }
 
+    public void handleChatPreviewPacket(ClientBoundChatPreviewPacket clientBoundChatPreviewPacket) {
+        getClientConnection().getEventManager().run(clientBoundChatPreviewPacket);
+    }
+
     public void handleGameMessagePacket(ClientBoundGameMessagePacket clientBoundGameMessagePacket) {
         GeneralHelper.printChat(clientBoundGameMessagePacket.getMessage());
+    }
+
+    public void handleServerDataPacket(ClientBoundServerDataPacket clientBoundServerDataPacket) {
+        getClientConnection().setServerDoesPreview(clientBoundServerDataPacket.isHasChatPreview());
     }
 
     public void handleJoinGamePacket(ClientBoundJoinGamePacket clientBoundJoinGamePacket) {

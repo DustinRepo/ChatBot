@@ -25,6 +25,7 @@ public class ChatMessage {
     }
 
     public static ChatMessage of(String jsonData) {
+        System.out.println(jsonData);
         parsingMessage.senderName = "";
         parsingMessage.body = "";
         parsingMessage.body = parse(GeneralHelper.gson.fromJson(jsonData, JsonObject.class));
@@ -38,7 +39,7 @@ public class ChatMessage {
     }
 
     public static String parse(JsonElement element) {
-        StringJoiner sj = new StringJoiner(" ");
+        StringBuilder sj = new StringBuilder();
         if (element == null)
             return "";
         if (element.isJsonPrimitive())
@@ -46,7 +47,7 @@ public class ChatMessage {
         if (!element.isJsonObject()) {
             JsonArray array = element.getAsJsonArray();
             for (JsonElement jsonElement : array) {
-                sj.add(parse(jsonElement));
+                sj.append(parse(jsonElement));
             }
             return sj.toString();
         } else {
@@ -61,7 +62,7 @@ public class ChatMessage {
                 if (jsonObject.has("translate") && jsonObject.get("translate").getAsString().equalsIgnoreCase("chat.type.text")) {
                     parsingMessage.senderName = sb.append(jsonObject.get("text").getAsString()).toString();
                 } else
-                    sj.add(sb.append(jsonObject.get("text").getAsString()).toString());
+                    sj.append(sb.append(jsonObject.get("text").getAsString()).toString());
             } else {
                 String translate = "";
                 if (jsonObject.has("translate")) {
@@ -78,14 +79,14 @@ public class ChatMessage {
                             String arg = args[i];
                             translated = translated.replaceFirst("%(?:(\\d+)\\$)?([A-Za-z%]|$)", arg);
                         }
-                        sj.add(sb.append(translated));
+                        sj.append(sb.append(translated));
                     } else {
-                        sj.add(sb.append(Translator.translate(translate)));
+                        sj.append(sb.append(Translator.translate(translate)));
                     }
                 }
             }
             if (jsonObject.has("extra")) {
-                sj.add(getExtra(jsonObject));
+                sj.append(getExtra(jsonObject));
             }
             return removeFormatCodes(sj.toString().trim());
         }
@@ -170,7 +171,6 @@ public class ChatMessage {
         DARK_GRAY("dark_gray", '8', "\u001B[37m", new Color(85, 85, 85)),
         BLACK("black", '0', "\u001B[30m", new Color(0, 0, 0)),
         RESET("reset", 'r', "\u001B[0m", new Color(255, 255, 255));
-
 
         private final String ansi, name;
         private final char char_;

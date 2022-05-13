@@ -26,7 +26,9 @@ import me.dustin.chatbot.network.crypt.PacketCrypt;
 import me.dustin.chatbot.network.packet.handler.LoginClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.handler.ClientBoundPacketHandler;
 import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundChatPacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundChatPreviewPacket;
 import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundCommandPacket;
+import me.dustin.chatbot.network.packet.impl.play.s2c.ClientBoundChatPreviewPacket;
 import me.dustin.chatbot.network.packet.pipeline.PacketDecryptor;
 import me.dustin.chatbot.network.packet.pipeline.PacketDeflater;
 import me.dustin.chatbot.network.packet.pipeline.PacketEncryptor;
@@ -65,10 +67,12 @@ public class ClientConnection {
     private ClientBoundPacketHandler clientBoundPacketHandler;
     private NetworkState networkState = NetworkState.LOGIN;
     private final KeyContainer keyContainer;
+    private String pendingMessage;
     private int compressionThreshold;
     private boolean isConnected;
     private boolean isEncrypted;
     private boolean isInGame;
+    private boolean serverDoesPreview;
 
     private final World world;
     private final ClientPlayer clientPlayer;
@@ -201,13 +205,35 @@ public class ClientConnection {
 
     public void sendChat(String message) {
         Instant instant = Instant.now();
-        if (message.startsWith("/") && ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
-            SaltAndSig.SaltAndSigs saltAndSigs = SaltAndSig.SaltAndSigs.EMPTY;
-            sendPacket(new ServerBoundCommandPacket(message.substring(1), instant, saltAndSigs));
-            return;
+        if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
+            if (message.startsWith("/")) {
+                SaltAndSig.SaltAndSigs saltAndSigs = SaltAndSig.SaltAndSigs.EMPTY;
+                sendPacket(new ServerBoundCommandPacket(message.substring(1), instant, saltAndSigs));
+                return;
+            }
+            if (serverDoesPreview()) {
+                this.setPendingMessage(message);
+                sendPacket(new ServerBoundChatPreviewPacket(0, message));
+                return;
+            }
         }
-        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message)));
+        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message, null), false));
     }
+
+    public void sendChat(String message, String preview) {
+        Instant instant = Instant.now();
+        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(message, instant, KeyHelper.generateSaltAndSig(instant, message, preview), true));
+    }
+
+    @EventPointer
+    private final EventListener<ClientBoundChatPreviewPacket> clientBoundChatPreviewPacketEventListener = new EventListener<>(clientBoundChatPreviewPacket -> {
+        String pendingMessage = getPendingMessage();
+        if (pendingMessage != null) {
+            Instant instant = Instant.now();
+            ChatBot.getClientConnection().sendPacket(new ServerBoundChatPacket(pendingMessage, instant, KeyHelper.generateSaltAndSig(instant, pendingMessage, clientBoundChatPreviewPacket.getMessage()), true));
+            setPendingMessage(null);
+        }
+    });
 
     public void tick() {
         while (isConnected()) {
@@ -329,6 +355,22 @@ public class ClientConnection {
 
     public KeyContainer getKeyContainer() {
         return keyContainer;
+    }
+
+    public String getPendingMessage() {
+        return pendingMessage;
+    }
+
+    public void setPendingMessage(String pendingMessage) {
+        this.pendingMessage = pendingMessage;
+    }
+
+    public boolean serverDoesPreview() {
+        return this.serverDoesPreview;
+    }
+
+    public void setServerDoesPreview(boolean hasChatPreview) {
+        this.serverDoesPreview = hasChatPreview;
     }
 
     public void setCompressionThreshold(int compressionThreshold) {

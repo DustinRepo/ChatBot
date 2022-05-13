@@ -2,6 +2,7 @@ package me.dustin.chatbot.helper;
 
 import com.google.common.primitives.Longs;
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.network.key.KeyContainer;
 import me.dustin.chatbot.network.key.KeyPairResponse;
 import me.dustin.chatbot.network.key.PublicKeyContainer;
@@ -32,12 +33,12 @@ public class KeyHelper {
         return GeneralHelper.gson.fromJson(httpResponse.data(), KeyPairResponse.class);
     }
 
-    public static SaltAndSig sigForMessage(Instant instant, String string, PrivateKey privateKey, UUID uuid) {
+    public static SaltAndSig sigForMessage(Instant instant, String string, PrivateKey privateKey, UUID uuid, String chatMessage) {
         try {
             Signature signature = getSignature(privateKey);
             if (signature != null) {
                 long l = nextLong();
-                updateSig(signature, l, uuid, instant, String.format("{\"text\":\"%s\"}", string));
+                updateSig(signature, l, uuid, instant, chatMessage == null ? String.format("{\"text\":\"%s\"}", string) : chatMessage);
                 return new SaltAndSig(l, signature.sign());
             }
         } catch (GeneralSecurityException var6) {
@@ -60,8 +61,8 @@ public class KeyHelper {
         return byteBuffer.array();
     }
 
-    public static SaltAndSig generateSaltAndSig(Instant instant, String message) {
-        return ChatBot.getClientConnection().getKeyContainer() == null ? SaltAndSig.EMPTY : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid());
+    public static SaltAndSig generateSaltAndSig(Instant instant, String message, String chatMessage) {
+        return ChatBot.getClientConnection().getKeyContainer() == null ? SaltAndSig.EMPTY : KeyHelper.sigForMessage(instant, message, ChatBot.getClientConnection().getKeyContainer().privateKey(), ChatBot.getClientConnection().getClientPlayer().getUuid(), chatMessage);
     }
 
     public static KeyContainer getKeyContainer(KeyPairResponse keyPairResponse) {

@@ -12,7 +12,8 @@ public class ServerBoundChatPacket extends Packet {
     private final String message;
     private final Instant instant;
     private final SaltAndSig saltAndSig;
-    public ServerBoundChatPacket(String message, Instant instant, SaltAndSig saltAndSig) {
+    private final boolean preview;
+    public ServerBoundChatPacket(String message, Instant instant, SaltAndSig saltAndSig, boolean preview) {
         super(ProtocolHandler.getCurrent().getPacketId(ProtocolHandler.NetworkSide.SERVERBOUND, "chat_message"));
         if (ProtocolHandler.getCurrent().getProtocolVer() >= ProtocolHandler.getVersionFromName("1.11").getProtocolVer()) {
             if (message.length() > 256) {
@@ -26,15 +27,16 @@ public class ServerBoundChatPacket extends Packet {
         this.message = message;
         this.instant = instant;
         this.saltAndSig = saltAndSig;
+        this.preview = preview;
     }
 
     @Override
     public void createPacket(PacketByteBuf packetByteBuf) throws IOException {
-        packetByteBuf.writeString(message);
+        packetByteBuf.writeString(this.message);
         if (ProtocolHandler.getCurrent().getProtocolVer() > ProtocolHandler.getVersionFromName("1.18.2").getProtocolVer()) {
-            packetByteBuf.writeLong(instant.toEpochMilli());
-            saltAndSig.write(packetByteBuf);
-            packetByteBuf.writeBoolean(false);//whether we want a preview or not
+            packetByteBuf.writeLong(this.instant.toEpochMilli());
+            this.saltAndSig.write(packetByteBuf);
+            packetByteBuf.writeBoolean(this.preview);
         }
     }
 }

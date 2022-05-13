@@ -1,12 +1,16 @@
 package me.dustin.chatbot.gui;
 
 import me.dustin.chatbot.ChatBot;
+import me.dustin.chatbot.chat.ChatMessage;
 import me.dustin.chatbot.event.EventAddPlayer;
 import me.dustin.chatbot.event.EventRemovePlayer;
 import me.dustin.chatbot.helper.KeyHelper;
 import me.dustin.chatbot.network.ClientConnection;
+import me.dustin.chatbot.network.ProtocolHandler;
 import me.dustin.chatbot.network.key.SaltAndSig;
 import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundChatPacket;
+import me.dustin.chatbot.network.packet.impl.play.c2s.ServerBoundChatPreviewPacket;
+import me.dustin.chatbot.network.packet.impl.play.s2c.ClientBoundChatPreviewPacket;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 
@@ -21,7 +25,9 @@ public class ChatBotGui extends JFrame {
     private final  CustomTextPane output;
     private final  JTextField input;
     private final DefaultListModel<String> model;
-
+    private long lastPreviewSend;
+    private String previewMessage;
+    private String pendingMessage;
     public ChatBotGui() {
         JButton sendButton = new JButton();
         this.output = new CustomTextPane(true);
@@ -58,21 +64,42 @@ public class ChatBotGui extends JFrame {
         this.output.setText("");
         model = new DefaultListModel<>();
         playerList.setModel(model);
-
+        lastPreviewSend = System.currentTimeMillis();
         input.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {
+            public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == 10) {//they pressed enter
                     if (ChatBot.getClientConnection() != null) {
-                        ChatBot.getClientConnection().sendChat(input.getText());
+                        if (previewMessage != null) {
+                            if (System.currentTimeMillis() - lastPreviewSend <= 1000) {
+                                ChatBot.getClientConnection().sendPacket(new ServerBoundChatPreviewPacket(0, input.getText()));
+                                pendingMessage = input.getText();
+                            }else
+                                ChatBot.getClientConnection().sendChat(input.getText(), previewMessage);
+                        }
+                        else
+                            ChatBot.getClientConnection().sendChat(input.getText());
+                        previewMessage = null;
                     }
                     input.setText("");
+                } else if (ChatBot.getClientConnection().serverDoesPreview() && !input.getText().startsWith("/")){
+                    if (System.currentTimeMillis() - lastPreviewSend >= 1000) {
+                        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPreviewPacket(0, input.getText()));
+                        lastPreviewSend = System.currentTimeMillis();
+                    }
                 }
             }
         });
         sendButton.addActionListener(actionEvent -> {
             if (ChatBot.getClientConnection() != null) {
-                ChatBot.getClientConnection().sendChat(input.getText());
+                if (previewMessage != null) {
+                    if (System.currentTimeMillis() - lastPreviewSend <= 1000) {
+                        ChatBot.getClientConnection().sendPacket(new ServerBoundChatPreviewPacket(0, input.getText()));
+                        pendingMessage = input.getText();
+                    }else
+                        ChatBot.getClientConnection().sendChat(input.getText(), previewMessage);
+                } else
+                    ChatBot.getClientConnection().sendChat(input.getText());
             }
             this.input.setText("");
         });
@@ -99,6 +126,16 @@ public class ChatBotGui extends JFrame {
     @EventPointer
     private final EventListener<EventRemovePlayer> eventRemovePlayerEventListener = new EventListener<>(event -> {
         getPlayerList().removeElement(event.getPlayer().getName());
+    });
+
+    @EventPointer
+    private final EventListener<ClientBoundChatPreviewPacket> clientBoundChatPreviewPacketEventListener = new EventListener<>(clientBoundChatPreviewPacket -> {
+        previewMessage = clientBoundChatPreviewPacket.getMessage();
+        if (pendingMessage != null) {
+            ChatBot.getClientConnection().sendChat(pendingMessage, previewMessage);
+            pendingMessage = null;
+            previewMessage = null;
+        }
     });
 
     public void tick() {
