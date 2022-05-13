@@ -120,12 +120,14 @@ How to sign messages:
 2b. update using the bytes of your UUID
 2c. update using Longs.toByteArray for the current epoch second
 2d. update using the bytes of a Chat instance of the message, or the chat preview if Signed Preview is true. (if Signed Preview is false, just doing some variant of `String.format("{\"text\":\"%s\"}", message)` will work)
+
+If you do not properly sign the message, the server will log an error to console, and discard the message
 ----------------------------------------------------------------------------------------------------------
 
 Chat-Preview packet (server-bound)
 ----------------------------------------------------------------------------------------------------------
 int    | query ID | the ID for the preview
-String | Message  | The message to preview
+Chat   | Message  | The message to preview
 ----------------------------------------------------------------------------------------------------------
 
 Command Packet (server-bound)
