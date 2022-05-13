@@ -7,21 +7,21 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 public interface NbtElement {
-    public static final int END_TYPE = 0;
-    public static final int BYTE_TYPE = 1;
-    public static final int SHORT_TYPE = 2;
-    public static final int INT_TYPE = 3;
-    public static final int LONG_TYPE = 4;
-    public static final int FLOAT_TYPE = 5;
-    public static final int DOUBLE_TYPE = 6;
-    public static final int BYTE_ARRAY_TYPE = 7;
-    public static final int STRING_TYPE = 8;
-    public static final int LIST_TYPE = 9;
-    public static final int COMPOUND_TYPE = 10;
-    public static final int INT_ARRAY_TYPE = 11;
-    public static final int LONG_ARRAY_TYPE = 12;
+    int END_TYPE = 0;
+    int BYTE_TYPE = 1;
+    int SHORT_TYPE = 2;
+    int INT_TYPE = 3;
+    int LONG_TYPE = 4;
+    int FLOAT_TYPE = 5;
+    int DOUBLE_TYPE = 6;
+    int BYTE_ARRAY_TYPE = 7;
+    int STRING_TYPE = 8;
+    int LIST_TYPE = 9;
+    int COMPOUND_TYPE = 10;
+    int INT_ARRAY_TYPE = 11;
+    int LONG_ARRAY_TYPE = 12;
 
-    public static NbtElement read(int type, DataInput input, int depth) {
+    static NbtElement read(int type, DataInput input, int depth) {
         try {
             switch (type) {
                 case END_TYPE -> {
@@ -70,7 +70,7 @@ public interface NbtElement {
         return null;
     }
 
-    public default int getType() {
+    default int getType() {
         if (this instanceof NbtEnd)
             return END_TYPE;
         if (this instanceof NbtByte)
