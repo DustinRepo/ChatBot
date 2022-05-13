@@ -1,0 +1,229 @@
+PLEASE NOTE: These are probably not all of the changes as I don't actually use all packets. These are just the changes I have noticed
+
+The login process has changed, now requiring you to get key data from Minecraft before attempting any login
+If playing on cracked, you can skip the key data step and any salt needed for things like chat message packets can be 0 and the signature data can be just an empty byte array
+
+How to get key data:
+----------------------------------------------------------------------------------------------------------
+1. Send a POST request to https://api.minecraftservices.com/player/certificates
+3. Include the header "Content-Type", "application/json; charset=utf-8"
+2. Include the header "Authorization": "Bearer {your access token}"
+
+Response:
+The response should look something like this:
+
+{
+  "keyPair" : {
+    "privateKey" : "-----BEGIN RSA PRIVATE KEY-----\n<ENCODED KEY DATA>\n-----END RSA PRIVATE KEY-----\n",
+    "publicKey" : "-----BEGIN RSA PUBLIC KEY-----\n<ENCODED KEY DATA>\n-----END RSA PUBLIC KEY-----\n"
+  },
+  "publicKeySignature" : "<long signature string>",
+  "expiresAt" : "2022-05-05T08:10:28.205817Z",
+  "refreshedAfter" : "2022-05-05T00:10:28.205817Z"
+}
+
+3. To turn the privatekey string into a PrivateKey instance, you must first remove the BEGIN and END parts of the string, then Base64 decode it using the MIME decoding scheme (Base64.getMimeDecoder() for java)
+4. Turn the string from step 3 into a key using PKCS8EncodedKeySpec and RSA algorithm
+5. Do the same except using X509EncodedKeySpec for the public key
+----------------------------------------------------------------------------------------------------------
+
+
+How to generate a Signature:
+----------------------------------------------------------------------------------------------------------
+1. Create a Signature instance using SHA256withRSA algorithm (was SHA1withRSA in 22w17a)
+
+For client use:
+2. call signature.initSign using the PrivateKey instance created from above
+
+For Server Use:
+2. Call signature.initVerify using the PublicKey instance created from above
+----------------------------------------------------------------------------------------------------------
+
+
+Changed packets so far as of 22w19a:
+
+LOGIN:
+LoginStart packet (ID 0x00) (server-bound)
+----------------------------------------------------------------------------------------------------------
+String  | Name         | Username to login with
+Boolean | Has Sig Data | Whether or not the following data is sent
+Long    | Timestamp    | an epoch-millisecond timestamp
+VarInt  | Key Size     | The size of the following array
+Byte[]  | Public Key   | The encoded bytes of the public key you received earlier from Mojang
+VarInt  | Sig Size     | The size of the following array
+Byte[]  | Signature    | The bytes of the public key signature you received earlier from Mojang
+----------------------------------------------------------------------------------------------------------
+
+This is a setup for 22w18a ONLY. I am only adding this as it is interesting, and for archiving it
+LoginStart packet (ID 0x00) (server-bound)
+----------------------------------------------------------------------------------------------------------
+String      | Name     | Username to login with
+Boolean     | Nbt Data | Tells the server whether or not the following data is sent
+NBT Compund | Key Data | Contains the data for our public key we got from Minecraft (only sent if above boolean is true)
+
+Compound setup:
+The Nbt Compound has 3 Nbt Strings that are inserted.
+1. "expires_at": "expiresAt" from the Key Response from Mojang
+2. "key": "publicKey" from the Key Response from Mojang
+3. "signature": "publicKeySignature" from the Key Response from Mojang
+----------------------------------------------------------------------------------------------------------
+
+EncryptResponse packet (0x01) (server-bound)
+----------------------------------------------------------------------------------------------------------
+VarInt  | SecretKey Size      | Size of the following array
+Byte[]  | Encrypted SecretKey | Bytes of the encrypted secret key you received from the server
+Boolean | Use Verify Token    | Determines whether you will send the encrypted verify token or Signature data
+
+if true:
+VarInt | Verify Token Size      | Size of the following array
+Byte[] | Encrypted Verify Token | Bytes of the encrypted secret key you received from the server
+
+if false:
+Long   | Salt           | Salt from signature data. Seems to be created with SecureRandom.nextLong()
+VarInt | Signature Size | Size of the following array
+Byte[] | Signature      | Bytes of the signature you created for this using signature.sign()
+
+How to properly send/check the signature:
+1. Create a Signature instance as shown above
+2. call signature.update using the verify token from the server's encrypt start packet (DO NOT ENCRYPT IF SENDING IN SIGNATURE)
+3. call signature.update using Longs.toByteArray on the intended salt
+4. If checking the token from the signature, you can see if it matches by doing the above then checking the output of signature.verify(<signature bytes from packet>)
+----------------------------------------------------------------------------------------------------------
+
+LoginSuccess (0x04) (client-bound)
+----------------------------------------------------------------------------------------------------------
+UUID    | Player UUID | Your UUID
+String  | Username    | Your username
+VarInt  | Array Size  | The size of the following properties array
+in array:
+String  | Name        | The name of the property
+String  | Value       | The value of the property
+Boolean | Is Signed   | Whether or not the property is signed
+String  | Signature   | Signature of property (only sent if isSigned = true)
+----------------------------------------------------------------------------------------------------------
+
+PLAY:
+
+Chat Message packet (server-bound)
+----------------------------------------------------------------------------------------------------------
+String  | Message        | The message
+Long    | Timestamp      | an epoch-millisecond timestamp
+Long    | Salt           | salt from the signature data
+VarInt  | Signature size | Size of the following array
+Byte[]  | Signature      | Bytes of the signature you signed for this message specifically
+Boolean | Signed Preview | Whether or not the client is signing the message with the previewed text from the server
+
+How to sign messages:
+1. Create Signature instance as stated above
+2. Update Signature using signature.update
+2a. update using Longs.toByteArray on salt
+2b. update using the bytes of your UUID
+2c. update using Longs.toByteArray for the current epoch second
+2d. update using the bytes of a Chat instance of the message, or the chat preview if Signed Preview is true. (if Signed Preview is false, just doing some variant of `String.format("{\"text\":\"%s\"}", message)` will work)
+----------------------------------------------------------------------------------------------------------
+
+Chat-Preview packet (server-bound)
+----------------------------------------------------------------------------------------------------------
+int    | query ID | the ID for the preview
+String | Message  | The message to preview
+----------------------------------------------------------------------------------------------------------
+
+Command Packet (server-bound)
+----------------------------------------------------------------------------------------------------------
+This is a new packet introduced in 22w18a for sending commands, now no longer being sent in Chat Message packets
+
+String  | Command         | The command being sent, without the /
+Long    | Creation Time   | Time in epoch-milliseconds when the packet was created
+Long    | Salt            | Salt of the message
+VarInt  | Signature count | Size of the following array
+in array:
+String  | Argument        | The argument being sent (UNCONFIRMED)
+VarInt  | Signature size  | Size of the following array
+Byte[]  | Signature       | Bytes of the signature signed for each argument
+
+As of writing the line (22w18a) I couldn't find a way for the vanilla client to actually send anything in the array, so I use 0 on the salt and 0 for the signature count, while obviously sending no array data. The server doesn't seem to care about this
+----------------------------------------------------------------------------------------------------------
+
+Server-Data packet (client-bound)
+----------------------------------------------------------------------------------------------------------
+boolean | Has MOTD          | Whether or not the chat component for MOTD is sent
+Chat    | MOTD              | The server's MOTD
+boolean | Has Icon          | Whether or not the icon data is sent
+String  | Icon              | The Base64 encoded string of the icon
+boolean | Has Chat Previews | Whether or not the server allows chat previews
+----------------------------------------------------------------------------------------------------------
+
+Game-Message packet (client-bound)
+----------------------------------------------------------------------------------------------------------
+This is a new packet introduced in 22w17a designed to split messages that aren't a player chat message. Death messages, teleport messages, etc will go here.
+
+Chat | Message | The text of the message
+Byte | Type    | Message type
+----------------------------------------------------------------------------------------------------------
+
+Chat-Message packet (client-bound)
+----------------------------------------------------------------------------------------------------------
+Chat    | Signed Message   | The text of the message
+Boolean | Has unsigned     | Whether or not the following Chat component is sent
+Chat    | Unsigned Message | The unsigned text of the message
+Byte    | Type             | Message type
+UUID    | Sender UUID      | UUID of the sender
+Chat    | Sender name      | Name of the sender, sent in Minecraft's Text format
+Boolean | Is Team          | Determines whether or not the Team Name is read below
+Char    | Team Name        | Name of the team the player is on
+Long    | Creation Time    | Time in epoch seconds when the message was created
+Long    | Salt             | Salt of the message
+VarInt  | Signature size   | Size of the following array
+Byte[]  | Signature        | Bytes of the signature signed for this message
+
+It seems so far in 22w18a that the Minecraft client doesn't care much (other than logging a warning to console) when a message is expired or a bad signature.
+It also appears the Minecraft client considers messages to expire 4 minutes after the creation time from the other player's chat packet
+----------------------------------------------------------------------------------------------------------
+
+Chat-Preview packet (client-bound)
+----------------------------------------------------------------------------------------------------------
+int     | Query ID         | The ID of the packet, should be the same ID as you sent in the server-bound preview packet (UNCONFIRMED)
+boolean | Contains preview | Whether or not the following preview message is sent
+Chat    | Preview message  | The preview of the message you just sent with a chat-packet if preview=true
+----------------------------------------------------------------------------------------------------------
+
+Join Game (client-bound)
+----------------------------------------------------------------------------------------------------------
+Int     | Entity ID   | The entity ID of the player
+Boolean | Hardcore    | Whether or not the server is hardcore
+Byte    | Game mode   | The current game mode
+Byte    | Game mode   | The previous game mode (-1 if no previous)
+VarInt  | Dimensions  | The size of the following array
+in array:
+--------
+String | Dimension | The name of the dimension
+--------
+Nbt     | Server data    | The data of the server, including data for all dimensions, biomes, etc
+String  | Dimension Type | The type of dimension you are in
+String  | Dimension      | The name of the dimension you are in
+Long    | Hashed seed    | The hashed seed of the world
+VarInt  | Max players    | Max amount of players the server will allow
+VarInt  | View Distance  | The view distance of the server in chunks
+Boolean | Reduced Debug  | Whether or not Reduced-Debug-Info is enabled
+Boolean | Allow Respawn  | Whether the server will give you a death screen or just respawn you automatically
+Boolean | Is Debug       | Whether or not it's a debug world
+Boolean | Is Flat        | Whether or not it's a flat world
+----------------------------------------------------------------------------------------------------------
+
+Spawn Entity Packet (client-bound)
+----------------------------------------------------------------------------------------------------------
+Since 22w14a this packet is no longer only used for non-living entities and is now used for all entities that are not players
+
+VarInt | Entity Id      | The Id in the world of the entity
+UUID   | entity UUID    | the UUID of the entity
+VarInt | Entity Type Id | Type Id of the entity
+Double | X              | X position of the entity
+Double | Y              | Y position of the entity
+Double | Z              | Z position of the entity
+Byte   | Yaw            | Yaw of the entity. To get the real pitch, you must divide this by (256.0F / 360.0F)
+Byte   | Pitch          | Pitch of the entity. To get the real pitch, you must divide this by (256.0F / 360.0F)
+VarInt | Data           | Meaning dependent on the value of the Type field. See https://wiki.vg/Object_Data for details
+Short  | VelocityX      | X velocity of the entity
+Short  | VelocityY      | Y velocity of the entity
+Short  | VelocityZ      | Z velocity of the entity
+----------------------------------------------------------------------------------------------------------
