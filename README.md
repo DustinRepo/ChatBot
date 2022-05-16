@@ -107,6 +107,8 @@ Get the coords of the bot
 Get the coords of another player
 ###### queue / q
 Get the current length of 2b2t queue
+###### bender
+Get a random Bender quote
 ###### kanye / ye
 Get a random Kanye quote
 ###### fart
