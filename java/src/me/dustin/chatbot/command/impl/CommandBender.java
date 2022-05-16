@@ -13,7 +13,7 @@ public class CommandBender extends Command {
     public CommandBender() {
         super("bender");
     }
-    private ArrayList<String> quotes = new ArrayList<>();
+    private final ArrayList<String> quotes = new ArrayList<>();
     @Override
     public void run(String str, UUID sender) {
         if (quotes.isEmpty()) {
@@ -23,10 +23,10 @@ public class CommandBender extends Command {
                 JsonObject object = (JsonObject) jsonElement;
                 quotes.add(object.get("quote").getAsString());
             });
-            Random r = new Random();
-            String quote = quotes.get(r.nextInt(quotes.size()));
-            sendChat("Bender says: %s".formatted(quote), sender);
         }
+        Random r = new Random();
+        String quote = quotes.get(r.nextInt(quotes.size()));
+        sendChat("Bender says: %s".formatted(quote), sender);
 
     }
 }
