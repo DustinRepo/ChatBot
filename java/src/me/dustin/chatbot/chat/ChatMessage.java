@@ -10,7 +10,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.util.StringJoiner;
 
 public class ChatMessage {
 
@@ -25,7 +24,6 @@ public class ChatMessage {
     }
 
     public static ChatMessage of(String jsonData) {
-        System.out.println(jsonData);
         parsingMessage.senderName = "";
         parsingMessage.body = "";
         parsingMessage.body = parse(GeneralHelper.gson.fromJson(jsonData, JsonObject.class));
