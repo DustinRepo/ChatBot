@@ -161,6 +161,10 @@ public class PlayClientBoundPacketHandler extends ClientBoundPacketHandler {
 
     public void handleCustomDataPacket(ClientBoundCustomDataPacket clientBoundCustomDataPacket) {}
 
+    public void handleSetPreviewEnabledPacket(ClientBoundSetPreviewEnabledPacket clientBoundSetPreviewEnabledPacket) {
+        getClientConnection().setAllowPreviews(clientBoundSetPreviewEnabledPacket.isEnabled());
+    }
+
     public void handleRemoveEntitiesPacket(ClientBoundRemoveEntities clientBoundRemoveEntities) {
         for (int entityId : clientBoundRemoveEntities.getEntityIds()) {
             Entity entity = getClientConnection().getWorld().getEntity(entityId);

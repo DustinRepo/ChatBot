@@ -73,6 +73,7 @@ public class ClientConnection {
     private boolean isEncrypted;
     private boolean isInGame;
     private boolean serverDoesPreview;
+    private boolean allowPreviews;
 
     private final World world;
     private final ClientPlayer clientPlayer;
@@ -366,7 +367,7 @@ public class ClientConnection {
     }
 
     public boolean serverDoesPreview() {
-        return this.serverDoesPreview;
+        return this.serverDoesPreview && isAllowPreviews();
     }
 
     public void setServerDoesPreview(boolean hasChatPreview) {
@@ -408,6 +409,14 @@ public class ClientConnection {
 
     public boolean isChannelOpen() {
         return channel != null && channel.isOpen();
+    }
+
+    public boolean isAllowPreviews() {
+        return allowPreviews;
+    }
+
+    public void setAllowPreviews(boolean allowPreviews) {
+        this.allowPreviews = allowPreviews;
     }
 
     public enum NetworkState {

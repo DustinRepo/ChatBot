@@ -189,6 +189,13 @@ boolean | Contains preview | Whether or not the following preview message is sen
 Chat    | Preview message  | The preview of the message you just sent with a chat-packet if preview=true
 ----------------------------------------------------------------------------------------------------------
 
+Allow Preview packet (client-bound)
+----------------------------------------------------------------------------------------------------------
+This packet was introduced in 1.19-pre1 to tell the client that it will not get previews
+
+Boolean | Enabled | Whether or not the server will accept/send chat preview packets
+----------------------------------------------------------------------------------------------------------
+
 Join Game (client-bound)
 ----------------------------------------------------------------------------------------------------------
 Int     | Entity ID   | The entity ID of the player

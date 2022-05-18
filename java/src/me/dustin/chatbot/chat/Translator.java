@@ -11,7 +11,7 @@ public class Translator {
     public static void setTranslation(String translation) {
         try {
             String v = ProtocolHandler.getCurrent().getName().replace(".", "_");
-            if (v.contains("pre") || v.contains("w"))
+            if (v.toLowerCase().contains("pre") || v.toLowerCase().contains("w"))
                 v = "1_19";
             //fat fuckin mess to create the version id needed for the link, i.e. 1_12 from 1.12.2
             if (v.split("_").length > 2)
