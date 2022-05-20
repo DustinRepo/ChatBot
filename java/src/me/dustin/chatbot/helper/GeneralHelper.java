@@ -6,11 +6,13 @@ import me.dustin.chatbot.ChatBot;
 import me.dustin.chatbot.chat.ChatMessage;
 
 import javax.swing.text.StyledDocument;
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import java.util.logging.Formatter;
@@ -54,7 +56,7 @@ public class GeneralHelper {
         if (!chatMessage.getSenderName().isEmpty() && !chatMessage.getSenderName().startsWith("<"))
             chatMessage = new ChatMessage("<" + chatMessage.getSenderName() + (chatMessage.getSenderName().contains("§") ? "§f" : "") +">", chatMessage.getBody());
         String m = chatMessage.getMessage();
-        if (!m.contains("§") || !ChatBot.getConfig().isColorConsole()) {
+        if ((!m.contains("__COLOR_") && !m.contains("§")) || !ChatBot.getConfig().isColorConsole()) {
             print(strip(m), ChatMessage.TextColor.WHITE);
             return;
         }
@@ -64,18 +66,26 @@ public class GeneralHelper {
     }
 
     public static void printColorText(String text) {
-        ChatMessage.TextColor color;
+        text = convertColors(text);
+        ChatMessage.TextColor color = null;
         StyledDocument document = ChatBot.getGui() != null ? ChatBot.getGui().getOutput().getStyledDocument() : null;
         String timeStampString = String.format("[%s] ", getCurrentTimeStamp());
         try {
             if (document != null)
                 document.insertString(document.getLength(), timeStampString, ChatMessage.TextColor.GRAY.getStyle());
             System.out.print(ANSI_RESET + timeStampString);
-            for (String s : text.split("§")) {
+            for (String s : text.split("__COLOR_")) {
                 if (s.length() == 0)
                     continue;
-                color = ChatMessage.TextColor.getFromChar(s.charAt(0));
-                String s1 = color == null ? s : s.substring(1);
+                boolean bl = s.startsWith("(") && s.length() > 12 && s.charAt(12) == ')';
+                if (bl) {
+                    int red = Integer.parseInt(s.substring(1, 4));
+                    int green = Integer.parseInt(s.substring(5, 8));
+                    int blue = Integer.parseInt(s.substring(9, 12));
+                    Color c = new Color(red, green, blue);
+                    color = ChatMessage.TextColor.getFromColor(c);
+                }
+                String s1 = bl ? s.substring(13) : s;
                 if (color == null)
                     color = ChatMessage.TextColor.WHITE;
                 if (document != null)
@@ -87,11 +97,32 @@ public class GeneralHelper {
                 ChatBot.getGui().getOutput().setCaretPosition(ChatBot.getGui().getOutput().getDocument().getLength());
             }
             System.out.print(ANSI_RESET + "\n");
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String convertColors(String text) {
+        for (ChatMessage.TextColor value : ChatMessage.TextColor.values()) {
+            text = text.replace("§" + value.getChar(), "__COLOR_(%03d,%03d,%03d)".formatted(value.getColor().getRed(), value.getColor().getGreen(), value.getColor().getBlue()));
+        }
+        return text;
     }
 
     public static String strip(String string) {
-        return string == null ? null : FORMATTING_CODE_PATTERN.matcher(string).replaceAll("");
+        string = FORMATTING_CODE_PATTERN.matcher(string).replaceAll("");
+        if (string.contains("__COLOR_")) {
+            StringBuilder stringBuilder = new StringBuilder();
+            String[] l = string.split("__COLOR_");
+            for (String s1 : l) {
+                if (s1.length() == 0)
+                    continue;
+                if (s1.startsWith("(") && s1.charAt(12) == ')')
+                    stringBuilder.append(s1.substring(13));
+            }
+            string = stringBuilder.toString();
+        }
+        return string;
     }
 
     public static boolean matchUUIDs(String s, String s1) {
