@@ -1,4 +1,9 @@
 {
+  "843": {
+    "name": "1.19 Pre-release 3",
+    "protocol_id": 1073741911,
+    "packets": 841
+  },
   "842": {
     "name": "1.19 Pre-release 2",
     "protocol_id": 1073741910,
