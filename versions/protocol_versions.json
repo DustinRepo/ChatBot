@@ -1,4 +1,14 @@
 {
+  "848": {
+    "name": "1.19",
+    "protocol_id": 759,
+    "packets": 841
+  },
+  "847": {
+    "name": "1.19-rc2",
+    "protocol_id": 1073741915,
+    "packets": 841
+  },
   "846": {
     "name": "1.19-rc1",
     "protocol_id": 1073741914,
